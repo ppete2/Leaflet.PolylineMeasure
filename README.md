@@ -17,7 +17,7 @@ Add 2 lines within your **HTML-code** to load the .css and .js files of the plug
 <script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
 ```
 
-Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.
+Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.  
 **Options:**
 * position: *"topleft"* (= default), *"topright", "bottomleft", "bottomright"*
 * imperial: *false* (= default. metric values), *true* (imperial values)
