@@ -1,13 +1,21 @@
+//  possible Options:
+//  1.) position: 'topleft', 'topright', 'bottomleft', 'bottomright'
+//  2.) imperial: 'false' (= metric length in meters and kilometers), 'true' (= imperial length in yards and miles)
 L.Control.PolylineMeasure = L.Control.extend({
 	options: {
-		position: 'topleft'
+		position: 'topleft', imperial: false
 	},
 
 	onAdd: function (map) {
 		var className = 'leaflet-bar';  // class of control-container
         var container = L.DomUtil.create('div', className);
         L.DomEvent.disableClickPropagation(container);
-		this._createButton('&#8614;', 'Polyline Measure', 'polylinemeasure-ctrcontainerlink', container, this._toggleMeasure, this);  // class of <a>-linkbutton *within* control-container
+		if (this.options.imperial === false) {
+           ctrtitle = 'Polyline Measure [metric]' 
+        } else {
+           ctrtitle = 'Polyline Measure [imperial]'  
+        }
+        this._createButton('&#8614;', ctrtitle, 'polylinemeasure-ctrcontainerlink', container, this._toggleMeasure, this);  // class of <a>-linkbutton *within* control-container
 		return container;
 	},
 
@@ -136,16 +144,16 @@ L.Control.PolylineMeasure = L.Control.extend({
 			this._layerPaintPath.addLatLng(e.latlng);
 		}
 
-		// Upate the end marker to the current location
+		// change color+radius of intermediate circle markers. markers optical important if new segment of line the doesn't bend
 		if(this._lastCircle) {
-			this._layerPaint.removeLayer(this._lastCircle);
+			this._lastCircle.setStyle ({radius:2, fillColor:'#000'});
 		}
 
 		this._lastCircle = new L.CircleMarker(e.latlng, { 
 		// Style of the circle marking the latest point of the Polyline while still drawing
             color: '#000', 
 			weight: 1, 
-			fillColor: '#000',
+			fillColor: '#FA8D00',
 			fillOpacity: 1,
 			radius:3,
 			interactive: true  // to handle a click within this circle which is the command to finish drawing the polyline 
@@ -206,20 +214,35 @@ L.Control.PolylineMeasure = L.Control.extend({
 	_updateTooltipPosition: function(position) {
 		this._tooltip.setLatLng(position);
 	},
-
+    
     _convertDistance: function (distance) {
         dist = distance;
-        unit = "km";
-        if (dist >= 1000000) {
-            dist = (dist/1000).toFixed(0);
-        } else if (dist >= 100000) {
-            dist = (dist/1000).toFixed(1);
-        // don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234km": is it 1234 km or 1,234km ?)           
-        } else if (dist >= 1000) {
-            dist = (dist/1000).toFixed(2);
+        if (this.options.imperial === true) {
+            unit = "mi";
+            if (dist >= 1609344) {
+                dist = (dist/1609.344).toFixed(0);
+            } else if (dist >= 160934.4) {
+                dist = (dist/1609.344).toFixed(1);
+            // don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234mi": is it 1234mi or 1,234mi ?)           
+            } else if (dist >= 1609.344) {
+                dist = (dist/1609.344).toFixed(2);
+            } else {
+                dist = (dist/0.9144).toFixed(1);
+                unit = "yd";
+            }
         } else {
-           dist = (dist).toFixed(1);
-           unit = "m";
+            unit = "km";
+            if (dist >= 1000000) {
+                dist = (dist/1000).toFixed(0);
+            } else if (dist >= 100000) {
+                dist = (dist/1000).toFixed(1);
+            // don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234km": is it 1234km or 1,234km ?)           
+            } else if (dist >= 1000) {
+                dist = (dist/1000).toFixed(2);
+            } else {
+                dist = (dist).toFixed(1);
+                unit = "m";
+            }
         }
         return {value:dist, unit:unit};
     },
