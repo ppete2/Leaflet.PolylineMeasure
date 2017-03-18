@@ -2,7 +2,9 @@
 * Leaflet Plugin to **measure distances** :triangular_ruler: of simple lines as well as of complex polylines.
 * To finish drawing a line just *doubleclick*, or *singleclick* onto the black point, or *press "ESC"-key*.
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** and added some optical improvements.
-* Please take a look at the following [**Demo site**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo.html)
+
+## Demo
+* Please take a look at the following [** **Demo site** **](https://ppete2.github.io/Leaflet.PolylineMeasure/demo.html)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
