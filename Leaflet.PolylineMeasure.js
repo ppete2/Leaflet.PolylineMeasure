@@ -2,30 +2,96 @@
 //  1.) position: 'topleft', 'topright', 'bottomleft', 'bottomright'
 //  2.) imperial: 'false' (= metric length in meters and kilometers), 'true' (= imperial length in yards and miles)
 L.Control.PolylineMeasure = L.Control.extend({
+
+	/**
+	 * Default options for the tool
+	 * @type {Object}
+	 */
 	options: {
-		position: 'topleft', imperial: false
+		/**
+		 * Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
+		 * @type {String}
+		 * @default
+		 */
+		position: 'topleft',
+		/**
+		 * Show imperial or metric distances
+		 * @type {Boolean}
+		 * @default
+		 */
+		imperial: false,
+		/**
+		 * Title for the control
+		 * @type {String}
+		 * @default
+		 */
+		title: '',
+		/**
+		 * HTML to place inside the control. This should just be a unicode icon
+		 * @type {String}
+		 * @default
+		 */
+		innerHtml: '&#8614;',
+		/**
+		 * Classes to apply to the control
+		 * @type {Array}
+		 * @default
+		 */
+		classesToApply: []
 	},
 
 	onAdd: function (map) {
-		var className = 'leaflet-bar';  // class of control-container
-        var container = L.DomUtil.create('div', className);
-        L.DomEvent.disableClickPropagation(container);
-		if (this.options.imperial === false) {
-           ctrtitle = 'Polyline Measure [metric]' 
-        } else {
-           ctrtitle = 'Polyline Measure [imperial]'  
-        }
-        this._createButton('&#8614;', ctrtitle, 'polylinemeasure-ctrcontainerlink', container, this._toggleMeasure, this);  // class of <a>-linkbutton *within* control-container
+		var self = this;
+		var classLeafletBar = 'leaflet-bar';  // class of control-container
+		var container = document.createElement('div');
+		container.classList.add(classLeafletBar);
+		L.DomEvent.disableClickPropagation(container);
+
+		var title = self._getTitle();
+		var contents = self.options.innerHtml;
+		var classes = self.options.classesToApply;
+
+		if (contents.includes('&')) {
+			classes.push('polyline-measure-unicode-icon');
+		}
+
+		self._createControl(contents, title, classes, container, self._toggleMeasure, self);
 		return container;
 	},
 
-	_createButton: function (html, title, className, container, fn, context) {
-		var link = L.DomUtil.create('a', className, container);
-		link.innerHTML = html;
-		link.href = '#';
-        link.title = title;
-		L.DomEvent.on(link, 'click', fn, context);
-		return link;
+	/**
+	 * Get the title for the button
+	 * @returns {String} The provided title or a default based on measurement type
+	 * @private
+	 */
+	_getTitle: function() {
+		var self = this;
+		return self.options.title ? self.options.title : 'Polyline Measure ' + (self.options.imperial ? '[imperial]' : '[metric]');
+	},
+
+
+	/**
+	 * Create a control button
+	 * @param {String} 		contents		innerHTML to add
+	 * @param {String} 		title			Title to show on hover
+	 * @param {Array} 		classesToAdd	Collection of classes to add
+	 * @param {Element} 	container		Parent element
+	 * @param {Function} 	fn				Callback function to run
+	 * @param {Object} 		context			Context
+	 * @returns {Element}					Created element
+	 * @private
+	 */
+	_createControl: function (contents, title, classesToAdd, container, fn, context) {
+		var anchor = document.createElement('a');
+		anchor.innerHTML = contents;
+		anchor.setAttribute('title', title);
+
+		classesToAdd.forEach(function(c) {
+			anchor.classList.add(c);
+		});
+		L.DomEvent.on(anchor, 'click', fn, context);
+		container.appendChild(anchor);
+		return anchor;
 	},
 
 	_toggleMeasure: function () {
