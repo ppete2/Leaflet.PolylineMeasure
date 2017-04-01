@@ -83,7 +83,13 @@
 			 * @type {Array}
 			 * @default
 			 */
-			clearControlClasses: []
+			clearControlClasses: [],
+			/**
+			 * Set the color of the temporary line drawn
+			 * @type {String}
+			 * @default
+			 */
+			tempLineColor: '#00f'
 		},
 
 		/**
@@ -332,34 +338,39 @@
 		},
 
 		_mouseMove: function(e) {
-			// the following line was added, cause from Leaflet v1.0 on after each "dblclick" another "click" is fired too. Which would cause the addon to immediately start a new polyline at the position where the former line ended. "click"-event will be activated again if mouse is being moved.
-			L.DomEvent.on(this._map, 'click', this._mouseClick, this);
-			if(!e.latlng || !this._lastPoint) {
+			var self = this;
+			// The following line was added, because from Leaflet v1.0 on after each "dblclick" another "click" is fired too.
+			// Which would cause the plugin to immediately start a new polyline at the position where the former line ended.
+			// "click"-event will be activated again if mouse is being moved.
+			L.DomEvent.on(self._map, 'click', self._mouseClick, self);
+
+			if(!e.latlng || !self._lastPoint) {
 				return;
 			}
-			if(!this._layerPaintPathTemp) {
-				this._layerPaintPathTemp = L.polyline([this._lastPoint, e.latlng], {
+
+			if(!self._layerPaintPathTemp) {
+				self._layerPaintPathTemp = L.polyline([self._lastPoint, e.latlng], {
 					// Style of temporary, dashed line while moving the mouse
-					color: '#00f',
+					color: self.options.tempLineColor,
 					weight: 2,
 					interactive: false,
 					dashArray: '8,8'
-				}).addTo(this._layerPaint);
-				// the following 5 lines replaced 1 line in the original addon (source: Github Pull Request), which was causing an error starting from Leaflet v1.0 on
+				}).addTo(self._layerPaint);
+				// the following 5 lines replaced 1 line in the original plugin (source: Github Pull Request), which was causing an error starting from Leaflet v1.0 on
 			} else {
-				if (this._layerPaintPathTemp.spliceLatLngs) {
-					this._layerPaintPathTemp.spliceLatLngs(0, 2, this._lastPoint, e.latlng);
+				if (self._layerPaintPathTemp.spliceLatLngs) {
+					self._layerPaintPathTemp.spliceLatLngs(0, 2, self._lastPoint, e.latlng);
 				} else {
-					this._layerPaintPathTemp.setLatLngs([this._lastPoint, e.latlng]);
+					self._layerPaintPathTemp.setLatLngs([self._lastPoint, e.latlng]);
 				}
 			}
-			if(this._tooltip) {
-				if(!this._distance) {
-					this._distance = 0;
+			if(self._tooltip) {
+				if(!self._distance) {
+					self._distance = 0;
 				}
-				this._updateTooltipPosition(e.latlng);
-				var distance = e.latlng.distanceTo(this._lastPoint);
-				this._updateTooltipDistance(this._distance + distance, distance);
+				self._updateTooltipPosition(e.latlng);
+				var distance = e.latlng.distanceTo(self._lastPoint);
+				self._updateTooltipDistance(self._distance + distance, distance);
 			}
 		},
 
