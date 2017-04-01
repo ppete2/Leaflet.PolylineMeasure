@@ -49,6 +49,12 @@
 			 */
 			backgroundColor: '#8f8',
 			/**
+			 * Cursor type to show when creating measurements
+			 * @type {String}
+			 * @default
+			 */
+			cursor: 'crosshair',
+			/**
 			 * Clear the measurements on stop
 			 * @type {Boolean}
 			 * @default
@@ -203,36 +209,112 @@
 			}
 		},
 
-
-
+		/**
+		 * Enable measuring on the map
+		 * @private
+		 */
 		_startMeasuring: function() {
-			this._oldCursor = this._map._container.style.cursor;
-			this._map._container.style.cursor = 'crosshair';
-			this._doubleClickZoom = this._map.doubleClickZoom.enabled();
-			this._map.doubleClickZoom.disable();
-			L.DomEvent
-				.on(this._map, 'mousemove', this._mouseMove, this)
-				.on(this._map, 'click', this._mouseClick, this)
-				.on(document, 'keydown', this._onKeyDown, this);
-			//.on(this._map, 'dblclick', this._finishPath, this)   // don't use it anymore from Leaflet v1.0 on, cause after each "dblclick" another "click" is fired too.
-			if(!this._layerPaint) {
-				this._layerPaint = L.layerGroup().addTo(this._map);
-			}
-			if(!this._points) {
-				this._points = [];
-			}
+			var self = this;
+			self._changeCursor();
+			self._disableDoubleClick();
+			self._activateMapEvents();
+			self._createLayerPaint();
+			self._createPoints();
 		},
 
-		_stopMeasuring: function() {
+		/**
+		 * Change cursor to default type
+		 * @private
+		 */
+		_changeCursor: function() {
+			var self = this;
+			self._oldCursor = self._map._container.style.cursor;
+			self._map._container.style.cursor = self.options.cursor;
+		},
+
+		/**
+		 * Revert cursor back to cursor originally set for map
+		 * @private
+		 */
+		_revertCursor: function() {
 			var self = this;
 			self._map._container.style.cursor = self._oldCursor;
-			L.DomEvent
-				.off(document, 'keydown', self._onKeyDown, self)
-				.off(self._map, 'mousemove', self._mouseMove, self)
-				.off(self._map, 'click', self._mouseClick, self);
+		},
+
+		/**
+		 * Disable map double click and enable zoom on double click
+		 * @private
+		 */
+		_disableDoubleClick: function() {
+			var self = this;
+			self._doubleClickZoom = self._map.doubleClickZoom.enabled();
+			self._map.doubleClickZoom.disable();
+		},
+
+		/**
+		 * Enable the map double click event
+		 * @private
+		 */
+		_enableDoubleClick: function() {
+			var self = this;
 			if(self._doubleClickZoom) {
 				self._map.doubleClickZoom.enable();
 			}
+		},
+
+		/**
+		 * Activate mouse events on map
+		 * @private
+		 */
+		_activateMapEvents: function() {
+			var self = this;
+			L.DomEvent.on(self._map, 'mousemove', self._mouseMove, self);
+			L.DomEvent.on(self._map, 'click', self._mouseClick, self);
+			L.DomEvent.on(document, 'keydown', self._onKeyDown, self);
+		},
+
+		/**
+		 * Deactivate mouse events on map
+		 * @private
+		 */
+		_deactivateMapEvents: function() {
+			var self = this;
+			L.DomEvent.off(document, 'keydown', self._onKeyDown, self);
+			L.DomEvent.off(self._map, 'mousemove', self._mouseMove, self);
+			L.DomEvent.off(self._map, 'click', self._mouseClick, self);
+		},
+
+		/**
+		 * Create a layer group to hold measurements, in not already created
+		 * @private
+		 */
+		_createLayerPaint: function() {
+			var self = this;
+			if(!self._layerPaint) {
+				self._layerPaint = L.layerGroup().addTo(self._map);
+			}
+		},
+
+		/**
+		 * Create an array to hold the points, if not already existing
+		 * @private
+		 */
+		_createPoints: function() {
+			var self = this;
+			if(!self._points) {
+				self._points = [];
+			}
+		},
+
+		/**
+		 * Stop the measuring functionality on the map
+		 * @private
+		 */
+		_stopMeasuring: function() {
+			var self = this;
+			self._revertCursor();
+			self._deactivateMapEvents();
+			self._enableDoubleClick();
 			if(self.options.clearMeasurementsOnStop && self._layerPaint) {
 				self.clearAllMeasurements();
 			}
