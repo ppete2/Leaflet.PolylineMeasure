@@ -47,7 +47,37 @@
 			/**
 			 * Background color for control when selected
 			 */
-			backgroundColor: '#8f8'
+			backgroundColor: '#8f8',
+			/**
+			 * Clear the measurements on stop
+			 * @type {Boolean}
+			 * @default
+			 */
+			clearMeasurementsOnStop: true,
+			/**
+			 * Show a control to clear all the measurements
+			 * @type {Boolean}
+			 * @default
+			 */
+			showMeasurementsClearControl: false,
+			/**
+			 * Title text to show on the clear measurements control button
+			 * @type {String}
+			 * @default
+ 			 */
+			clearControlTitle: 'Clear',
+			/**
+			 * Clear control inner html
+			 * @type {String}
+			 * @default
+ 			 */
+			clearControlInnerHtml: '&times;',
+			/**
+			 * Collection of classes to add to clear control button
+			 * @type {Array}
+			 * @default
+			 */
+			clearControlClasses: []
 		},
 
 		/**
@@ -57,11 +87,34 @@
 		 */
 		onAdd: function (map) {
 			var self = this;
+			self._createContainer();
+			self._createMeasurementControl();
+
+			if (self.options.showMeasurementsClearControl) {
+				self._createClearMeasurementControl();
+			}
+
+			return self._container;
+		},
+
+		/**
+		 * Create the container for the controls
+		 * @private
+		 */
+		_createContainer: function() {
+			var self = this;
 			var classLeafletBar = 'leaflet-bar';  // class of control-container
 			self._container = document.createElement('div');
 			self._container.classList.add(classLeafletBar);
 			L.DomEvent.disableClickPropagation(self._container);
+		},
 
+		/**
+		 * Create the measurement control
+		 * @private
+		 */
+		_createMeasurementControl: function() {
+			var self = this;
 			var title = self._getTitle();
 			var contents = self.options.innerHtml;
 			var classes = self.options.classesToApply;
@@ -72,8 +125,23 @@
 
 			self._measureControl = self._createControl(contents, title, classes, self._container, self._toggleMeasure, self);
 			self._measureControl.setAttribute('id', _measureControlId);
+		},
 
-			return self._container;
+		/**
+		 * Create a control to clear all the measurements from the map
+		 * @private
+		 */
+		_createClearMeasurementControl: function() {
+			var self = this;
+			var title = self.options.clearControlTitle;
+			var contents = self.options.clearControlInnerHtml;
+			var classes = self.options.clearControlClasses;
+
+			if (contents.includes('&')) {
+				classes.push(_unicodeClass);
+			}
+
+			self._clearMeasureControl = self._createControl(contents, title, classes, self._container, self.clearAllMeasurements, self);
 		},
 
 		/**
@@ -120,16 +188,22 @@
 			self._updateSelectedControl();
 		},
 
+		/**
+		 * Update the control when measuring is enabled or disabled
+		 * @private
+		 */
 		_updateSelectedControl: function() {
 			var self = this;
 			if(self._measuring) {
 				self._measureControl.style.backgroundColor = self.options.backgroundColor;
-				this._startMeasuring();
+				self._startMeasuring();
 			} else {
 				self._measureControl.removeAttribute('style');
-				this._stopMeasuring();
+				self._stopMeasuring();
 			}
 		},
+
+
 
 		_startMeasuring: function() {
 			this._oldCursor = this._map._container.style.cursor;
@@ -150,18 +224,29 @@
 		},
 
 		_stopMeasuring: function() {
-			this._map._container.style.cursor = this._oldCursor;
+			var self = this;
+			self._map._container.style.cursor = self._oldCursor;
 			L.DomEvent
-				.off(document, 'keydown', this._onKeyDown, this)
-				.off(this._map, 'mousemove', this._mouseMove, this)
-				.off(this._map, 'click', this._mouseClick, this);
-			if(this._doubleClickZoom) {
-				this._map.doubleClickZoom.enable();
+				.off(document, 'keydown', self._onKeyDown, self)
+				.off(self._map, 'mousemove', self._mouseMove, self)
+				.off(self._map, 'click', self._mouseClick, self);
+			if(self._doubleClickZoom) {
+				self._map.doubleClickZoom.enable();
 			}
-			if(this._layerPaint) {
-				this._layerPaint.clearLayers();
+			if(self.options.clearMeasurementsOnStop && self._layerPaint) {
+				self.clearAllMeasurements();
 			}
-			this._restartPath();
+			self._restartPath();
+		},
+
+		/**
+		 * Clear all measurements from the map
+		 */
+		clearAllMeasurements: function() {
+			var self = this;
+			if (self._layerPaint) {
+				self._layerPaint.clearLayers();
+			}
 		},
 
 		_mouseMove: function(e) {
