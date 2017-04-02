@@ -46,6 +46,8 @@
 			classesToApply: [],
 			/**
 			 * Background color for control when selected
+			 * @type {String}
+			 * @default
 			 */
 			backgroundColor: '#8f8',
 			/**
@@ -85,11 +87,149 @@
 			 */
 			clearControlClasses: [],
 			/**
-			 * Set the color of the temporary line drawn
-			 * @type {String}
-			 * @default
+			 * Styling settings for the temporary dashed line
+             * @type {Object}
 			 */
-			tempLineColor: '#00f'
+			tempLine: {
+				/**
+				 * Dashed line color
+				 * @type {String}
+				 * @default
+				 */
+				color: '#00f',
+				/**
+				 * Dashed line weight
+				 * @type {Number}
+				 * @default
+				 */
+				weight: 2
+			},
+			/**
+			 * Styling for the solid line
+			 * @type {Object}
+			 */
+			line: {
+				/**
+				 * Solid line color
+				 * @type {String}
+				 * @default
+				 */
+				color: '#006',
+				/**
+				 * Solid line weight
+				 * @type {Number}
+				 * @default
+				 */
+				weight: 2
+			},
+            /**
+             * Style settings for circle marker indicating the starting point of the polyline
+             * @type {Object}
+             */
+			startingPoint: {
+                /**
+                 * Color of the border of the circle
+                 * @type {String}
+                 * @default
+                 */
+				color: '#000',
+                /**
+                 * Weight of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				weight: 1,
+                /**
+                 * Fill color of the circle
+                 * @type {String}
+                 * @default
+                 */
+				fillColor: '#0f0',
+                /**
+                 * Fill opacity of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				fillOpacity: 1,
+                /**
+                 * Radius of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				radius: 3
+			},
+            /**
+             * Style settings for circle marker indicating the last point of the polyline
+             * @type {Object}
+             */
+			lastPoint: {
+                /**
+                 * Color of the border of the circle
+                 * @type {String}
+                 * @default
+                 */
+                color: '#000',
+                /**
+                 * Weight of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                weight: 1,
+                /**
+                 * Fill color of the circle
+                 * @type {String}
+                 * @default
+                 */
+                fillColor: '#fa8d00',
+                /**
+                 * Fill opacity of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                fillOpacity: 1,
+                /**
+                 * Radius of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                radius: 3
+			},
+            /**
+             * Style settings for circle marker indicating the last point of the polyline
+             * @type {Object}
+             */
+			endPoint: {
+                /**
+                 * Color of the border of the circle
+                 * @type {String}
+                 * @default
+                 */
+                color: '#000',
+                /**
+                 * Weight of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                weight: 1,
+                /**
+                 * Fill color of the circle
+                 * @type {String}
+                 * @default
+                 */
+                fillColor: '#f00',
+                /**
+                 * Fill opacity of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                fillOpacity: 1,
+                /**
+                 * Radius of the circle
+                 * @type {Number}
+                 * @default
+                 */
+                radius: 3
+			}
 		},
 
 		/**
@@ -337,6 +477,11 @@
 			}
 		},
 
+		/**
+		 * Event to fire on mouse move
+		 * @param {Object} e Event
+		 * @private
+		 */
 		_mouseMove: function(e) {
 			var self = this;
 			// The following line was added, because from Leaflet v1.0 on after each "dblclick" another "click" is fired too.
@@ -351,12 +496,13 @@
 			if(!self._layerPaintPathTemp) {
 				self._layerPaintPathTemp = L.polyline([self._lastPoint, e.latlng], {
 					// Style of temporary, dashed line while moving the mouse
-					color: self.options.tempLineColor,
-					weight: 2,
+					color: self.options.tempLine.color,
+					weight: self.options.tempLine.weight,
 					interactive: false,
 					dashArray: '8,8'
 				}).addTo(self._layerPaint);
-				// the following 5 lines replaced 1 line in the original plugin (source: Github Pull Request), which was causing an error starting from Leaflet v1.0 on
+				// The following 5 lines replaced 1 line in the original plugin (source: Github Pull Request),
+				// which was causing an error starting from Leaflet v1.0 on
 			} else {
 				if (self._layerPaintPathTemp.spliceLatLngs) {
 					self._layerPaintPathTemp.spliceLatLngs(0, 2, self._lastPoint, e.latlng);
@@ -374,120 +520,160 @@
 			}
 		},
 
+		/**
+		 * Event to fire on mouse click
+		 * @param {Object} e Event
+		 * @private
+		 */
 		_mouseClick: function(e) {
+			var self = this;
 			// Skip if no coordinates
 			if(!e.latlng) {
 				return;
 			}
-			// If we have a tooltip, update the distance and create a new tooltip, leaving the old one exactly where it is (i.e. where the user has clicked)
-			if(this._lastPoint && this._tooltip) {
-				if(!this._distance) {
-					this._distance = 0;
+			// If we have a tooltip, update the distance and create a new tooltip,
+			// leaving the old one exactly where it is (i.e. where the user has clicked)
+			if(self._lastPoint && self._tooltip) {
+				if(!self._distance) {
+					self._distance = 0;
 				}
-				this._updateTooltipPosition(e.latlng);
-				var distance = e.latlng.distanceTo(this._lastPoint);
-				this._updateTooltipDistance(this._distance + distance, distance);
-				this._distance += distance;
+				self._updateTooltipPosition(e.latlng);
+				var distance = e.latlng.distanceTo(self._lastPoint);
+				self._updateTooltipDistance(self._distance + distance, distance);
+				self._distance += distance;
 			}
-			this._createTooltip(e.latlng);
+			self._createTooltip(e.latlng);
 
 			// If this is already the second click, add the location to the fix path (create one first if we don't have one)
-			if(this._lastPoint && !this._layerPaintPath) {
-				this._layerPaintPath = L.polyline([this._lastPoint], {
+			if(self._lastPoint && !self._layerPaintPath) {
+				self._layerPaintPath = L.polyline([self._lastPoint], {
 					// Style of fixed, solid line after mouse is clicked
-					color: '#006',
-					weight: 2,
+					color: self.options.line.color,
+					weight: self.options.line.weight,
 					interactive: false
-				}).addTo(this._layerPaint);
-				this._startCircle = new L.CircleMarker(this._lastPoint, {
+				}).addTo(self._layerPaint);
+				self._startCircle = new L.CircleMarker(self._lastPoint, {
 					// Style of the Circle marking the start of the Polyline
-					color: '#000',
-					weight: 1,
-					fillColor: '#0f0',
-					fillOpacity: 1,
-					radius:3,
-					interactive: false,
-				}).addTo(this._layerPaint);
+					color: self.options.startingPoint.color,
+					weight: self.options.startingPoint.weight,
+					fillColor: self.options.startingPoint.fillColor,
+					fillOpacity: self.options.startingPoint.fillOpacity,
+					radius: self.options.startingPoint.radius,
+					interactive: false
+				}).addTo(self._layerPaint);
 			}
 
-			if(this._layerPaintPath) {
-				this._layerPaintPath.addLatLng(e.latlng);
+			if(self._layerPaintPath) {
+				self._layerPaintPath.addLatLng(e.latlng);
 			}
 
 			// change color+radius of intermediate circle markers. markers optical important if new segment of line the doesn't bend
-			if(this._lastCircle) {
-				this._lastCircle.setStyle ({radius:2, fillColor:'#000'});
+			if(self._lastCircle) {
+				self._lastCircle.setStyle ({radius:2, fillColor:'#000'});
 			}
 
-			this._lastCircle = new L.CircleMarker(e.latlng, {
+			self._lastCircle = new L.CircleMarker(e.latlng, {
 				// Style of the circle marking the latest point of the Polyline while still drawing
-				color: '#000',
-				weight: 1,
-				fillColor: '#FA8D00',
-				fillOpacity: 1,
-				radius:3,
+				color: self.options.lastPoint.color,
+				weight: self.options.lastPoint.weight,
+				fillColor: self.options.lastPoint.fillColor,
+				fillOpacity: self.options.lastPoint.fillOpacity,
+				radius: self.options.lastPoint.radius,
 				interactive: true  // to handle a click within this circle which is the command to finish drawing the polyline
-			}).addTo(this._layerPaint);
-			this._lastCircle.on('click', function() { this._finishPath(); }, this);  // to handle a click within this circle which is the command to finish drawing the polyline
+			}).addTo(self._layerPaint);
+			self._lastCircle.on('click', function() { self._finishPath(); }, self);  // to handle a click within this circle which is the command to finish drawing the polyline
 			// Save current location as last location
-			this._lastPoint = e.latlng;
+			self._lastPoint = e.latlng;
 		},
 
+        /**
+         * Finish the drawing of the path
+         * @private
+         */
 		_finishPath: function() {
+			var self = this;
 			// Remove the last end marker as well as the last (moving tooltip)
-			// the following line was added, cause from Leaflet v1.0 on after each "dblclick" another "click" is fired too. Which would cause the addon to immediately start a new polyline at the position where the former line ended. And/or the last tooltip-window got drawed two times on top of each other. "click"-event will be activated again if mouse is being moved.
-			L.DomEvent.off(this._map, 'click', this._mouseClick, this);
+			// The following line was added, cause from Leaflet v1.0 on after each "dblclick" another "click" is fired too.
+			// Which would cause the plugin to immediately start a new polyline at the position where the former line ended.
+			// And/or the last tooltip-window got drawed two times on top of each other.
+			// "click"-event will be activated again if mouse is being moved.
+			L.DomEvent.off(self._map, 'click', self._mouseClick, self);
 
-			this._finishCircle = new L.CircleMarker(this._lastPoint, {
+			self._finishCircle = new L.CircleMarker(self._lastPoint, {
 				// Style of the circle marking the end of the whole Polyline
-				color: '#000',
-				weight: 1,
-				fillColor: '#f00',
-				fillOpacity: 1,
-				radius:3,
-				interactive: false,
-			}).addTo(this._layerPaint);
+				color: self.options.endPoint.color,
+				weight: self.options.endPoint.weight,
+				fillColor: self.options.endPoint.fillColor,
+				fillOpacity: self.options.endPoint.fillOpacity,
+				radius: self.options.endPoint.radius,
+				interactive: false
+			}).addTo(self._layerPaint);
 
-			if(this._lastCircle) {
-				this._layerPaint.removeLayer(this._lastCircle);
+			if(self._lastCircle) {
+				self._layerPaint.removeLayer(self._lastCircle);
 			}
-			if(this._tooltip) {
-				this._layerPaint.removeLayer(this._tooltip);
+			if(self._tooltip) {
+				self._layerPaint.removeLayer(self._tooltip);
 			}
-			if(this._layerPaint && this._layerPaintPathTemp) {
-				this._layerPaint.removeLayer(this._layerPaintPathTemp);
+			if(self._layerPaint && self._layerPaintPathTemp) {
+				self._layerPaint.removeLayer(self._layerPaintPathTemp);
 			}
 			// Reset everything
-			this._restartPath();
+			self._restartPath();
 		},
 
+        /**
+         * After completing a path, reset all the values to prepare in creating the next polyline measurement
+         * @private
+         */
 		_restartPath: function() {
-			this._distance = 0;
-			this._tooltip = undefined;
-			this._lastCircle = undefined;
-			this._lastPoint = undefined;
-			this._layerPaintPath = undefined;
-			this._layerPaintPathTemp = undefined;
+			var self = this;
+			self._distance = 0;
+			self._tooltip = undefined;
+			self._lastCircle = undefined;
+			self._lastPoint = undefined;
+			self._layerPaintPath = undefined;
+			self._layerPaintPathTemp = undefined;
 		},
 
+        /**
+         * Create a tooltip at the provided position
+         * @param {LatLng} position
+         * @private
+         */
 		_createTooltip: function(position) {
+			var self = this;
 			var icon = L.divIcon({
-				className: 'polylinemeasure-tooltip',
+				className: 'polyline-measure-tooltip',
 				iconAnchor: [-4, -4]
 			});
-			this._tooltip = L.marker(position, {
+			self._tooltip = L.marker(position, {
 				icon: icon,
 				interactive: false
-			}).addTo(this._layerPaint);
+			}).addTo(self._layerPaint);
 		},
 
+        /**
+         * Update the tooltip position on the map
+         * @param {LatLng} position
+         * @private
+         */
 		_updateTooltipPosition: function(position) {
-			this._tooltip.setLatLng(position);
+			var self = this;
+			self._tooltip.setLatLng(position);
 		},
 
-		_convertDistance: function (distance) {
-			dist = distance;
-			if (this.options.imperial === true) {
+        /**
+         * Get the distance in the format specified in the options
+         * @param {Number} distance Distance to convert
+         * @returns {{value: *, unit: *}}
+         * @private
+         */
+		_getDistance: function (distance) {
+			var self = this;
+			var dist = distance;
+			var unit;
+			if (self.options.imperial === true) {
 				unit = "mi";
 				if (dist >= 1609344) {
 					dist = (dist/1609.344).toFixed(0);
@@ -517,23 +703,37 @@
 			return {value:dist, unit:unit};
 		},
 
+        /**
+         * Update the tooltip distance
+         * @param {Number} total        Total distance
+         * @param {Number} difference   Difference in distance between 2 points
+         * @private
+         */
 		_updateTooltipDistance: function(total, difference) {
-			var totalRound = this._convertDistance(total);
-			var differenceRound = this._convertDistance(difference);
-			var text = '<div class="polylinemeasure-tooltip-total">' + totalRound.value + ' ' +  totalRound.unit + '</div>';
+			var self = this;
+			var totalRound = self._getDistance(total);
+			var differenceRound = self._getDistance(difference);
+			var text = '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
 			if (differenceRound.value > 0 && totalRound.value != differenceRound.value) {
-				text += '<div class="polylinemeasure-tooltip-difference">(+' + differenceRound.value + ' ' +  differenceRound.unit + ')</div>';
+				text += '<div class="polyline-measure-tooltip-difference">(+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + ')</div>';
 			}
-			this._tooltip._icon.innerHTML = text;
+			self._tooltip._icon.innerHTML = text;
 		},
 
+        /**
+         * Event to fire when a keyboard key is depressed.
+         * Currently only watching for ESC key.
+         * @param {Object} e Event
+         * @private
+         */
 		_onKeyDown: function (e) {
+			var self = this;
 			if(e.keyCode == 27) {
 				// "ESC"-Key. If not in path exit measuring mode, else just finish path
-				if(!this._lastPoint) {
-					this._toggleMeasure();
+				if(!self._lastPoint) {
+					self._toggleMeasure();
 				} else {
-					this._finishPath();
+					self._finishPath();
 				}
 			}
 		}
@@ -546,9 +746,10 @@
 	});
 
 	L.Map.addInitHook(function () {
-		if (this.options.polylineMeasureControl) {
-			this.PMControl = new L.Control.PolylineMeasure();
-			this.addControl(this.PMControl);
+		var self = this;
+		if (self.options.polylineMeasureControl) {
+			self.PMControl = new L.Control.PolylineMeasure();
+			self.addControl(self.PMControl);
 		}
 	});
 
