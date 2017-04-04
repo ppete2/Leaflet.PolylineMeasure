@@ -18,9 +18,54 @@ Add 2 lines within your **HTML-code** to load the .css and .js files of the plug
 ```
 
 Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.  
-**Options:**
-* position: *"topleft"* (= default), *"topright", "bottomleft", "bottomright"*
-* imperial: *false* (= default. metric values), *true* (imperial values)
-```javascript
-L.control.polylineMeasure({position:'topleft', imperial:false}).addTo(map);
+```js
+L.control.polylineMeasure(options).addTo(map);
+```
+
+## Default options
+
+```js
+options = {
+    position: 'topleft',                    // Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
+    imperial: false,                        // Show imperial or metric distances
+    title: '',                              // Title for the control
+    innerHtml: '&#8614;',                   // HTML to place inside the control
+    classesToApply: [],                     // Classes to apply to the control
+    backgroundColor: '#8f8',                // Background color for control when selected
+    cursor: 'crosshair',                    // Cursor type to show when creating measurements
+    clearMesurementsOnStop: true,           // Clear all the measurements when the control is unselected
+    showMeasurementsClearControl: false,    // Show a control to clear all the measurements
+    clearControlTitle: 'Clear',             // Title text to show on the clear measurements control button
+    clearControlInnerHtml: '&times',        // Clear control inner html
+    clearControlClasses: [],                // Collection of classes to add to clear control button
+    tempLine: {                             // Styling settings for the temporary dashed line
+        color: '#00f',                      // Dashed line color
+        weight: 2                           // Dashed line weight
+    },          
+    line: {                                 // Styling for the solid line
+        color: '#006',                      // Solid line color
+        weight: 2                           // Solid line weight
+    },
+    startingPoint: {                        // Style settings for circle marker indicating the starting point of the polyline
+        color: '#000',                      // Color of the border of the circle
+        weight: 1,                          // Weight of the circle
+        fillColor: '#0f0',                  // Fill color of the circle
+        fillOpacity: 1,                     // Fill opacity of the circle
+        radius: 3                           // Radius of the circle
+    },
+    lastPoint: {                            // Style settings for circle marker indicating the last point of the polyline
+        color: '#000',                      // Color of the border of the circle
+        weight: 1,                          // Weight of the circle
+        fillColor: '#fa8d00',               // Fill color of the circle
+        fillOpacity: 1,                     // Fill opacity of the circle
+        radius: 3                           // Radius of the circle
+    },
+    endPoint: {                             // Style settings for circle marker indicating the last point of the polyline
+        color: '#000',                      // Color of the border of the circle
+        weight: 1,                          // Weight of the circle
+        fillColor: '#f00',                  // Fill color of the circle
+        fillOpacity: 1,                     // Fill opacity of the circle
+        radius: 3                           // Radius of the circle
+    },
+};
 ```

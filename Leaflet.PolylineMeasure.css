@@ -1,15 +1,4 @@
-.polylinemeasure-ctrcontainerlink {
-    font-size: 19px;
-	font-weight: bold;
-}
-
-.polylinemeasure-ctrcontainer-on .polylinemeasure-ctrcontainerlink,
-.polylinemeasure-ctrcontainer-on .polylinemeasure-ctrcontainerlink:hover {
-    background-color: #8f8;
-    box-shadow: 0 0 4px rgba(10,10,10,1.0);
-}
-    
-.polylinemeasure-tooltip {
+.polyline-measure-tooltip {
 	font: 10px Arial, Helvetica, sans-serif;
     line-height: 10px;
 	background-color: rgba(255, 255, 160, 0.7);
@@ -22,11 +11,19 @@
 	white-space: nowrap;
 }
 
-.polylinemeasure-tooltip-total {
+.polyline-measure-tooltip-total {
 	color: #006;
     font-weight: bold;
 }
 
-.polylinemeasure-tooltip-difference {
+.polyline-measure-tooltip-difference {
 	color: #060;
+}
+
+.polyline-measure-unicode-icon {
+	font-size: 19px;
+	font-weight: bold;
+}
+.leaflet-control {
+	cursor: pointer;
 }
