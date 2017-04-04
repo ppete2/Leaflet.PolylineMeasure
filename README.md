@@ -19,7 +19,7 @@ Add 2 lines within your **HTML-code** to load the .css and .js files of the plug
 
 Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.  
 ```js
-L.control.polylineMeasure({options}).addTo(map);
+L.control.polylineMeasure(options).addTo(map);
 ```
 
 ## Default options
