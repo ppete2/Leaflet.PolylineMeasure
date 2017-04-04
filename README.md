@@ -5,7 +5,7 @@
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added some optical improvements.
 
 ## Demo
-* Please take a look at the following [**Demo (metric values)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_metric.html) or [**Demo (imperial values)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_imperial.html)
+* Please take a look at the following [**Demo (metric values, with Clear-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_metric.html) or [**Demo (imperial values, without Clear-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_imperial.html)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
