@@ -19,7 +19,7 @@ Add 2 lines within your **HTML-code** to load the .css and .js files of the plug
 
 Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.  
 ```js
-L.control.polylineMeasure(options).addTo(map);
+L.control.polylineMeasure({options}).addTo(map);
 ```
 
 ## Default options
@@ -33,7 +33,7 @@ options = {
     classesToApply: [],                     // Classes to apply to the control
     backgroundColor: '#8f8',                // Background color for control when selected
     cursor: 'crosshair',                    // Cursor type to show when creating measurements
-    clearMesurementsOnStop: true,           // Clear all the measurements when the control is unselected
+    clearMeasurementsOnStop: true,          // Clear all the measurements when the control is unselected
     showMeasurementsClearControl: false,    // Show a control to clear all the measurements
     clearControlTitle: 'Clear',             // Title text to show on the clear measurements control button
     clearControlInnerHtml: '&times',        // Clear control inner html
