@@ -24,3 +24,6 @@
 	font-size: 19px;
 	font-weight: bold;
 }
+.leaflet-control {
+	cursor: pointer;
+}
