@@ -570,6 +570,7 @@
 			// change color+radius of intermediate circle markers. markers optical important if new segment of line the doesn't bend
 			if(self._lastCircle) {
 				self._lastCircle.setStyle ({radius:2, fillColor:'#000'});
+				self._lastCircle.off();
 			}
 
 			self._lastCircle = new L.CircleMarker(e.latlng, {
