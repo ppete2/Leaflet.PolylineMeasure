@@ -2,7 +2,7 @@
 * Leaflet Plugin to :triangular_ruler: **measure distances** of simple lines as well as of complex polylines.
 * Measuring in **metric system** (meters, kilometers) or in **imperial system** (yards, miles)
 * To finish drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
-* Changing postions of line's points afterwards is possible.
+* **Moving** of line's points afterwards is possible by click and drag them.
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added some optical improvements.
 
 ## Demo
