@@ -31,19 +31,19 @@
 			 * @type {String}
 			 * @default
 			 */
-			title: '',
+			measureControlTitle: '',
 			/**
 			 * HTML to place inside the control. This should just be a unicode icon
 			 * @type {String}
 			 * @default
 			 */
-			innerHtml: '&#8614;',
+			measureControlLabel: '&#8614;',
 			/**
 			 * Classes to apply to the control
 			 * @type {Array}
 			 * @default
 			 */
-			classesToApply: [],
+			measureControlClasses: [],
 			/**
 			 * Background color for control when selected
 			 * @type {String}
@@ -79,7 +79,7 @@
 			 * @type {String}
 			 * @default
  			 */
-			clearControlInnerHtml: '&times;',
+			clearControlLabel: '&times;',
 			/**
 			 * Collection of classes to add to clear control button
 			 * @type {Array}
@@ -108,7 +108,7 @@
 			 * Styling for the solid line
 			 * @type {Object}
 			 */
-			line: {
+			fixedLine: {
 				/**
 				 * Solid line color
 				 * @type {String}
@@ -126,7 +126,7 @@
              * Style settings for circle marker indicating the starting point of the polyline
              * @type {Object}
              */
-			startingPoint: {
+			startCircle: {
                 /**
                  * Color of the border of the circle
                  * @type {String}
@@ -159,10 +159,46 @@
 				radius: 3
 			},
             /**
-             * Style settings for circle marker indicating the last point of the polyline
+             * Style settings for all circle markers between startCircle and endCircle
              * @type {Object}
              */
-			lastPoint: {
+            intermedCircle: {
+                /**
+                 * Color of the border of the circle
+                 * @type {String}
+                 * @default
+                 */
+				color: '#000',
+                /**
+                 * Weight of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				weight: 1,
+                /**
+                 * Fill color of the circle
+                 * @type {String}
+                 * @default
+                 */
+				fillColor: '#ff0',
+                /**
+                 * Fill opacity of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				fillOpacity: 1,
+                /**
+                 * Radius of the circle
+                 * @type {Number}
+                 * @default
+                 */
+				radius: 3
+			},
+            /**
+             * Style settings for circle marker indicating the latest point of the polyline during drawing a line
+             * @type {Object}
+             */
+			currentCircle: {
                 /**
                  * Color of the border of the circle
                  * @type {String}
@@ -180,7 +216,7 @@
                  * @type {String}
                  * @default
                  */
-                fillColor: '#fa8d00',
+                fillColor: '#f0f',
                 /**
                  * Fill opacity of the circle
                  * @type {Number}
@@ -195,10 +231,10 @@
                 radius: 3
 			},
             /**
-             * Style settings for circle marker indicating the last point of the polyline
+             * Style settings for circle marker indicating the end point of the polyline
              * @type {Object}
              */
-			endPoint: {
+			endCircle: {
                 /**
                  * Color of the border of the circle
                  * @type {String}
@@ -241,11 +277,9 @@
 			var self = this;
 			self._createContainer();
 			self._createMeasurementControl();
-
 			if (self.options.showMeasurementsClearControl) {
 				self._createClearMeasurementControl();
 			}
-
 			return self._container;
 		},
 
@@ -258,7 +292,7 @@
 			var classLeafletBar = 'leaflet-bar';  // class of control-container
 			self._container = document.createElement('div');
 			self._container.classList.add(classLeafletBar);
-			L.DomEvent.disableClickPropagation(self._container);
+			L.DomEvent.disableClickPropagation(self._container); // otherwise drawing process would instantly start at controls' container or double click would zoom-in map
 		},
 
 		/**
@@ -267,15 +301,13 @@
 		 */
 		_createMeasurementControl: function() {
 			var self = this;
-			var title = self._getTitle();
-			var contents = self.options.innerHtml;
-			var classes = self.options.classesToApply;
-
-			if (contents.includes('&')) {
+			var title = self._getMeasureControlTitle();
+			var label = self.options.measureControlLabel;
+			var classes = self.options.measureControlClasses;
+			if (label.indexOf('&') != -1) {
 				classes.push(_unicodeClass);
 			}
-
-			self._measureControl = self._createControl(contents, title, classes, self._container, self._toggleMeasure, self);
+			self._measureControl = self._createControl(label, title, classes, self._container, self._toggleMeasure, self);
 			self._measureControl.setAttribute('id', _measureControlId);
 		},
 
@@ -286,14 +318,12 @@
 		_createClearMeasurementControl: function() {
 			var self = this;
 			var title = self.options.clearControlTitle;
-			var contents = self.options.clearControlInnerHtml;
+			var label = self.options.clearControlLabel;
 			var classes = self.options.clearControlClasses;
-
-			if (contents.includes('&')) {
+			if (label.indexOf('&') != -1) {
 				classes.push(_unicodeClass);
 			}
-
-			self._clearMeasureControl = self._createControl(contents, title, classes, self._container, self.clearAllMeasurements, self);
+			self._clearMeasureControl = self._createControl(label, title, classes, self._container, self._clearAllMeasurements, self);
 		},
 
 		/**
@@ -301,14 +331,14 @@
 		 * @returns {String} The provided title or a default based on measurement type
 		 * @private
 		 */
-		_getTitle: function() {
+		_getMeasureControlTitle: function() {
 			var self = this;
-			return self.options.title ? self.options.title : 'Polyline Measure ' + (self.options.imperial ? '[imperial]' : '[metric]');
+			return self.options.measureControlTitle ? self.options.measureControlTitle : 'Polyline Measure ' + (self.options.imperial ? '[imperial]' : '[metric]');
 		},
 
 		/**
 		 * Create a control button
-		 * @param {String} 		contents		innerHTML to add
+		 * @param {String} 		label		    Label to add
 		 * @param {String} 		title			Title to show on hover
 		 * @param {Array} 		classesToAdd	Collection of classes to add
 		 * @param {Element} 	container		Parent element
@@ -317,15 +347,14 @@
 		 * @returns {Element}					Created element
 		 * @private
 		 */
-		_createControl: function (contents, title, classesToAdd, container, fn, context) {
+		_createControl: function (label, title, classesToAdd, container, fn, context) {
 			var anchor = document.createElement('a');
-			anchor.innerHTML = contents;
+			anchor.innerHTML = label;
 			anchor.setAttribute('title', title);
-
 			classesToAdd.forEach(function(c) {
 				anchor.classList.add(c);
 			});
-			L.DomEvent.on(anchor, 'click', fn, context);
+			L.DomEvent.on (anchor, 'click', fn, context);
 			container.appendChild(anchor);
 			return anchor;
 		},
@@ -336,7 +365,7 @@
 		 */
 		_toggleMeasure: function () {
 			var self = this;
-			this._measuring = !this._measuring;
+			self._measuring = !self._measuring;
 			self._updateSelectedControl();
 		},
 
@@ -365,7 +394,11 @@
 			self._disableDoubleClick();
 			self._activateMapEvents();
 			self._createLayerPaint();
-			self._createPoints();
+			self._cntCircle = 0;
+            self._cntLine = 0;
+            self._arrFixedLines = [];
+            self._arrTooltipsCurrentline = [null];
+            self._arrTooltips = [];
 		},
 
 		/**
@@ -414,9 +447,9 @@
 		 */
 		_activateMapEvents: function() {
 			var self = this;
-			L.DomEvent.on(self._map, 'mousemove', self._mouseMove, self);
-			L.DomEvent.on(self._map, 'click', self._mouseClick, self);
-			L.DomEvent.on(document, 'keydown', self._onKeyDown, self);
+			self._map.on ('mousemove', self._mouseMove, self);
+			self._map.on ('click', self._mouseClick, self);
+			L.DomEvent.on (document, 'keydown', self._onKeyDown, self);
 		},
 
 		/**
@@ -425,9 +458,9 @@
 		 */
 		_deactivateMapEvents: function() {
 			var self = this;
-			L.DomEvent.off(document, 'keydown', self._onKeyDown, self);
-			L.DomEvent.off(self._map, 'mousemove', self._mouseMove, self);
-			L.DomEvent.off(self._map, 'click', self._mouseClick, self);
+            self._map.off ('mousemove', self._mouseMove, self);
+            self._map.off ('click', self._mouseClick, self);
+			L.DomEvent.off (document, 'keydown', self._onKeyDown, self);
 		},
 
 		/**
@@ -442,17 +475,6 @@
 		},
 
 		/**
-		 * Create an array to hold the points, if not already existing
-		 * @private
-		 */
-		_createPoints: function() {
-			var self = this;
-			if(!self._points) {
-				self._points = [];
-			}
-		},
-
-		/**
 		 * Stop the measuring functionality on the map
 		 * @private
 		 */
@@ -462,7 +484,7 @@
 			self._deactivateMapEvents();
 			self._enableDoubleClick();
 			if(self.options.clearMeasurementsOnStop && self._layerPaint) {
-				self.clearAllMeasurements();
+				self._clearAllMeasurements();
 			}
 			self._restartPath();
 		},
@@ -470,173 +492,33 @@
 		/**
 		 * Clear all measurements from the map
 		 */
-		clearAllMeasurements: function() {
+		_clearAllMeasurements: function() {
 			var self = this;
 			if (self._layerPaint) {
 				self._layerPaint.clearLayers();
 			}
 		},
 
-		/**
-		 * Event to fire on mouse move
-		 * @param {Object} e Event
-		 * @private
-		 */
-		_mouseMove: function(e) {
+        /**
+         * Event to fire when a keyboard key is depressed.
+         * Currently only watching for ESC key.
+         * @param {Object} e Event
+         * @private
+         */
+        _onKeyDown: function (e) {
 			var self = this;
-			// The following line was added, because from Leaflet v1.0 on after each "dblclick" another "click" is fired too.
-			// Which would cause the plugin to immediately start a new polyline at the position where the former line ended.
-			// "click"-event will be activated again if mouse is being moved.
-			L.DomEvent.on(self._map, 'click', self._mouseClick, self);
-
-			if(!e.latlng || !self._lastPoint) {
-				return;
-			}
-
-			if(!self._layerPaintPathTemp) {
-				self._layerPaintPathTemp = L.polyline([self._lastPoint, e.latlng], {
-					// Style of temporary, dashed line while moving the mouse
-					color: self.options.tempLine.color,
-					weight: self.options.tempLine.weight,
-					interactive: false,
-					dashArray: '8,8'
-				}).addTo(self._layerPaint);
-				// The following 5 lines replaced 1 line in the original plugin (source: Github Pull Request),
-				// which was causing an error starting from Leaflet v1.0 on
-			} else {
-				if (self._layerPaintPathTemp.spliceLatLngs) {
-					self._layerPaintPathTemp.spliceLatLngs(0, 2, self._lastPoint, e.latlng);
+			if(e.keyCode == 27) {
+				// "ESC"-Key. If not in path exit measuring mode, else just finish path
+				if(!self._currentCircle) {
+					
+                    self._toggleMeasure();
 				} else {
-					self._layerPaintPathTemp.setLatLngs([self._lastPoint, e.latlng]);
+                    
+					self._finishPath(e);
 				}
 			}
-			if(self._tooltip) {
-				if(!self._distance) {
-					self._distance = 0;
-				}
-				self._updateTooltipPosition(e.latlng);
-				var distance = e.latlng.distanceTo(self._lastPoint);
-				self._updateTooltipDistance(self._distance + distance, distance);
-			}
 		},
-
-		/**
-		 * Event to fire on mouse click
-		 * @param {Object} e Event
-		 * @private
-		 */
-		_mouseClick: function(e) {
-			var self = this;
-			// Skip if no coordinates
-			if(!e.latlng) {
-				return;
-			}
-			// If we have a tooltip, update the distance and create a new tooltip,
-			// leaving the old one exactly where it is (i.e. where the user has clicked)
-			if(self._lastPoint && self._tooltip) {
-				if(!self._distance) {
-					self._distance = 0;
-				}
-				self._updateTooltipPosition(e.latlng);
-				var distance = e.latlng.distanceTo(self._lastPoint);
-				self._updateTooltipDistance(self._distance + distance, distance);
-				self._distance += distance;
-			}
-			self._createTooltip(e.latlng);
-
-			// If this is already the second click, add the location to the fix path (create one first if we don't have one)
-			if(self._lastPoint && !self._layerPaintPath) {
-				self._layerPaintPath = L.polyline([self._lastPoint], {
-					// Style of fixed, solid line after mouse is clicked
-					color: self.options.line.color,
-					weight: self.options.line.weight,
-					interactive: false
-				}).addTo(self._layerPaint);
-				self._startCircle = new L.CircleMarker(self._lastPoint, {
-					// Style of the Circle marking the start of the Polyline
-					color: self.options.startingPoint.color,
-					weight: self.options.startingPoint.weight,
-					fillColor: self.options.startingPoint.fillColor,
-					fillOpacity: self.options.startingPoint.fillOpacity,
-					radius: self.options.startingPoint.radius,
-					interactive: false
-				}).addTo(self._layerPaint);
-			}
-
-			if(self._layerPaintPath) {
-				self._layerPaintPath.addLatLng(e.latlng);
-			}
-
-			// change color+radius of intermediate circle markers. markers optical important if new segment of line the doesn't bend
-			if(self._lastCircle) {
-				self._lastCircle.setStyle ({radius:2, fillColor:'#000'});
-				self._lastCircle.off();
-			}
-
-			self._lastCircle = new L.CircleMarker(e.latlng, {
-				// Style of the circle marking the latest point of the Polyline while still drawing
-				color: self.options.lastPoint.color,
-				weight: self.options.lastPoint.weight,
-				fillColor: self.options.lastPoint.fillColor,
-				fillOpacity: self.options.lastPoint.fillOpacity,
-				radius: self.options.lastPoint.radius,
-				interactive: true  // to handle a click within this circle which is the command to finish drawing the polyline
-			}).addTo(self._layerPaint);
-			self._lastCircle.on('click', function() { self._finishPath(); }, self);  // to handle a click within this circle which is the command to finish drawing the polyline
-			// Save current location as last location
-			self._lastPoint = e.latlng;
-		},
-
-        /**
-         * Finish the drawing of the path
-         * @private
-         */
-		_finishPath: function() {
-			var self = this;
-			// Remove the last end marker as well as the last (moving tooltip)
-			// The following line was added, cause from Leaflet v1.0 on after each "dblclick" another "click" is fired too.
-			// Which would cause the plugin to immediately start a new polyline at the position where the former line ended.
-			// And/or the last tooltip-window got drawed two times on top of each other.
-			// "click"-event will be activated again if mouse is being moved.
-			L.DomEvent.off(self._map, 'click', self._mouseClick, self);
-
-			self._finishCircle = new L.CircleMarker(self._lastPoint, {
-				// Style of the circle marking the end of the whole Polyline
-				color: self.options.endPoint.color,
-				weight: self.options.endPoint.weight,
-				fillColor: self.options.endPoint.fillColor,
-				fillOpacity: self.options.endPoint.fillOpacity,
-				radius: self.options.endPoint.radius,
-				interactive: false
-			}).addTo(self._layerPaint);
-
-			if(self._lastCircle) {
-				self._layerPaint.removeLayer(self._lastCircle);
-			}
-			if(self._tooltip) {
-				self._layerPaint.removeLayer(self._tooltip);
-			}
-			if(self._layerPaint && self._layerPaintPathTemp) {
-				self._layerPaint.removeLayer(self._layerPaintPathTemp);
-			}
-			// Reset everything
-			self._restartPath();
-		},
-
-        /**
-         * After completing a path, reset all the values to prepare in creating the next polyline measurement
-         * @private
-         */
-		_restartPath: function() {
-			var self = this;
-			self._distance = 0;
-			self._tooltip = undefined;
-			self._lastCircle = undefined;
-			self._lastPoint = undefined;
-			self._layerPaintPath = undefined;
-			self._layerPaintPathTemp = undefined;
-		},
-
+        
         /**
          * Create a tooltip at the provided position
          * @param {LatLng} position
@@ -648,6 +530,7 @@
 				className: 'polyline-measure-tooltip',
 				iconAnchor: [-4, -4]
 			});
+            
 			self._tooltip = L.marker(position, {
 				icon: icon,
 				interactive: false
@@ -715,29 +598,209 @@
 			var totalRound = self._getDistance(total);
 			var differenceRound = self._getDistance(difference);
 			var text = '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
-			if (differenceRound.value > 0 && totalRound.value != differenceRound.value) {
+			if (differenceRound.value > 0 ) {
 				text += '<div class="polyline-measure-tooltip-difference">(+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + ')</div>';
 			}
 			self._tooltip._icon.innerHTML = text;
 		},
+        
+		/**
+		 * Event to fire on mouse move
+		 * @param {Object} e Event
+		 * @private
+		 */
+		_mouseMove: function(e) {
+			var self = this;
+            self._map.on ('click', self._mouseClick, self);  // necassary for _dragCircle. If switched on already within _dragCircle an unwanted click is fired at the end of the drag.
+			if(!e.latlng || !self._currentCircle) {
+				return;
+			}
+
+			if(!self._tempLine) {
+				self._tempLine = L.polyline ([self._currentCircleCoords, e.latlng], {
+					// Style of temporary, dashed line while moving the mouse
+					color: self.options.tempLine.color,
+					weight: self.options.tempLine.weight,
+					interactive: false,
+					dashArray: '8,8'
+				}).addTo(self._layerPaint).bringToBack();  // to move tempLine behind startCircle
+			} else {
+				self._tempLine.setLatLngs ([self._currentCircleCoords, e.latlng]);
+			}
+
+			if(self._tooltip) {
+				if(!self._distance) {
+					self._distance = 0;
+				}
+				self._updateTooltipPosition (e.latlng);
+				var distance = e.latlng.distanceTo (self._currentCircleCoords);
+				self._updateTooltipDistance (self._distance + distance, distance);
+			}
+		},
+
+		/**
+		 * Event to fire on mouse click
+		 * @param {Object} e Event
+		 * @private
+		 */
+		_mouseClick: function(e) {
+			var self = this;
+			if (!e.latlng) {
+				return;
+			}
+			// If we have a tooltip, update the distance and create a new tooltip,
+			// leaving the old one exactly where it is (i.e. where the user has clicked)
+			if (self._currentCircle) {
+				if (!self._distance) {
+					self._distance = 0;
+				}
+				self._updateTooltipPosition (e.latlng);
+				var distance = e.latlng.distanceTo (self._currentCircleCoords);
+				self._updateTooltipDistance (self._distance + distance, distance);
+                self._arrTooltipsCurrentline.push (self._tooltip);
+                self._distance += distance;
+                self._currentCircle.off ('click', self._finishPath, self);
+                if (!self._fixedLine) {
+                    self._fixedLine = L.polyline([self._currentCircleCoords], {
+                        // Style of fixed, solid line after mouse is clicked
+                        color: self.options.fixedLine.color,
+                        weight: self.options.fixedLine.weight,
+                        interactive: false
+                    }).addTo(self._layerPaint).bringToBack();   // to move the line behind the startCircle
+                    self._currentCircle.setStyle ({
+                        // Style of the Circle marking the start of the Polyline
+                        color: self.options.startCircle.color,
+                        weight: self.options.startCircle.weight,
+                        fillColor: self.options.startCircle.fillColor,
+                        fillOpacity: self.options.startCircle.fillOpacity,
+                        radius: self.options.startCircle.radius
+                    })
+                        self._currentCircle.on ('mousedown', self._dragCircle, self);
+                } else {
+                    self._currentCircle.setStyle ({fillColor: self.options.intermedCircle.fillColor});
+                    self._currentCircle.on ('mousedown', self._dragCircle, self);
+                }
+            }
+			
+            self._prevTooltip = self._tooltip;
+			self._createTooltip(e.latlng);
+			if(self._fixedLine) {
+				self._fixedLine.addLatLng(e.latlng);
+			}
+
+			// change color+radius of intermediate circle markers. These intermediate Circles are optical important, especially if a new segment of line the doesn't bend
+			self._currentCircle = new L.CircleMarker(e.latlng, {
+				// Style of the circle marking the latest point of the Polyline while still drawing
+				color: self.options.currentCircle.color,
+				weight: self.options.currentCircle.weight,
+				fillColor: self.options.currentCircle.fillColor,
+				fillOpacity: self.options.currentCircle.fillOpacity,
+				radius: self.options.currentCircle.radius,
+			}).addTo(self._layerPaint);
+            self._currentCircle.cntLine = self._cntLine;
+            self._currentCircle.cntCircle = self._cntCircle;
+            self._cntCircle++;
+            self._currentCircle.on ('click', self._finishPath, self);  // to handle a click within this circle which is the command to finish drawing the polyline
+            self._currentCircleCoords = e.latlng;
+		},
 
         /**
-         * Event to fire when a keyboard key is depressed.
-         * Currently only watching for ESC key.
-         * @param {Object} e Event
+         * Finish the drawing of the path
          * @private
          */
-		_onKeyDown: function (e) {
+		_finishPath: function(e) {
 			var self = this;
-			if(e.keyCode == 27) {
-				// "ESC"-Key. If not in path exit measuring mode, else just finish path
-				if(!self._lastPoint) {
-					self._toggleMeasure();
-				} else {
-					self._finishPath();
-				}
+            L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started because os the map.on ('click')-event.
+            self._currentCircle.off ('click', self._finishPath, self);  // Remove the last end marker as well as the last (moving tooltip)
+            self._prevTooltip._icon.classList.add ('polyline-measure-tooltip-end'); // add Class e.g. another background-color to the Previous Tooltip (which is the last fixed tooltip, cause the moving tooltip is being deleted later)
+            self._currentCircle.setStyle ({
+				// Style of the circle marking the end of the whole Polyline
+				color: self.options.endCircle.color,
+				weight: self.options.endCircle.weight,
+				fillColor: self.options.endCircle.fillColor,
+				fillOpacity: self.options.endCircle.fillOpacity,
+				radius: self.options.endCircle.radius				
+			});
+			self._arrFixedLines.push (self._fixedLine);
+            self._cntLine++;
+            self._arrTooltips.push (self._arrTooltipsCurrentline);
+            self._currentCircle.on ('mousedown', self._dragCircle, self);
+            if(self._tooltip) {
+				self._layerPaint.removeLayer(self._tooltip);
 			}
-		}
+			if(self._layerPaint && self._tempLine) {
+				self._layerPaint.removeLayer(self._tempLine);
+			}
+			// Reset everything
+			self._restartPath();
+		},
+
+        /**
+         * After completing a path, reset all the values to prepare in creating the next polyline measurement
+         * @private
+         */
+		_restartPath: function() {
+			var self = this;
+            self._cntCircle = 0;
+			self._distance = 0;
+			self._tooltip = undefined;
+			self._currentCircle = undefined;
+			self._currentCircleCoords = undefined;
+			self._fixedLine = undefined;
+			self._tempLine = undefined;
+            self._arrTooltipsCurrentline = [null];   // assign "null" to 1st element of array, cause there's no tooltip for 1st Circle
+		},
+      
+        _dragCircle: function (e1) {
+            var self = this;
+            if (self._measuring) {    // just execute drag-function if Measuring tool is active.
+            
+            self._map.dragging.disable();  // turn of moving of the map during drag of a circle
+            self._map.off ('mousemove', self._mouseMove, self);
+            self._map.off ('click', self._mouseClick, self);
+            
+            var mouseStartingLat = e1.latlng.lat;
+            var mouseStartingLng = e1.latlng.lng;
+            var circleStartingLat = e1.target._latlng.lat;
+            var circleStartingLng = e1.target._latlng.lng;
+            self._map.on ('mousemove', function (e2) {
+                var mouseNewLat = e2.latlng.lat;
+                var mouseNewLng = e2.latlng.lng;
+                var latDifference = mouseNewLat - mouseStartingLat;
+                var lngDifference = mouseNewLng - mouseStartingLng;
+                var currentCircleCoords = L.latLng (circleStartingLat + latDifference, circleStartingLng + lngDifference);
+                e1.target.setLatLng (currentCircleCoords);
+                lineNr = e1.target.cntLine;
+                circleNr = e1.target.cntCircle;
+                lineCoords = self._arrFixedLines[lineNr].getLatLngs()  // get Coords of each Point of the current Polyline
+                lineCoords [circleNr] = currentCircleCoords;
+                self._arrFixedLines[lineNr].setLatLngs (lineCoords);
+                
+                if (circleNr >= 1) {     // just update tooltip position of 2nd, 3rd, 4th etc. Circle of a line
+                    self._tooltip = self._arrTooltips[lineNr][circleNr];
+                    self._updateTooltipPosition (currentCircleCoords);
+                }    
+                self._distance = 0;
+                // update tooltip texts of each tooltip but not tooltip of 1st Circle (which doesnt't have a tooltip)
+                lineCoords.map (function (item, index) {    
+                    if (index >= 1)  {
+                        self._tooltip = self._arrTooltips[lineNr][index];
+                        var distance = lineCoords[index].distanceTo (lineCoords[index-1]);
+                        self._updateTooltipDistance(self._distance + distance, distance);
+                        self._distance += distance;
+                    }
+                });
+                
+                self._map.on ('mouseup', function () { 
+                    self._map.off ('mousemove');
+                    self._map.dragging.enable();
+                    self._map.on ('mousemove', self._mouseMove, self);
+                    self._map.off ('mouseup');
+                    self._restartPath();
+                });
+            });
+            }
+        }
 	});
 
 //======================================================================================
