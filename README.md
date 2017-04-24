@@ -47,7 +47,7 @@ options = {
         color: '#006',                      // Solid line color
         weight: 2                           // Solid line weight
     },
-    startingCircle: {                       // Style settings for circle marker indicating the starting point of the polyline
+    startCircle: {                          // Style settings for circle marker indicating the starting point of the polyline
         color: '#000',                      // Color of the border of the circle
         weight: 1,                          // Weight of the circle
         fillColor: '#0f0',                  // Fill color of the circle
