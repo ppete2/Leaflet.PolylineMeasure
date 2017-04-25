@@ -1,4 +1,20 @@
-(function() {
+(function (factory) {
+    var L;
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['leaflet'], factory);
+    } else if (typeof module !== 'undefined') {
+        // Node/CommonJS
+        L = require('leaflet');
+        module.exports = factory(L);
+    } else {
+        // Browser globals
+        if (typeof window.L === 'undefined') {
+            throw new Error('Leaflet must be loaded first');
+        }
+        factory(window.L);
+    }
+}(function (L) {
 
 	var _measureControlId = 'polyline-measure-control';
 	var _unicodeClass = 'polyline-measure-unicode-icon';
@@ -820,4 +836,4 @@
 	L.control.polylineMeasure = function (options) {
 		return new L.Control.PolylineMeasure (options);
 	};
-})();
+}));

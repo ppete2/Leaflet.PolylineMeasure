@@ -1,0 +1,19 @@
+{
+  "name": "leaflet.polylinemeasure",
+  "version": "1.0.0",
+  "description": "Leaflet Plugin to measure distances of simple lines as well as of complex polylines",
+  "main": "Leaflet.PolylineMeasure.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ppete2/Leaflet.PolylineMeasure.git"
+  },
+  "author": "",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/ppete2/Leaflet.PolylineMeasure/issues"
+  },
+  "homepage": "https://github.com/ppete2/Leaflet.PolylineMeasure#readme"
+}
