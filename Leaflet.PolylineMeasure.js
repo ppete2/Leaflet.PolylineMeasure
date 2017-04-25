@@ -292,6 +292,7 @@
                     classes.push(_unicodeClass);
                 }
                 self._clearMeasureControl = self._createControl(label, title, classes, self._container, self._clearAllMeasurements, self);
+                self._clearMeasureControl.classList.add('polyline-measure-clearControl')
 			}
 			return self._container;
 		},
@@ -360,6 +361,10 @@
                 if(self.options.clearMeasurementsOnStop && self._layerPaint) {
                     self._clearAllMeasurements();
                 }
+                // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
+                if (self._cntCircle !== 0) {
+                    self._finishPath();
+                }
 			}
 		},
 
@@ -368,7 +373,10 @@
 		 */
 		_clearAllMeasurements: function() {
 			var self = this;
-			if (self._layerPaint) {
+			if (self._cntCircle !== 0) {
+                    self._finishPath();
+            }
+            if (self._layerPaint) {
 				self._layerPaint.clearLayers();
 			}
             self._cntLine = 0;
@@ -556,7 +564,9 @@
          */
 		_finishPath: function(e) {
 			var self = this;
-            L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started because os the map.on ('click')-event.
+            if (e) {
+                L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started because os the map.on ('click')-event.
+            }
             self._currentCircle.off ('click', self._finishPath, self);
             // just execute following commands if there have been at least 2 Points of a line drawn and remove each "line" just consisting of the startCircle.
             if (self._cntCircle !== 1) {
