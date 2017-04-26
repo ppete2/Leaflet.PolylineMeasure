@@ -1,4 +1,18 @@
-(function() {
+(function (factory) {
+    if (typeof define === 'function' && define.amd) {
+        // AMD
+        define(['leaflet'], factory);
+    } else if (typeof module !== 'undefined') {
+        // Node/CommonJS
+        module.exports = factory(require('leaflet'));
+    } else {
+        // Browser globals
+        if (typeof window.L === 'undefined') {
+            throw new Error('Leaflet must be loaded first');
+        }
+        factory(window.L);
+    }
+}(function (L) {
 	var _measureControlId = 'polyline-measure-control';
 	var _unicodeClass = 'polyline-measure-unicode-icon';
 	/**
@@ -340,7 +354,7 @@
                 // create LayerGroup "layerPaint" (only) the first time Measure Control is switched on
                 if (!self._layerPaint) {
                     self._layerPaint = L.layerGroup().addTo(self._map);
-                // init Variables, but just there isn't any line on the map whoch has been drawn before 
+                // init Variables, but just there isn't any line on the map whoch has been drawn before
                 }
                 if (!self._cntLine) {
                     self._cntLine = 0;
@@ -488,7 +502,7 @@
 			}
 			// If we have a tooltip, update the distance and create a new tooltip,
 			// leaving the old one exactly where it is (i.e. where the user has clicked)
-			
+
             if(!self._tempLine) {
 				self._tempLine = L.polyline ([], {
 					// Style of temporary, dashed line while moving the mouse
@@ -497,8 +511,8 @@
 					interactive: false,
 					dashArray: '8,8'
 				}).addTo(self._layerPaint).bringToBack();  // to move tempLine behind startCircle
-			} 
-            
+			}
+
             if (self._currentCircle) {
 				self._tooltip.setLatLng (e.latlng);
 				var distance = e.latlng.distanceTo (self._currentCircleCoords);
@@ -508,7 +522,7 @@
                 self._currentCircle.off ('click', self._finishPath, self);
                 var circleStyle = self.options.intermedCircle;
                 // if just the startCircle is drawn yet
-                
+
                 if (self._cntCircle === 1) {
                     circleStyle = self.options.startCircle;
                     self._fixedLine = L.polyline([self._currentCircleCoords], {
@@ -527,13 +541,13 @@
                 });
                 self._currentCircle.on ('mousedown', self._dragCircle, self);
 			}
-            
+
             self._prevTooltip = self._tooltip;
 			var icon = L.divIcon({
 				className: 'polyline-measure-tooltip',
 				iconAnchor: [-4, -4]
 			});
-            
+
 			self._tooltip = L.marker(e.latlng, {
 				icon: icon,
 				interactive: false
@@ -577,7 +591,7 @@
                     weight: self.options.endCircle.weight,
                     fillColor: self.options.endCircle.fillColor,
                     fillOpacity: self.options.endCircle.fillOpacity,
-                    radius: self.options.endCircle.radius				
+                    radius: self.options.endCircle.radius
                 });
                 self._arrFixedLines.push (self._fixedLine);
                 self._cntLine++;
@@ -676,4 +690,4 @@
 	L.control.polylineMeasure = function (options) {
 		return new L.Control.PolylineMeasure (options);
 	};
-})();
+}));
