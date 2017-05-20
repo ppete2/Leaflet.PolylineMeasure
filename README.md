@@ -77,3 +77,11 @@ options = {
     },
 };
 ```
+
+## Events
+
+* `enable` - enable measuring
+* `disable` - disable measuring
+* `toggle` - 
+* `start` - start line measure
+* `stop` - stop line measure

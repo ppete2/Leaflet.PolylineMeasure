@@ -21,7 +21,17 @@
 	          subdomains: 'ab', maxZoom: 20, noWrap:true, attribution:'<a href="http://www.mapbox.com">Mapbox</a> | <a href="http://www.openstreetmap.org/copyright/">OpenStreetMap</a>' });
 			var map = new L.Map('map').addLayer(layerOsm).setView(new L.LatLng(47.8, 13.0), 14);
             L.control.scale({maxWidth:240, metric:true, imperial:false, position: 'bottomleft'}).addTo(map);            
-            L.control.polylineMeasure({position:'topleft', imperial:false, clearMeasurementsOnStop: false, showMeasurementsClearControl: true}).addTo(map);
+            var control = L.control.polylineMeasure({position:'topleft', imperial:false, clearMeasurementsOnStop: false, showMeasurementsClearControl: true}).addTo(map);
+
+            control.on("enable", function () {console.log("Measuring is enable");});
+            control.on("disable", function () {console.log("Measuring is disable");});
+            control.on("toggle", function (data) {console.log("Measuring is toggle " + (data.status ?  "on" : "off"));});
+
+            control.on("start", function () {console.log("Measuring is started");});
+            control.on("stop", function () {console.log("Measuring is stopped");});
+
+
+
 		</script>
 	</body>
 </html>
