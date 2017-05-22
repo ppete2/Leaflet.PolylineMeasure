@@ -80,8 +80,10 @@ options = {
 
 ## Events
 
-* `enable` - enable measuring
-* `disable` - disable measuring
-* `toggle` - 
-* `start` - start line measure
-* `stop` - stop line measure
+* `enable` - enable measuring;
+* `disable` - disable measuring;
+* `toggle` - for both;
+* `start` - start line measure;
+* `path` - create intermediate point {length, distance};
+* `move` - on mouse move when measure {length, distance};
+* `stop` - stop line measure {distance};
