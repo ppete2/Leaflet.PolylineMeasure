@@ -363,6 +363,7 @@
          * @private
          */
         _enableMeasure: function () {
+			if (this._measuring) { return; }
 			var self = this;
             self._measuring = true;
             self._measureControl.style.backgroundColor = self.options.backgroundColor;
@@ -392,6 +393,7 @@
          * @private
          */
 		_disableMeasure: function () {
+			if (!this._measuring) { return; }
             var self = this;
             self._measuring = false;
             self._measureControl.removeAttribute('style');
@@ -518,6 +520,7 @@
             self._tooltip.setLatLng(e.latlng);
             var distance = e.latlng.distanceTo (self._currentCircleCoords);
             self._updateTooltipDistance (self._distance + distance, distance);
+			self.fire("move", {length: distance, distance: self._distance + distance});
 		},
 
 		/**
@@ -571,6 +574,7 @@
                     radius: circleStyle.radius
                 });
                 self._currentCircle.on ('mousedown', self._dragCircle, self);
+				self.fire("path", {distance: self._distance, length: distance});
 			}
 
             self._prevTooltip = self._tooltip;
@@ -633,8 +637,8 @@
             }
             self._layerPaint.removeLayer(self._tooltip);
             self._layerPaint.removeLayer(self._tempLine);
+			self.fire("stop", {distance: self._distance});
 			self._resetPathVariables();
-            self.fire("stop");
 		},
 
         /**

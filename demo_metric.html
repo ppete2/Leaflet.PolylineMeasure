@@ -28,9 +28,18 @@
             control.on("toggle", function (data) {console.log("Measuring is toggle " + (data.status ?  "on" : "off"));});
 
             control.on("start", function () {console.log("Measuring is started");});
-            control.on("stop", function () {console.log("Measuring is stopped");});
 
+//			control.on("move", function (data) {
+//				console.log("Path length is " + data.length + ", all distance is " + data.distance);
+//			});
 
+			control.on("path", function (data) {
+				console.log("Path length is " + data.length + ", all distance is " + data.distance);
+			});
+
+            control.on("stop", function (data) {
+				console.log("Measuring is stopped with distance: " + data.distance);
+            });
 
 		</script>
 	</body>
