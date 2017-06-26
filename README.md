@@ -12,6 +12,8 @@
 
 ## Usage
 
+`npm i leaflet.polylinemeasure --save`
+
 Add 2 lines within your **HTML-code** to load the .css and .js files of the plugin:
 ```html
 <link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
