@@ -30,18 +30,18 @@ L.control.polylineMeasure(options).addTo(map);
 options = {
     position: 'topleft',                    // Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
     unit: 'metres',                         // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'
-    measureControlTitleOn: 'Turn on PolylineMeasure',                // Title for the control going to be switched on
-	measureControlTitleOff: 'Turn off PolylineMeasure',                // Title for the control going to be switched off
+    measureControlTitleOn: 'Turn on PolylineMeasure',   // Title for the control going to be switched on
+    measureControlTitleOff: 'Turn off PolylineMeasure', // Title for the control going to be switched off
     measureControlLabel: '&#8614;',         // HTML to place inside the control
     measureControlClasses: [],              // Classes to apply to the control
     backgroundColor: '#8f8',                // Background color for control when selected
     cursor: 'crosshair',                    // Cursor type to show when creating measurements
     clearMeasurementsOnStop: true,          // Clear all the measurements when the control is unselected
     showMeasurementsClearControl: false,    // Show a control to clear all the measurements
-    clearControlTitle: 'Clear Measurements',             // Title text to show on the clear measurements control button
+    clearControlTitle: 'Clear Measurements',// Title text to show on the clear measurements control button
     clearControlLabel: '&times',            // Clear control inner html
     clearControlClasses: [],                // Collection of classes to add to clear control button
-	showUnitControl: false,             // Show a control to change the units of measurements
+    showUnitControl: false,                 // Show a control to change the units of measurements
     tempLine: {                             // Styling settings for the temporary dashed line
         color: '#00f',                      // Dashed line color
         weight: 2                           // Dashed line weight
