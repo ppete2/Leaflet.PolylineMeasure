@@ -6,20 +6,20 @@
 * **Moving** of line's points afterwards is possible by clicking and draging them.
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added some optical improvements.
 
-## Demo
-* Please take a look at the following [**Demo (metre units, with Clear-button and Units-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_metres.html) or [**Demo (landmile units, without Unit-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_landmiles.html) or [**Demo (nauticalmile units, without Unit-button and Clear-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_nautmiles.html)
+## Demos
+* Please take a look at [**Demo 1 (metre units, with Clear-button and Units-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_metres.html) or [**Demo 2 (landmile units, without Unit-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_landmiles.html) or [**Demo 3 (nauticalmile units, without Unit-button and Clear-button)**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo_nautmiles.html)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
 ## Usage
 
-Add 2 lines within your **HTML-code** to load the .css and .js files of the plugin:
+Add 2 code lines within your **HTML-file** to load the .css and .js files of the plugin:
 ```html
 <link rel="stylesheet" href="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
 <script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
 ```
 
-Add 1 line within your **Javascript-code** to add the plugin's control into your Leaflet map.  
+Add 1 code line within your **Javascript-file** to add the plugin's control into your Leaflet map.  
 ```js
 L.control.polylineMeasure(options).addTo(map);
 ```
@@ -29,7 +29,7 @@ L.control.polylineMeasure(options).addTo(map);
 ```js
 options = {
     position: 'topleft',                    // Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
-    unit: 'metres',                        // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'
+    unit: 'metres',                         // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'
     measureControlTitleOn: 'Turn on PolylineMeasure',                // Title for the control going to be switched on
 	measureControlTitleOff: 'Turn off PolylineMeasure',                // Title for the control going to be switched off
     measureControlLabel: '&#8614;',         // HTML to place inside the control
@@ -41,7 +41,7 @@ options = {
     clearControlTitle: 'Clear Measurements',             // Title text to show on the clear measurements control button
     clearControlLabel: '&times',            // Clear control inner html
     clearControlClasses: [],                // Collection of classes to add to clear control button
-	showUnitControl: false,           // Show a control to change the units of measurements
+	showUnitControl: false,             // Show a control to change the units of measurements
     tempLine: {                             // Styling settings for the temporary dashed line
         color: '#00f',                      // Dashed line color
         weight: 2                           // Dashed line weight
@@ -71,7 +71,7 @@ options = {
         fillOpacity: 1,                     // Fill opacity of the circle
         radius: 3                           // Radius of the circle
     },
-    endCircle: {                             // Style settings for circle marker indicating the last point of the polyline
+    endCircle: {                            // Style settings for circle marker indicating the last point of the polyline
         color: '#000',                      // Color of the border of the circle
         weight: 1,                          // Weight of the circle
         fillColor: '#f00',                  // Fill color of the circle
