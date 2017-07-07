@@ -21,8 +21,6 @@
 	 */
 	L.Control.PolylineMeasure = L.Control.extend({
 
-        includes: L.Mixin.Events,
-
 		/**
 		 * Default options for the tool
 		 * @type {Object}
@@ -35,17 +33,23 @@
 			 */
 			position: 'topleft',
 			/**
-			 * Show imperial or metric distances
-			 * @type {Boolean}
-			 * @default
-			 */
-			imperial: false,
-			/**
-			 * Title for the control
+			 * Which units the distances are displayed in. Possible values are: 'metres', 'landmiles', 'nauticalmiles'
 			 * @type {String}
 			 * @default
 			 */
-			measureControlTitle: '',
+			unit: 'metres',
+			/**
+			 * Title for the control going to be switched on
+			 * @type {String}
+			 * @default
+			 */
+			measureControlTitleOn: "Turn on PolylineMeasure",
+			/**
+			 * Title for the control going to be switched off
+			 * @type {String}
+			 * @default
+			 */
+			measureControlTitleOff: "Turn off PolylineMeasure",
 			/**
 			 * HTML to place inside the control. This should just be a unicode icon
 			 * @type {String}
@@ -87,7 +91,7 @@
 			 * @type {String}
 			 * @default
  			 */
-			clearControlTitle: 'Clear',
+			clearControlTitle: 'Clear Measurements',
 			/**
 			 * Clear control inner html
 			 * @type {String}
@@ -100,6 +104,12 @@
 			 * @default
 			 */
 			clearControlClasses: [],
+			/**
+			 * Show a control to change the units of measurements
+			 * @type {Boolean}
+			 * @default
+			 */
+			showUnitControl: false,
 			/**
 			 * Styling settings for the temporary dashed line
              * @type {Object}
@@ -281,45 +291,7 @@
                 radius: 3
 			}
 		},
-
-		/**
-		 * Method to fire on add to map
-		 * @param {Object} 		map 	Map object
-		 * @returns {Element}			Containing element
-		 */
-		onAdd: function(map) {
-			var self = this;
-			self._container = document.createElement('div');
-			self._container.classList.add('leaflet-bar');
-			L.DomEvent.disableClickPropagation(self._container); // otherwise drawing process would instantly start at controls' container or double click would zoom-in map
-			var title = self.options.measureControlTitle ? self.options.measureControlTitle : 'Polyline Measure ' + (self.options.imperial ? '[imperial]' : '[metric]');
-			var label = self.options.measureControlLabel;
-			var classes = self.options.measureControlClasses;
-			if (label.indexOf('&') !== -1) {
-				classes.push(_unicodeClass);
-			}
-			self._measureControl = self._createControl(label, title, classes, self._container, self._toggleMeasure, self);
-			self._measureControl.setAttribute('id', _measureControlId);
-			if (self.options.showMeasurementsClearControl) {
-				title = self.options.clearControlTitle;
-                label = self.options.clearControlLabel;
-                classes = self.options.clearControlClasses;
-                if (label.indexOf('&') !== -1) {
-                    classes.push(_unicodeClass);
-                }
-                self._clearMeasureControl = self._createControl(label, title, classes, self._container, self._clearAllMeasurements, self);
-                self._clearMeasureControl.classList.add('polyline-measure-clearControl')
-			}
-			return self._container;
-		},
-
-        /**
-         * Method to fire on remove from map
-         */
-		onRemove: function () {
-			this._disableMeasure();
-		},
-
+		
 		/**
 		 * Create a control button
 		 * @param {String} 		label		    Label to add
@@ -344,74 +316,98 @@
 		},
 
 		/**
+		 * Method to fire on add to map
+		 * @param {Object} 		map 	Map object
+		 * @returns {Element}			Containing element
+		 */
+		onAdd: function(map) {
+			var self = this;
+			self._container = document.createElement('div');
+			self._container.classList.add('leaflet-bar');
+			L.DomEvent.disableClickPropagation(self._container); // otherwise drawing process would instantly start at controls' container or double click would zoom-in map
+			
+			var title = self.options.measureControlTitleOn;
+			var label = self.options.measureControlLabel;
+			var classes = self.options.measureControlClasses;
+			if (label.indexOf('&') != -1) {
+				classes.push(_unicodeClass);
+			}
+			self._measureControl = self._createControl(label, title, classes, self._container, self._toggleMeasure, self);
+			self._measureControl.setAttribute('id', _measureControlId);
+			
+			if (self.options.showMeasurementsClearControl) {
+				var title = self.options.clearControlTitle;
+                var label = self.options.clearControlLabel;
+                var classes = self.options.clearControlClasses;
+                if (label.indexOf('&') != -1) {
+                    classes.push(_unicodeClass);
+                }
+                self._clearMeasureControl = self._createControl(label, title, classes, self._container, self._clearAllMeasurements, self);
+                self._clearMeasureControl.classList.add('polyline-measure-clearControl')
+			}
+			if (self.options.showUnitControl) {
+				var title = "Change units [" + self.options.unit  + "]";
+				if (self.options.unit=="metres") {
+					var label = "m";
+				}  else if  (self.options.unit=="landmiles") {
+					var label = "mi";
+				} else {
+					var label = "nm";
+				}
+				var classes = [];
+				self._unitControl = self._createControl(label, title, classes, self._container, self._changeUnit, self);
+				self._unitControl.setAttribute('id', 'unitControlId');
+			}
+			return self._container;
+		},
+
+		/**
 		 * Toggle the measure functionality on or off
 		 * @private
 		 */
 		_toggleMeasure: function () {
-		    // if measuring being switched on
-            if (this._measuring) {
-				this._disableMeasure();
-			// if measuring being switched off
-            } else {
-				this._enableMeasure();
-			}
-			this.fire("toggle", {status: this._measuring});
-		},
-
-        /**
-         * Enable the measure functionality
-         * @private
-         */
-        _enableMeasure: function () {
-			if (this._measuring) { return; }
 			var self = this;
-            self._measuring = true;
-            self._measureControl.style.backgroundColor = self.options.backgroundColor;
-            self._oldCursor = self._map._container.style.cursor;          // save former cursor type
-            self._map._container.style.cursor = self.options.cursor;
-            self._doubleClickZoom = self._map.doubleClickZoom.enabled();  // save former status of doubleClickZoom
-            self._map.doubleClickZoom.disable();
-            self._map.on ('mousemove', self._mouseMove, self);   //  enable listing to 'mousemove', 'click', 'keydown' events
-            self._map.on ('click', self._mouseClick, self);
-            L.DomEvent.on (document, 'keydown', self._onKeyDown, self);
-            // create LayerGroup "layerPaint" (only) the first time Measure Control is switched on
-            if (!self._layerPaint) {
-                self._layerPaint = L.layerGroup().addTo(self._map);
+			self._measuring = !self._measuring;
+            if (self._measuring) {   // if measuring is going to be switched on
+				self._measureControl.style.backgroundColor = self.options.backgroundColor;
+				self._measureControl.title = self.options.measureControlTitleOff;
+                self._oldCursor = self._map._container.style.cursor;          // save former cursor type
+                self._map._container.style.cursor = self.options.cursor;
+                self._doubleClickZoom = self._map.doubleClickZoom.enabled();  // save former status of doubleClickZoom
+                self._map.doubleClickZoom.disable();
+                self._map.on ('mousemove', self._mouseMove, self);   //  enable listing to 'mousemove', 'click', 'keydown' events
+                self._map.on ('click', self._mouseClick, self);
+                L.DomEvent.on (document, 'keydown', self._onKeyDown, self);
+                // create LayerGroup "layerPaint" (only) the first time Measure Control is switched on
+                if (!self._layerPaint) {
+                    self._layerPaint = L.layerGroup().addTo(self._map);
                 // init Variables, but just there isn't any line on the map whoch has been drawn before
-            }
-            if (!self._cntLine) {
-                self._cntLine = 0;
-                self._arrFixedLines = [];
-                self._arrTooltips = [];
-            }
-            self._resetPathVariables();
-            self.fire("enable");
-        },
-
-        /**
-         * Disable the measure functionality
-         * @private
-         */
-		_disableMeasure: function () {
-			if (!this._measuring) { return; }
-            var self = this;
-            self._measuring = false;
-            self._measureControl.removeAttribute('style');
-            self._map._container.style.cursor = self._oldCursor;
-            self._map.off ('mousemove', self._mouseMove, self);
-            self._map.off ('click', self._mouseClick, self);
-            L.DomEvent.off (document, 'keydown', self._onKeyDown, self);
-            if(self._doubleClickZoom) {
-                self._map.doubleClickZoom.enable();
-            }
-            if(self.options.clearMeasurementsOnStop && self._layerPaint) {
-                self._clearAllMeasurements();
-            }
-            // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
-            if (self._cntCircle !== 0) {
-                self._finishPath();
-            }
-            self.fire("disable");
+                }
+                if (!self._cntLine) {
+                    self._cntLine = 0;
+                    self._arrFixedLines = [];
+					self._arrCircleCoords = [];
+                    self._arrTooltips = [];
+                }
+                self._resetPathVariables();
+            } else {   // if measuring is going to be switched off
+				self._measureControl.removeAttribute('style');
+				self._measureControl.title = self.options.measureControlTitleOn;
+				self._map._container.style.cursor = self._oldCursor;
+                self._map.off ('mousemove', self._mouseMove, self);
+                self._map.off ('click', self._mouseClick, self);
+                L.DomEvent.off (document, 'keydown', self._onKeyDown, self);
+                if(self._doubleClickZoom) {
+                    self._map.doubleClickZoom.enable();
+                }
+                if(self.options.clearMeasurementsOnStop && self._layerPaint) {
+                    self._clearAllMeasurements();
+                }
+                // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
+                if (self._cntCircle !== 0) {
+                    self._finishPath();
+                }
+			}
 		},
 
 		/**
@@ -426,8 +422,35 @@
 				self._layerPaint.clearLayers();
 			}
             self._cntLine = 0;
+			self._arrCircleCoords = [];
             self._arrFixedLines = [];
             self._arrTooltips = [];
+		},
+		
+		_changeUnit: function() {
+			var self = this;
+			if (self.options.unit == "metres") {
+				self.options.unit = "landmiles";
+				document.getElementById("unitControlId").innerHTML = "mi";
+            } else if (self.options.unit == "landmiles") {
+				self.options.unit = "nauticalmiles";
+				document.getElementById("unitControlId").innerHTML = "nm";
+			} else {
+				self.options.unit = "metres";
+				document.getElementById("unitControlId").innerHTML = "m";
+			}
+			self._unitControl.title = "Change units [" + self.options.unit  + "]";
+			self._arrTooltips.map (function (item1, index1) {    
+				self._arrTooltips[index1].map (function (item2, index2) {    
+					if (index2 >= 1)  {                     
+						self._tooltip = item2;
+						var distance = self._arrCircleCoords [index1][index2-1].distanceTo (self._arrCircleCoords [index1][index2]);
+						self._updateTooltipDistance(self._distance + distance, distance);
+						self._distance += distance;
+					}
+				})
+				self._distance = 0;
+			})
 		},
 
         /**
@@ -438,7 +461,7 @@
          */
         _onKeyDown: function (e) {
 			var self = this;
-			if(e.keyCode === 27) {
+			if(e.keyCode == 27) {
 				// if NOT drawing a line (= there's no currentCircle)
 				if(!self._currentCircle) {
                     self._toggleMeasure();
@@ -457,8 +480,18 @@
 		_getDistance: function (distance) {
 			var self = this;
 			var dist = distance;
-			var unit;
-			if (self.options.imperial === true) {
+			var symbol;
+			if (self.options.unit === 'nauticalmiles') {
+				unit = "nm";
+				if (dist >= 1852000) {
+					dist = (dist/1852).toFixed(0);
+				} else if (dist >= 185200) {
+					dist = (dist/1852).toFixed(1);
+					// don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234 nm": is it 1234 nm or 1,234 nm ?)
+				} else  {
+					dist = (dist/1852).toFixed(2);
+				}
+			} else if (self.options.unit === 'landmiles') {
 				unit = "mi";
 				if (dist >= 1609344) {
 					dist = (dist/1609.344).toFixed(0);
@@ -471,13 +504,14 @@
 					dist = (dist/0.9144).toFixed(1);
 					unit = "yd";
 				}
-			} else {
+			}
+			else {
 				unit = "km";
 				if (dist >= 1000000) {
 					dist = (dist/1000).toFixed(0);
 				} else if (dist >= 100000) {
 					dist = (dist/1000).toFixed(1);
-					// don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234km": is it 1234km or 1,234km ?)
+					// don't use 3 decimal digits, cause especially in countries using the "." as thousands seperator a number could optically be confused (e.g. "1.234 km": is it 1234 km or 1,234 km ?)
 				} else if (dist >= 1000) {
 					dist = (dist/1000).toFixed(2);
 				} else {
@@ -486,6 +520,58 @@
 				}
 			}
 			return {value:dist, unit:unit};
+		},
+
+/**
+         * Calculate Great-circle Arc (= shortest distance on a sphere like the Earth) between two coordinates
+		 * formulas: http://www.edwilliams.org/avform.htm
+         * @private
+         */		
+		_polylineArc: function (_from, _to) {
+			
+			function _GCinterpolate (f) {
+				A = Math.sin((1 - f) * d) / Math.sin(d);
+				B = Math.sin(f * d) / Math.sin(d);
+				x = A * Math.cos(from.lat) * Math.cos(from.lng) + B * Math.cos(to.lat) * Math.cos(to.lng);
+				y = A * Math.cos(from.lat) * Math.sin(from.lng) + B * Math.cos(to.lat) * Math.sin(to.lng);
+				z = A * Math.sin(from.lat) + B * Math.sin(to.lat);
+				// atan2 better than atan-function cause results are from -pi to +pi
+				// => results of latInterpol, lngInterpol always within range -180° ... +180°  => conversion into values < -180° or > + 180° has to be done afterwards
+				latInterpol = 180 / Math.PI * Math.atan2(z, Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
+				lngInterpol = 180 / Math.PI * Math.atan2(y, x);
+				// don't split polyline if it crosses dateline ( -180° or +180°).  Without the polyline would look like: +179° ==> +180° ==> -180° ==> -179°...
+				// algo: if difference lngInterpol-from.lng is > 180° there's been an unwanted split from +180 to -180 cause an arc can never span >180°
+				diff = lngInterpol-from.lng*180/Math.PI;
+				if (diff < 0) {
+					lngInterpol = lngInterpol  - Math.trunc ((diff - 180)/ 360) * 360;
+				} else {
+					lngInterpol = lngInterpol  - Math.trunc ((diff +180)/ 360) * 360;
+				}
+				return [latInterpol, lngInterpol];
+			}
+			 
+			function _GCarc (npoints) {
+				first_pass = [];
+				var delta = 1.0 / (npoints-1 );
+				// first point of Arc should NOT be returned
+				for (var i = 0; i < npoints; i++) {
+					var step = delta * i;
+					var pair = _GCinterpolate (step);
+					first_pass.push (pair);
+				}
+				return first_pass;
+			}
+   
+			var from = Object.assign({}, _from);  // work with copy of _from-Object otherwise it would get modiefied due to call-by-reference on Objects in Javascript
+			var to = Object.assign({}, _to);
+			from.lat=from.lat * Math.PI / 180;
+			from.lng=from.lng * Math.PI / 180;
+			to.lat=to.lat * Math.PI / 180;
+			to.lng=to.lng * Math.PI / 180;
+			d = 2.0 * Math.asin(Math.sqrt(Math.pow (Math.sin((from.lat - to.lat) / 2.0), 2) + Math.cos(from.lat) *  Math.cos(to.lat) *  Math.pow(Math.sin((from.lng - to.lng) / 2.0), 2)));
+			arcpoints = 100;   // 100 points = 99 line segments. lower value to make arc less accurate or increase value to make it more accurate.
+			latlngs = _GCarc  (arcpoints);  
+			return latlngs;
 		},
 
         /**
@@ -512,15 +598,14 @@
 		 */
 		_mouseMove: function(e) {
 			var self = this;
-            self._map.on ('click', self._mouseClick, self);  // necassary for _dragCircle. If switched on already within _dragCircle an unwanted click is fired at the end of the drag.
+		    self._map.on ('click', self._mouseClick, self);  // necassary for _dragCircle. If switched on already within _dragCircle an unwanted click is fired at the end of the drag.
 			if(!e.latlng || !self._currentCircle) {
 				return;
 			}
-            self._tempLine.setLatLngs ([self._currentCircleCoords, e.latlng]);
-            self._tooltip.setLatLng(e.latlng);
+            self._tempLine.setLatLngs (self._polylineArc (self._currentCircleCoords, e.latlng));
+			self._tooltip.setLatLng(e.latlng);
             var distance = e.latlng.distanceTo (self._currentCircleCoords);
             self._updateTooltipDistance (self._distance + distance, distance);
-			self.fire("move", {length: distance, distance: self._distance + distance});
 		},
 
 		/**
@@ -544,7 +629,6 @@
 					interactive: false,
 					dashArray: '8,8'
 				}).addTo(self._layerPaint).bringToBack();  // to move tempLine behind startCircle
-				self.fire("start");
 			}
 
             if (self._currentCircle) {
@@ -574,7 +658,6 @@
                     radius: circleStyle.radius
                 });
                 self._currentCircle.on ('mousedown', self._dragCircle, self);
-				self.fire("path", {distance: self._distance, length: distance});
 			}
 
             self._prevTooltip = self._tooltip;
@@ -588,7 +671,9 @@
 				interactive: false
 			}).addTo(self._layerPaint);
 			if(self._fixedLine) {
-				self._fixedLine.addLatLng(e.latlng);
+				tempArc = self._polylineArc (self._currentCircleCoords, e.latlng);
+				tempArc.shift();   // remove 1st element of tempArc, cause this point is already present in Polyline (end of previous line segment)
+				self._fixedLine.setLatLngs (self._fixedLine.getLatLngs().concat (tempArc));
 			}
 
 			// change color+radius of intermediate circle markers. These intermediate Circles are optical important, especially if a new segment of line the doesn't bend
@@ -598,13 +683,14 @@
 				weight: self.options.currentCircle.weight,
 				fillColor: self.options.currentCircle.fillColor,
 				fillOpacity: self.options.currentCircle.fillOpacity,
-				radius: self.options.currentCircle.radius
+				radius: self.options.currentCircle.radius,
 			}).addTo(self._layerPaint);
             self._currentCircle.cntLine = self._cntLine;
             self._currentCircle.cntCircle = self._cntCircle;
             self._cntCircle++;
             self._currentCircle.on ('click', self._finishPath, self);  // to handle a click within this circle which is the command to finish drawing the polyline
             self._currentCircleCoords = e.latlng;
+			self._arrCircleCoordsCurrentline.push (self._currentCircleCoords);
 		},
 
         /**
@@ -614,7 +700,7 @@
 		_finishPath: function(e) {
 			var self = this;
             if (e) {
-                L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started because os the map.on ('click')-event.
+                L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started due to the map.on ('click')-event.
             }
             self._currentCircle.off ('click', self._finishPath, self);
             // just execute following commands if there have been at least 2 Points of a line drawn and remove each "line" just consisting of the startCircle.
@@ -630,14 +716,14 @@
                 });
                 self._arrFixedLines.push (self._fixedLine);
                 self._cntLine++;
-                self._arrTooltips.push (self._arrTooltipsCurrentline);
+				self._arrTooltips.push (self._arrTooltipsCurrentline);
+                self._arrCircleCoords.push (self._arrCircleCoordsCurrentline);
                 self._currentCircle.on ('mousedown', self._dragCircle, self);
             } else {
                 self._layerPaint.removeLayer (self._currentCircle);
             }
             self._layerPaint.removeLayer(self._tooltip);
             self._layerPaint.removeLayer(self._tempLine);
-			self.fire("stop", {distance: self._distance});
 			self._resetPathVariables();
 		},
 
@@ -654,47 +740,53 @@
 			self._currentCircleCoords = undefined;
 			self._fixedLine = undefined;
 			self._tempLine = undefined;
+			self._arrCircleCoordsCurrentline = [];
             self._arrTooltipsCurrentline = [null];   // assign "null" to 1st element of array, cause there's no tooltip for 1st Circle
 		},
       
         _dragCircle: function (e1) {
             var self = this;
             if ((self._measuring) && (self._cntCircle === 0)) {    // just execute drag-function if Measuring tool is active but no line is being drawn at the moment.
-            
             self._map.dragging.disable();  // turn of moving of the map during drag of a circle
             self._map.off ('mousemove', self._mouseMove, self);
             self._map.off ('click', self._mouseClick, self);
-            
             var mouseStartingLat = e1.latlng.lat;
             var mouseStartingLng = e1.latlng.lng;
             var circleStartingLat = e1.target._latlng.lat;
             var circleStartingLng = e1.target._latlng.lng;
-            self._map.on ('mousemove', function (e2) {
+			self._map.on ('mousemove', function (e2) {
                 var mouseNewLat = e2.latlng.lat;
                 var mouseNewLng = e2.latlng.lng;
                 var latDifference = mouseNewLat - mouseStartingLat;
                 var lngDifference = mouseNewLng - mouseStartingLng;
                 var currentCircleCoords = L.latLng (circleStartingLat + latDifference, circleStartingLng + lngDifference);
-                e1.target.setLatLng (currentCircleCoords);
-                var lineNr = e1.target.cntLine;
-                var circleNr = e1.target.cntCircle;
-                var lineCoords = self._arrFixedLines[lineNr].getLatLngs();  // get Coords of each Point of the current Polyline
-                lineCoords [circleNr] = currentCircleCoords;
-                self._arrFixedLines[lineNr].setLatLngs (lineCoords);
-                
-                if (circleNr >= 1) {     // just update tooltip position of 2nd, 3rd, 4th etc. Circle of a line
+                lineNr = e1.target.cntLine;
+                circleNr = e1.target.cntCircle;
+				e1.target.setLatLng (currentCircleCoords);
+				self._arrCircleCoords [lineNr][circleNr] = currentCircleCoords;
+                lineCoords = self._arrFixedLines[lineNr].getLatLngs(); // get Coords of each Point of the current Polyline
+				if (circleNr >= 1)	 {   // redraw previous arc just if circle is not starting circle of polyline
+					newLineSegment1 = self._polylineArc (self._arrCircleCoords [lineNr][circleNr-1], currentCircleCoords);
+					lineCoords.splice ((circleNr-1)*(arcpoints-1), arcpoints, ...newLineSegment1);
+				}
+				if   (circleNr < self._arrCircleCoords [lineNr].length-1) {   // redraw following arc just if circle is not end circle of polyline
+					newLineSegment2 = self._polylineArc (currentCircleCoords, self._arrCircleCoords [lineNr][circleNr+1]);
+					lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment2);
+				}
+				self._arrFixedLines[lineNr].setLatLngs (lineCoords);
+                if (circleNr >= 1) {     // just update tooltip position if moved circle is 2nd, 3rd, 4th etc. circle of a polyline
                     self._tooltip = self._arrTooltips[lineNr][circleNr];
                     self._tooltip.setLatLng(currentCircleCoords);
                 }    
                 self._distance = 0;
                 // update tooltip texts of each tooltip but not tooltip of 1st Circle (which doesnt't have a tooltip)
-                lineCoords.map (function (item, index) {    
-                    if (index >= 1)  {
-                        self._tooltip = self._arrTooltips[lineNr][index];
-                        var distance = lineCoords[index].distanceTo (lineCoords[index-1]);
+				self._arrTooltips[lineNr].map (function (item, index) {    
+					if (index >= 1)  {                     
+						self._tooltip = item;
+                        var distance = self._arrCircleCoords [lineNr][index-1].distanceTo (self._arrCircleCoords [lineNr][index]);
                         self._updateTooltipDistance(self._distance + distance, distance);
                         self._distance += distance;
-                    }
+					}
                 });
                 
                 self._map.on ('mouseup', function () { 
