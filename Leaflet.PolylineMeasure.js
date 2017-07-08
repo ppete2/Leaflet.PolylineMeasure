@@ -532,46 +532,49 @@
 			function _GCinterpolate (f) {
 				A = Math.sin((1 - f) * d) / Math.sin(d);
 				B = Math.sin(f * d) / Math.sin(d);
-				x = A * Math.cos(from.lat) * Math.cos(from.lng) + B * Math.cos(to.lat) * Math.cos(to.lng);
-				y = A * Math.cos(from.lat) * Math.sin(from.lng) + B * Math.cos(to.lat) * Math.sin(to.lng);
-				z = A * Math.sin(from.lat) + B * Math.sin(to.lat);
+				x = A * Math.cos(fromLat) * Math.cos(fromLng) + B * Math.cos(toLat) * Math.cos(toLng);
+				y = A * Math.cos(fromLat) * Math.sin(fromLng) + B * Math.cos(toLat) * Math.sin(toLng);
+				z = A * Math.sin(fromLat) + B * Math.sin(toLat);
 				// atan2 better than atan-function cause results are from -pi to +pi
 				// => results of latInterpol, lngInterpol always within range -180° ... +180°  => conversion into values < -180° or > + 180° has to be done afterwards
 				latInterpol = 180 / Math.PI * Math.atan2(z, Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)));
 				lngInterpol = 180 / Math.PI * Math.atan2(y, x);
 				// don't split polyline if it crosses dateline ( -180° or +180°).  Without the polyline would look like: +179° ==> +180° ==> -180° ==> -179°...
 				// algo: if difference lngInterpol-from.lng is > 180° there's been an unwanted split from +180 to -180 cause an arc can never span >180°
-				diff = lngInterpol-from.lng*180/Math.PI;
+				diff = lngInterpol-fromLng*180/Math.PI;
+				function trunc(n) { return Math[n > 0 ? "floor" : "ceil"](n); }   // alternatively we could use the new Math.trunc method, but Internet Explorer doesn't know it
 				if (diff < 0) {
-					lngInterpol = lngInterpol  - Math.trunc ((diff - 180)/ 360) * 360;
+					lngInterpol = lngInterpol  - trunc ((diff - 180)/ 360) * 360; 
 				} else {
-					lngInterpol = lngInterpol  - Math.trunc ((diff +180)/ 360) * 360;
+					lngInterpol = lngInterpol  - trunc ((diff +180)/ 360) * 360;
 				}
 				return [latInterpol, lngInterpol];
 			}
 			 
 			function _GCarc (npoints) {
-				first_pass = [];
+				arrArcCoords = [];
 				var delta = 1.0 / (npoints-1 );
 				// first point of Arc should NOT be returned
 				for (var i = 0; i < npoints; i++) {
 					var step = delta * i;
-					var pair = _GCinterpolate (step);
-					first_pass.push (pair);
+					var coordPair = _GCinterpolate (step);
+					arrArcCoords.push (coordPair);
 				}
-				return first_pass;
+				return arrArcCoords;
 			}
    
-			var from = Object.assign({}, _from);  // work with copy of _from-Object otherwise it would get modiefied due to call-by-reference on Objects in Javascript
-			var to = Object.assign({}, _to);
-			from.lat=from.lat * Math.PI / 180;
-			from.lng=from.lng * Math.PI / 180;
-			to.lat=to.lat * Math.PI / 180;
-			to.lng=to.lng * Math.PI / 180;
-			d = 2.0 * Math.asin(Math.sqrt(Math.pow (Math.sin((from.lat - to.lat) / 2.0), 2) + Math.cos(from.lat) *  Math.cos(to.lat) *  Math.pow(Math.sin((from.lng - to.lng) / 2.0), 2)));
+			var fromLat = _from.lat;  // work with with copies of object's elements _from.lat and _from.lng, otherwise they would get modiefied due to call-by-reference on Objects in Javascript
+			var fromLng = _from.lng;
+			var toLat = _to.lat;
+			var toLng = _to.lng;
+			fromLat=fromLat * Math.PI / 180;
+			fromLng=fromLng * Math.PI / 180;
+			toLat=toLat * Math.PI / 180;
+			toLng=toLng * Math.PI / 180;
+			d = 2.0 * Math.asin(Math.sqrt(Math.pow (Math.sin((fromLat - toLat) / 2.0), 2) + Math.cos(fromLat) *  Math.cos(toLat) *  Math.pow(Math.sin((fromLng - toLng) / 2.0), 2)));
 			arcpoints = 100;   // 100 points = 99 line segments. lower value to make arc less accurate or increase value to make it more accurate.
-			latlngs = _GCarc  (arcpoints);  
-			return latlngs;
+			arrLatLngs = _GCarc  (arcpoints);  
+			return arrLatLngs;
 		},
 
         /**
@@ -584,10 +587,10 @@
 			var self = this;
 			var totalRound = self._getDistance(total);
 			var differenceRound = self._getDistance(difference);
-			var text = '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
 			if (differenceRound.value > 0 ) {
-				text += '<div class="polyline-measure-tooltip-difference">(+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + ')</div>';
+				text = '<div class="polyline-measure-tooltip-difference">+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + '</div>';
 			}
+			text += '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
 			self._tooltip._icon.innerHTML = text;
 		},
         
@@ -767,11 +770,12 @@
                 lineCoords = self._arrFixedLines[lineNr].getLatLngs(); // get Coords of each Point of the current Polyline
 				if (circleNr >= 1)	 {   // redraw previous arc just if circle is not starting circle of polyline
 					newLineSegment1 = self._polylineArc (self._arrCircleCoords [lineNr][circleNr-1], currentCircleCoords);
-					lineCoords.splice ((circleNr-1)*(arcpoints-1), arcpoints, ...newLineSegment1);
+					// the next line's syntax has to be used since Internet Explorer doesn't know new spread operator (...) for inserting the individual elements of an array as 3rd argument of the splice method; Otherwise we could write: lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment1);
+					Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), arcpoints].concat (newLineSegment1));
 				}
 				if   (circleNr < self._arrCircleCoords [lineNr].length-1) {   // redraw following arc just if circle is not end circle of polyline
 					newLineSegment2 = self._polylineArc (currentCircleCoords, self._arrCircleCoords [lineNr][circleNr+1]);
-					lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment2);
+					Array.prototype.splice.apply (lineCoords, [circleNr*(arcpoints-1), arcpoints].concat (newLineSegment2));
 				}
 				self._arrFixedLines[lineNr].setLatLngs (lineCoords);
                 if (circleNr >= 1) {     // just update tooltip position if moved circle is 2nd, 3rd, 4th etc. circle of a polyline
