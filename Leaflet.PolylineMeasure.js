@@ -252,7 +252,7 @@
                  * @type {Number}
                  * @default
                  */
-                radius: 3
+                radius: 5
 			},
             /**
              * Style settings for circle marker indicating the end point of the polyline
