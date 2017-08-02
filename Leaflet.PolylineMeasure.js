@@ -377,6 +377,7 @@
                 self._map.doubleClickZoom.disable();
                 self._map.on ('mousemove', self._mouseMove, self);   //  enable listing to 'mousemove', 'click', 'keydown' events
                 self._map.on ('click', self._mouseClick, self);
+                self._map.on('dblclick', self._finishPath, self);
                 L.DomEvent.on (document, 'keydown', self._onKeyDown, self);
                 // create LayerGroup "layerPaint" (only) the first time Measure Control is switched on
                 if (!self._layerPaint) {
@@ -396,6 +397,7 @@
 				self._map._container.style.cursor = self._oldCursor;
                 self._map.off ('mousemove', self._mouseMove, self);
                 self._map.off ('click', self._mouseClick, self);
+                self._map.off('dblclick', self._finishPath, self);
                 L.DomEvent.off (document, 'keydown', self._onKeyDown, self);
                 if(self._doubleClickZoom) {
                     self._map.doubleClickZoom.enable();
@@ -572,8 +574,12 @@
 			toLat=toLat * Math.PI / 180;
 			toLng=toLng * Math.PI / 180;
 			d = 2.0 * Math.asin(Math.sqrt(Math.pow (Math.sin((fromLat - toLat) / 2.0), 2) + Math.cos(fromLat) *  Math.cos(toLat) *  Math.pow(Math.sin((fromLng - toLng) / 2.0), 2)));
-			arcpoints = 100;   // 100 points = 99 line segments. lower value to make arc less accurate or increase value to make it more accurate.
-			arrLatLngs = _GCarc  (arcpoints);  
+			if (d === 0) {
+				arrLatLngs = [[fromLat, fromLng]];
+			} else {
+				arcpoints = 100;   // 100 points = 99 line segments. lower value to make arc less accurate or increase value to make it more accurate.
+				arrLatLngs = _GCarc(arcpoints);
+			}
 			return arrLatLngs;
 		},
 
@@ -638,9 +644,7 @@
 				self._tooltip.setLatLng (e.latlng);
 				var distance = e.latlng.distanceTo (self._currentCircleCoords);
 				self._updateTooltipDistance (self._distance + distance, distance);
-                self._arrTooltipsCurrentline.push (self._tooltip);
                 self._distance += distance;
-                self._currentCircle.off ('click', self._finishPath, self);
                 var circleStyle = self.options.intermedCircle;
                 // if just the startCircle is drawn yet
 
@@ -663,37 +667,41 @@
                 self._currentCircle.on ('mousedown', self._dragCircle, self);
 			}
 
-            self._prevTooltip = self._tooltip;
-			var icon = L.divIcon({
-				className: 'polyline-measure-tooltip',
-				iconAnchor: [-4, -4]
-			});
+			if (!self._prevTooltip || !self._prevTooltip.getLatLng().equals(e.latlng)) {
+				self._prevTooltip = self._tooltip;
+				var icon = L.divIcon({
+					className: 'polyline-measure-tooltip',
+					iconAnchor: [-4, -4]
+				});
 
-			self._tooltip = L.marker(e.latlng, {
-				icon: icon,
-				interactive: false
-			}).addTo(self._layerPaint);
-			if(self._fixedLine) {
-				tempArc = self._polylineArc (self._currentCircleCoords, e.latlng);
-				tempArc.shift();   // remove 1st element of tempArc, cause this point is already present in Polyline (end of previous line segment)
-				self._fixedLine.setLatLngs (self._fixedLine.getLatLngs().concat (tempArc));
+                self._tooltip = L.marker(e.latlng, {
+                    icon: icon,
+                    interactive: false
+                }).addTo(self._layerPaint);
+                if (self._fixedLine) {
+                    tempArc = self._polylineArc(self._currentCircleCoords, e.latlng);
+                    tempArc.shift();   // remove 1st element of tempArc, cause this point is already present in Polyline (end of previous line segment)
+                    self._fixedLine.setLatLngs(self._fixedLine.getLatLngs().concat(tempArc));
+                }
+
+                // change color+radius of intermediate circle markers. These intermediate Circles are optical important, especially if a new segment of line the doesn't bend
+                self._currentCircle = new L.CircleMarker(e.latlng, {
+                    // Style of the circle marking the latest point of the Polyline while still drawing
+                    color: self.options.currentCircle.color,
+                    weight: self.options.currentCircle.weight,
+                    fillColor: self.options.currentCircle.fillColor,
+                    fillOpacity: self.options.currentCircle.fillOpacity,
+                    radius: self.options.currentCircle.radius,
+                }).addTo(self._layerPaint);
+                self._currentCircle.cntLine = self._cntLine;
+                self._currentCircle.cntCircle = self._cntCircle;
+                self._cntCircle++;
+                self._currentCircleCoords = e.latlng;
+                self._arrCircleCoordsCurrentline.push (self._currentCircleCoords);
+                if (self._prevTooltip) {
+                    self._arrTooltipsCurrentline.push(self._prevTooltip);
+                }
 			}
-
-			// change color+radius of intermediate circle markers. These intermediate Circles are optical important, especially if a new segment of line the doesn't bend
-			self._currentCircle = new L.CircleMarker(e.latlng, {
-				// Style of the circle marking the latest point of the Polyline while still drawing
-				color: self.options.currentCircle.color,
-				weight: self.options.currentCircle.weight,
-				fillColor: self.options.currentCircle.fillColor,
-				fillOpacity: self.options.currentCircle.fillOpacity,
-				radius: self.options.currentCircle.radius,
-			}).addTo(self._layerPaint);
-            self._currentCircle.cntLine = self._cntLine;
-            self._currentCircle.cntCircle = self._cntCircle;
-            self._cntCircle++;
-            self._currentCircle.on ('click', self._finishPath, self);  // to handle a click within this circle which is the command to finish drawing the polyline
-            self._currentCircleCoords = e.latlng;
-			self._arrCircleCoordsCurrentline.push (self._currentCircleCoords);
 		},
 
         /**
@@ -705,29 +713,31 @@
             if (e) {
                 L.DomEvent.stopPropagation(e);   // otherwise instantly a new line would be started due to the map.on ('click')-event.
             }
-            self._currentCircle.off ('click', self._finishPath, self);
-            // just execute following commands if there have been at least 2 Points of a line drawn and remove each "line" just consisting of the startCircle.
-            if (self._cntCircle !== 1) {
-                self._prevTooltip._icon.classList.add ('polyline-measure-tooltip-end'); // add Class e.g. another background-color to the Previous Tooltip (which is the last fixed tooltip, cause the moving tooltip is being deleted later)
-                self._currentCircle.setStyle ({
-				// Style of the circle marking the end of the whole Polyline
-                    color: self.options.endCircle.color,
-                    weight: self.options.endCircle.weight,
-                    fillColor: self.options.endCircle.fillColor,
-                    fillOpacity: self.options.endCircle.fillOpacity,
-                    radius: self.options.endCircle.radius
-                });
-                self._arrFixedLines.push (self._fixedLine);
-                self._cntLine++;
-				self._arrTooltips.push (self._arrTooltipsCurrentline);
-                self._arrCircleCoords.push (self._arrCircleCoordsCurrentline);
-                self._currentCircle.on ('mousedown', self._dragCircle, self);
-            } else {
-                self._layerPaint.removeLayer (self._currentCircle);
+            // this will be called twice sometimes, make sure we haven't already reset
+            if (self._currentCircle) {
+                self._currentCircle.off('click', self._finishPath, self);
+                self._layerPaint.removeLayer(self._tooltip);
+                self._layerPaint.removeLayer(self._tempLine);
+                // just execute following commands if there have been at least 2 Points of a line drawn and remove each "line" just consisting of the startCircle.
+                if (self._cntCircle !== 1) {
+                    self._prevTooltip._icon.classList.add('polyline-measure-tooltip-end'); // add Class e.g. another background-color to the Previous Tooltip (which is the last fixed tooltip, cause the moving tooltip is being deleted later)
+                    self._currentCircle.setStyle ({
+                    // Style of the circle marking the end of the whole Polyline
+                        color: self.options.endCircle.color,
+                        weight: self.options.endCircle.weight,
+                        fillColor: self.options.endCircle.fillColor,
+                        fillOpacity: self.options.endCircle.fillOpacity,
+                        radius: self.options.endCircle.radius
+                    });
+                    self._arrFixedLines.push (self._fixedLine);
+                    self._cntLine++;
+                    self._arrTooltips.push (self._arrTooltipsCurrentline);
+                    self._arrCircleCoords.push (self._arrCircleCoordsCurrentline);
+                } else {
+                    self._layerPaint.removeLayer(self._currentCircle);
+                }
+                self._resetPathVariables();
             }
-            self._layerPaint.removeLayer(self._tooltip);
-            self._layerPaint.removeLayer(self._tempLine);
-			self._resetPathVariables();
 		},
 
         /**
