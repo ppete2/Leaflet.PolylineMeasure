@@ -336,7 +336,7 @@
 
 			// initialize state
 			self._lines = [];
-
+            self._arrArrows = [];
 			self._measureControl = self._createControl(label, title, classes, self._container, self._toggleMeasure, self);
 			self._measureControl.setAttribute('id', _measureControlId);
 			
@@ -420,6 +420,7 @@
 				self._layerPaint.clearLayers();
 			}
             self._lines = [];
+			self._arrArrows = [];
 		},
 		
 		_changeUnit: function() {
@@ -587,6 +588,25 @@
 			text += '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
 			tooltip._icon.innerHTML = text;
 		},
+		
+		_drawArrow: function (arcLine) {
+			var self = this;
+			var P48 = arcLine[48];
+				var P49 = arcLine[49];
+				var diffLng4849 = P49[1] - P48[1];
+				var diffLat4849 = P49[0] - P48[0];
+             var center = [P48[0] + diffLat4849/2, P48[1] + diffLng4849/2];  // center of Great-circle distance, NOT of the arc on a Mercator map! reason: a) to complicated b) map not always Mercator c) good optical feature to see where real center of distance is not the "virtual" warped arc center due to Mercator projection
+				// angle just an aprroximation, which could be somewhat off if Line runs near high latitudes. Use of *geographical coords* for line segment [48] to [49] is best method. Use of *Pixel coords* for just one arc segement [48] to [49] could create for short lines unexact rotation angles, and the use Use of Pixel coords between endpoints [0] to [98] results in even more rotation difference for high latitudes as with geogrpaphical coords-method 
+                var cssAngle = -Math.atan2(diffLat4849, diffLng4849)*57.29578   // convert radiant to degree as needed for use as CSS value; cssAngle is opposite to mathematical angle.                 
+				iconArrow = L.divIcon ({ 
+                        className: "",  // to avoid getting a default class with paddings and borders assigned by Leaflet
+						iconSize: [16, 16],
+                        iconAnchor: [8, 8],
+						// html : "<img src='iconArrow.png' style='background:green; height:100%; vertical-align:top; transform:rotate("+ cssAngle +"deg)'>" // alternative method by the use of an image instead of a Unicode symbol.
+						html : "<div style = 'font-size: 16px; line-height: 16px; vertical-align:top; transform: rotate("+ cssAngle +"deg)'>&#x2bc8;</div>"   // best results if iconSize = font-size = line-height and iconAnchor font-size/2 .both values needed to position symbol in center of L.divIcon for all font-sizes. 
+				});
+                arrow = L.marker (center, {icon: iconArrow}).addTo(self._layerPaint);
+		},
         
 		/**
 		 * Event to fire on mouse move
@@ -672,6 +692,8 @@
                         }
                         this.path.setLatLngs(this.path.getLatLngs().concat(arc));
                         this.distance += lastPoint.distanceTo(latlng);
+						self._drawArrow(arc);
+						self._arrArrowsCurrentline.push (arrow);
 					}
 
 					// update last tooltip with final value
@@ -698,6 +720,7 @@
                         // Style of the circle marking the end of the whole Polyline
                         this.markers.last().setStyle (self.options.endCircle);
                         self._lines.push(this);
+						self._arrArrows.push (self._arrArrowsCurrentline);
                     } else {
                     	// if there is only one point, just clean it up
                         self._layerPaint.removeLayer(this.markers.last());
@@ -741,6 +764,7 @@
 		_resetPathVariables: function() {
             self._cntCircle = 0;
             self._currentLine = null;
+			self._arrArrowsCurrentline = [];
 		},
       
         _dragCircle: function (e1) {
@@ -767,10 +791,16 @@
 					newLineSegment1 = self._polylineArc(self._lines[lineNr].points[circleNr-1], currentCircleCoords);
 					// the next line's syntax has to be used since Internet Explorer doesn't know new spread operator (...) for inserting the individual elements of an array as 3rd argument of the splice method; Otherwise we could write: lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment1);
 					Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), arcpoints].concat (newLineSegment1));
+						self._drawArrow (newLineSegment1);
+					self._arrArrows[lineNr][circleNr-1].removeFrom (self._layerPaint);
+					self._arrArrows[lineNr][circleNr-1] = arrow;
 				}
 				if   (circleNr < self._lines[lineNr].points.length-1) {   // redraw following arc just if circle is not end circle of polyline
 					newLineSegment2 = self._polylineArc (currentCircleCoords, self._lines[lineNr].points[circleNr+1]);
 					Array.prototype.splice.apply (lineCoords, [circleNr*(arcpoints-1), arcpoints].concat (newLineSegment2));
+					self._drawArrow (newLineSegment2);
+					self._arrArrows[lineNr][circleNr].removeFrom (self._layerPaint);
+					self._arrArrows[lineNr][circleNr] = arrow;
 				}
                 self._lines[lineNr].path.setLatLngs (lineCoords);
                 if (circleNr > 0) {     // just update tooltip position if moved circle is 2nd, 3rd, 4th etc. circle of a polyline
