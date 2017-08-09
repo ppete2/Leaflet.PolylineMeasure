@@ -622,8 +622,8 @@
             self._currentLine.tempLine.setLatLngs (self._polylineArc (lastPoint, e.latlng));
             var tooltip = self._currentLine.tooltips.last();
 			tooltip.setLatLng(e.latlng);
-            var distance = e.latlng.distanceTo(lastPoint);
-            self._updateTooltipDistance(tooltip, self._currentLine.distance + distance, distance);
+            var distanceSegment = e.latlng.distanceTo(lastPoint);
+            self._updateTooltipDistance(tooltip, self._currentLine.distance + distanceSegment, distanceSegment);
 		},
 
 		_startLine: function() {
@@ -680,18 +680,19 @@
                     if (lastPoint && lastPoint.equals(latlng)) {
                     	return;
 					}
-                    this.points.push(latlng);
-
-                    this.handleMarkers(latlng);
-
+                    
 					// update polyline
-					if (this.points.length > 1) {
+					if (this.points.length > 0) {
                         var arc = self._polylineArc(lastPoint, latlng);
 						if (this.points.length > 2) {
                             arc.shift();
                         }
                         this.path.setLatLngs(this.path.getLatLngs().concat(arc));
-                        this.distance += lastPoint.distanceTo(latlng);
+						// following lines needed especially for Mobile Browsers where we just use mouseclicks. No mousemoves, no tempLine.
+						distanceSegment = lastPoint.distanceTo(latlng);
+						var tooltip = self._currentLine.tooltips.last();
+						self._updateTooltipDistance(tooltip, this.distance + distanceSegment, distanceSegment);
+						this.distance += distanceSegment;
 						self._drawArrow(arc);
 						self._arrArrowsCurrentline.push (arrow);
 					}
@@ -708,6 +709,8 @@
                         interactive: false
                     }).addTo(self._layerPaint);
                     this.tooltips.push(tooltip);
+					this.points.push(latlng);
+                    this.handleMarkers(latlng);
 				},
 				finalize: function() {
 					// clean up tooltip created by last click
