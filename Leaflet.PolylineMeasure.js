@@ -413,8 +413,8 @@
 		 * Clear all measurements from the map
 		 */
 		_clearAllMeasurements: function() {
-			if (self._cntCircle !== 0) {
-                    self._finishPath();
+			if ((self._cntCircle !== undefined) && (self._cntCircle !== 0)) {
+					self._finishPath();
             }
             if (self._layerPaint) {
 				self._layerPaint.clearLayers();
@@ -588,7 +588,7 @@
 			text += '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
 			tooltip._icon.innerHTML = text;
 		},
-		
+
 		_drawArrow: function (arcLine) {
 			var self = this;
 			var P48 = arcLine[48];
@@ -607,6 +607,7 @@
 				});
                 arrow = L.marker (center, {icon: iconArrow}).addTo(self._layerPaint);
 		},
+
         
 		/**
 		 * Event to fire on mouse move
@@ -680,12 +681,12 @@
                     if (lastPoint && lastPoint.equals(latlng)) {
                     	return;
 					}
-                    
+                    this.points.push(latlng);
 					// update polyline
-					if (this.points.length > 0) {
+					if (this.points.length > 1) {
                         var arc = self._polylineArc(lastPoint, latlng);
 						if (this.points.length > 2) {
-                            arc.shift();
+							arc.shift();
                         }
                         this.path.setLatLngs(this.path.getLatLngs().concat(arc));
 						// following lines needed especially for Mobile Browsers where we just use mouseclicks. No mousemoves, no tempLine.
@@ -693,8 +694,8 @@
 						var tooltip = self._currentLine.tooltips.last();
 						self._updateTooltipDistance(tooltip, this.distance + distanceSegment, distanceSegment);
 						this.distance += distanceSegment;
-						self._drawArrow(arc);
-						self._arrArrowsCurrentline.push (arrow);
+				 		self._drawArrow(arc);
+				 		self._arrArrowsCurrentline.push (arrow);
 					}
 
 					// update last tooltip with final value
@@ -709,7 +710,7 @@
                         interactive: false
                     }).addTo(self._layerPaint);
                     this.tooltips.push(tooltip);
-					this.points.push(latlng);
+					
                     this.handleMarkers(latlng);
 				},
 				finalize: function() {
@@ -794,7 +795,7 @@
 					newLineSegment1 = self._polylineArc(self._lines[lineNr].points[circleNr-1], currentCircleCoords);
 					// the next line's syntax has to be used since Internet Explorer doesn't know new spread operator (...) for inserting the individual elements of an array as 3rd argument of the splice method; Otherwise we could write: lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment1);
 					Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), arcpoints].concat (newLineSegment1));
-						self._drawArrow (newLineSegment1);
+					self._drawArrow (newLineSegment1);
 					self._arrArrows[lineNr][circleNr-1].removeFrom (self._layerPaint);
 					self._arrArrows[lineNr][circleNr-1] = arrow;
 				}
