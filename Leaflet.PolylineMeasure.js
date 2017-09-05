@@ -679,7 +679,6 @@
                     var lastPoint = this.points.last();
                     // ignore points we already have
                     if (lastPoint && lastPoint.equals(latlng)) {
-                    	self._finishPath();
                     	return;
 					}
                     this.points.push(latlng);
