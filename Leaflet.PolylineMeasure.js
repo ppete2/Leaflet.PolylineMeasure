@@ -492,9 +492,13 @@
 					// don't use 3 decimal digits, cause especially in countries using the "." as thousands separator a number could optically be confused (e.g. "1.234mi": is it 1234mi or 1,234mi ?)
 				} else if (dist >= 1609.344) {
 					dist = (dist/1609.344).toFixed(2);
-				} else {
+				} else if (dist >= 402.336) {
 					dist = (dist/0.9144).toFixed(1);
 					unit = "yd";
+				}
+				else{
+					dist = (dist/0.3048).toFixed(1);
+					unit = "ft";
 				}
 			}
 			else {
