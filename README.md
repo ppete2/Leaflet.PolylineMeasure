@@ -1,6 +1,6 @@
 # Leaflet.PolylineMeasure
 * Leaflet Plugin to :triangular_ruler: **measure distances** of simple lines as well as of complex polylines.
-* Measuring in **metric system** (metres, kilometres), in **imperial system** (yards, landmiles), or in **nautical miles**
+* Measuring in **metric system** (metre, kilometre), in **imperial system** (foot, landmile), or in **nautical miles**.
 * lines are drawn as arcs and distances are calculated considering [Great.circle distance](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
 * To finish drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*

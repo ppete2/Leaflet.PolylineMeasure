@@ -478,8 +478,11 @@
 				} else if (dist >= 185200) {
 					dist = (dist/1852).toFixed(1);
 					// don't use 3 decimal digits, cause especially in countries using the "." as thousands separator a number could optically be confused (e.g. "1.234 nm": is it 1234 nm or 1,234 nm ?)
-				} else  {
+				} else if (dist >= 1852) {
 					dist = (dist/1852).toFixed(2);
+				} else  {
+					dist = (dist/0.3048).toFixed(0);
+					unit = "ft";
 				}
 			} else if (self.options.unit === 'landmiles') {
 				unit = "mi";
@@ -491,8 +494,8 @@
 				} else if (dist >= 1609.344) {
 					dist = (dist/1609.344).toFixed(2);
 				} else {
-					dist = (dist/0.9144).toFixed(1);
-					unit = "yd";
+					dist = (dist/0.3048).toFixed(0);
+					unit = "ft";
 				}
 			}
 			else {
