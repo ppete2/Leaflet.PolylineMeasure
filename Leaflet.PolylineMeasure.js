@@ -385,7 +385,6 @@
                 }
                 self._map.on ('mousemove', self._mouseMove, self);   //  enable listing to 'mousemove', 'click', 'keydown' events
                 self._map.on ('click', self._mouseClick, self);
-                self._map.on('dblclick', self._finishPath, self);
                 L.DomEvent.on (document, 'keydown', self._onKeyDown, self);
                 self._resetPathVariables();
             } else {   // if measuring is going to be switched off
@@ -394,7 +393,6 @@
 				self._map._container.style.cursor = self._oldCursor;
                 self._map.off ('mousemove', self._mouseMove, self);
                 self._map.off ('click', self._mouseClick, self);
-                self._map.off('dblclick', self._finishPath, self);
                 L.DomEvent.off (document, 'keydown', self._onKeyDown, self);
                 if(self._doubleClickZoom) {
                     self._map.doubleClickZoom.enable();
@@ -659,6 +657,7 @@
 					// update style on previous marker
                     var oldMarker = this.markers.last();
                     if (oldMarker) {
+                    	oldMarker.off('click');
                         if (this.markers.length === 1) {
                         	oldMarker.setStyle(self.options.startCircle);
                         } else {
@@ -672,7 +671,8 @@
                     marker.cntLine = self._lines.length;
                     marker.cntCircle = self._cntCircle;
                     self._cntCircle++;
-                    marker.on ('mousedown', self._dragCircle, self);
+                    marker.on('mousedown', self._dragCircle, self);
+                    marker.on('click', self._finishPath);
                     this.markers.push(marker);
 				},
 				addPoint: function(latlng) {
@@ -722,7 +722,9 @@
                     if (this.points.length > 1) {
                         this.tooltips.last()._icon.classList.add('polyline-measure-tooltip-end'); // add Class e.g. another background-color to the Previous Tooltip (which is the last fixed tooltip, cause the moving tooltip is being deleted later)
                         // Style of the circle marking the end of the whole Polyline
-                        this.markers.last().setStyle (self.options.endCircle);
+						var oldMarker = this.markers.last()
+                        oldMarker.setStyle(self.options.endCircle);
+                        oldMarker.off('click');
                         self._lines.push(this);
 						self._arrArrows.push (self._arrArrowsCurrentline);
                     } else {
@@ -743,7 +745,8 @@
 		 * @private
 		 */
 		_mouseClick: function(e) {
-			if (!e.latlng) {
+			// skip if there is no latlng or this event's container point matches the finishing point for the line we just completed
+			if (!e.latlng || (self._finishPoint && self._finishPoint.equals(e.containerPoint))) {
 				return;
 			}
 
@@ -758,7 +761,8 @@
          * @private
          */
 		_finishPath: function(e) {
-            self._currentLine.finalize();
+			self._currentLine.finalize();
+			self._finishPoint = e.containerPoint;
 		},
 
         /**
