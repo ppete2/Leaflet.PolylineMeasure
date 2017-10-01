@@ -778,24 +778,23 @@
 			self._arrArrowsCurrentline = [];
 		},
       
-        _dragCircle: function (e1) {
-            if ((self._measuring) && (self._cntCircle === 0)) {    // just execute drag-function if Measuring tool is active but no line is being drawn at the moment.
-            self._map.dragging.disable();  // turn of moving of the map during drag of a circle
-            self._map.off ('mousemove', self._mouseMove, self);
-            self._map.off ('click', self._mouseClick, self);
-            var mouseStartingLat = e1.latlng.lat;
-            var mouseStartingLng = e1.latlng.lng;
-            var circleStartingLat = e1.target._latlng.lat;
-            var circleStartingLng = e1.target._latlng.lng;
-			self._map.on ('mousemove', function (e2) {
-                var mouseNewLat = e2.latlng.lat;
-                var mouseNewLng = e2.latlng.lng;
-                var latDifference = mouseNewLat - mouseStartingLat;
-                var lngDifference = mouseNewLng - mouseStartingLng;
-                var currentCircleCoords = L.latLng (circleStartingLat + latDifference, circleStartingLng + lngDifference);
-                lineNr = e1.target.cntLine;
-                circleNr = e1.target.cntCircle;
-				e1.target.setLatLng (currentCircleCoords);
+		_dragCircleMouseup: function () {
+			self._resetPathVariables();
+			self._map.off ('mousemove', self._dragCircleMousemove, self);
+			self._map.dragging.enable();
+			self._map.on ('mousemove', self._mouseMove, self);
+			self._map.off ('mouseup', self._dragCircleMouseup, self);
+		},
+	  
+		_dragCircleMousemove: function (e2) {
+			var mouseNewLat = e2.latlng.lat;
+			var mouseNewLng = e2.latlng.lng;
+			var latDifference = mouseNewLat - self._mouseStartingLat;
+			var lngDifference = mouseNewLng - self._mouseStartingLng;
+			var currentCircleCoords = L.latLng (self._circleStartingLat + latDifference, self._circleStartingLng + lngDifference);
+                lineNr = self._e1.target.cntLine;
+                circleNr = self._e1.target.cntCircle;
+				self._e1.target.setLatLng (currentCircleCoords);
                 self._lines[lineNr].points[circleNr] = currentCircleCoords;
                 lineCoords = self._lines[lineNr].path.getLatLngs(); // get Coords of each Point of the current Polyline
 				if (circleNr >= 1)	 {   // redraw previous arc just if circle is not starting circle of polyline
@@ -824,16 +823,21 @@
                     totalDistance += distance;
                     self._updateTooltipDistance(item, totalDistance, distance);
                 });
-                
-                self._map.on ('mouseup', function () { 
-                    self._resetPathVariables();
-                    self._map.off ('mousemove');
-                    self._map.dragging.enable();
-                    self._map.on ('mousemove', self._mouseMove, self);
-                    self._map.off ('mouseup');
-                });
-            });
-            }
+                self._map.on ('mouseup', self._dragCircleMouseup, self);
+            },
+	  
+        _dragCircle: function (e1) {
+			self._e1 = e1;
+			if ((self._measuring) && (self._cntCircle === 0)) {    // just execute drag-function if Measuring tool is active but no line is being drawn at the moment.
+				self._map.dragging.disable();  // turn of moving of the map during drag of a circle
+				self._map.off ('mousemove', self._mouseMove, self);
+				self._map.off ('click', self._mouseClick, self);
+				self._mouseStartingLat = e1.latlng.lat;
+				self._mouseStartingLng = e1.latlng.lng;
+				self._circleStartingLat = e1.target._latlng.lat;
+				self._circleStartingLng = e1.target._latlng.lng;
+				self._map.on ('mousemove', self._dragCircleMousemove, self);
+			}
         }
 	});
 
