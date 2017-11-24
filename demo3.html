@@ -21,7 +21,7 @@
 	          subdomains: 'ab', maxZoom: 20, noWrap:false, attribution:'<a href="http://www.mapbox.com">Mapbox</a> | <a href="http://www.openstreetmap.org/copyright/">OpenStreetMap</a>' });
 			var map = new L.Map('map').addLayer(layerOsm).setView(new L.LatLng(48, 0), 4);
             L.control.scale({maxWidth:240, metric:false, imperial:true, position: 'bottomleft'}).addTo(map);
-            L.control.polylineMeasure({position:'topleft', unit:'nauticalmiles', clearMeasurementsOnStop: false, showMeasurementsClearControl: false, showUnitControl: false}).addTo(map);
+            L.control.polylineMeasure({position:'topleft', unit:'nauticalmiles', showBearings:true, clearMeasurementsOnStop: false, showMeasurementsClearControl: false, showUnitControl: false}).addTo(map);
 		</script>	
 	</body>
 </html>
