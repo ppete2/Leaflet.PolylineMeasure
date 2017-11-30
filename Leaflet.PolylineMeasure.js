@@ -373,6 +373,13 @@
         },
 
         /**
+         * Method to fire on remove from map
+         */
+        onRemove: function () {
+            if (self._measuring) self._toggleMeasure();
+        },
+
+        /**
          * Toggle the measure functionality on or off
          * @private
          */
