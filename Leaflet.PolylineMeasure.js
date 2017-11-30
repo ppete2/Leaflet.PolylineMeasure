@@ -373,6 +373,13 @@
         },
 
         /**
+         * Method to fire on remove from map
+         */
+        onRemove: function () {
+            if (self._measuring) self._toggleMeasure();
+        },
+
+        /**
          * Toggle the measure functionality on or off
          * @private
          */
@@ -418,7 +425,7 @@
          */
         _clearAllMeasurements: function() {
             if ((self._cntCircle !== undefined) && (self._cntCircle !== 0)) {
-                    self._finishPath();
+                self._finishPath();
             }
             if (self._layerPaint) {
                 self._layerPaint.clearLayers();
@@ -812,7 +819,7 @@
          */
         _finishPath: function(e) {
             self._currentLine.finalize();
-            self._finishPoint = e.containerPoint;
+            if (e) self._finishPoint = e.containerPoint;
         },
 
         /**
