@@ -415,7 +415,7 @@
                 }
                 // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
                 if (self._cntCircle !== 0) {
-                    self._finishPath();
+                    self._finishOrRestartPath();
                 }
             }
         },
@@ -425,7 +425,7 @@
          */
         _clearAllMeasurements: function() {
             if ((self._cntCircle !== undefined) && (self._cntCircle !== 0)) {
-                    self._finishPath();
+                    self._finishOrRestartPath();
             }
             if (self._layerPaint) {
                 self._layerPaint.clearLayers();
@@ -470,7 +470,7 @@
                 if(!self._currentLine) {
                     self._toggleMeasure();
                 } else {
-                    self._finishPath(e);
+                    self._finishOrRestartPath(e);
                 }
             }
         },
@@ -720,7 +720,7 @@
                     marker.cntCircle = self._cntCircle;
                     self._cntCircle++;
                     marker.on('mousedown', self._dragCircle, self);
-                    marker.on('click', self._finishPath);
+                    marker.on('click', self._finishOrRestartPath);
                     this.markers.push(marker);
                 },
                 getNewToolTip: function(latlng){
@@ -824,19 +824,18 @@
          * Finish the drawing of the path
          * @private
          */
-        _finishPath: function(e) {
+        _finishOrRestartPath: function(e) {
             //restart Line on Ctrl+Click
             if(e.originalEvent.ctrlKey && self._finishPoint && self._finishPoint.equals(e.latlng,2)){
                 self._finishPoint = undefined;
 
                 self._currentLine = self._lines[e.target.cntLine];
                 self._currentLine.restart = true;
+                var tooltipNew = self._currentLine.getNewToolTip(e.latlng);
+                tooltipNew.addTo(self._layerPaint);
                 self._currentLine.tooltips.push(tooltipNew);
                 self._currentLine.markers.last().setStyle({fillColor: '#fff'});
                 self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
-
-                var tooltipNew = self._currentLine.getNewToolTip(e.latlng);
-                tooltipNew.addTo(self._layerPaint);
 
                 self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
                 self._arrArrows = [];
