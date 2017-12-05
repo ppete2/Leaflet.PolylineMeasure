@@ -838,7 +838,7 @@
                 self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
 
                 self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
-                self._arrArrows = [];
+                self._arrArrows.splice(e.target.cntLine,1);
                 self._cntCircle = self._currentLine.points.length;
                 
                 self._lines.splice(e.target.cntLine,1);
