@@ -828,18 +828,21 @@
             //restart Line on Ctrl+Click
             if(e.originalEvent.ctrlKey && self._finishPoint && self._finishPoint.equals(e.latlng,2)){
                 self._finishPoint = undefined;
+
                 self._currentLine = self._lines[e.target.cntLine];
                 self._currentLine.restart = true;
+                self._currentLine.tooltips.push(tooltipNew);
+                self._currentLine.markers.last().setStyle({fillColor: '#fff'});
+                self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
 
                 var tooltipNew = self._currentLine.getNewToolTip(e.latlng);
                 tooltipNew.addTo(self._layerPaint);
-                self._currentLine.tooltips.push(tooltipNew);
-                
-                self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
+
                 self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
                 self._arrArrows = [];
-                self._lines.splice(e.target.cntLine,1);
                 self._cntCircle = self._currentLine.points.length;
+                
+                self._lines.splice(e.target.cntLine,1);
             }
             else{
                 if(self._currentLine) self._currentLine.finalize();
