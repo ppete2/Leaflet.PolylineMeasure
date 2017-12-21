@@ -776,8 +776,8 @@
                         var oldMarker = this.markers.last()
                         oldMarker.setStyle(self.options.endCircle);
                         // oldMarker.off('click');
-                        self._lines.push(this);
-                        self._arrArrows.push (self._arrArrowsCurrentline);
+                        self._lines.splice(self._e1.target.cntLine,1,this);
+                        self._arrArrows.splice(self._e1.target.cntLine,1,self._arrArrowsCurrentline);
                     } else {
                         // if there is only one point, just clean it up
                         self._layerPaint.removeLayer(this.markers.last());
@@ -838,10 +838,7 @@
                 self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
 
                 self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
-                self._arrArrows.splice(e.target.cntLine,1);
                 self._cntCircle = self._currentLine.points.length;
-                
-                self._lines.splice(e.target.cntLine,1);
             }
             else{
                 if(self._currentLine) self._currentLine.finalize();
