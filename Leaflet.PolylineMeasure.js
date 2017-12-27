@@ -415,7 +415,7 @@
                 }
                 // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
                 if (self._cntCircle !== 0) {
-                    self._finishPath();
+                    self._finishOrRestartPath();
                 }
             }
         },
@@ -425,7 +425,7 @@
          */
         _clearAllMeasurements: function() {
             if ((self._cntCircle !== undefined) && (self._cntCircle !== 0)) {
-                self._finishPath();
+                    self._finishOrRestartPath();
             }
             if (self._layerPaint) {
                 self._layerPaint.clearLayers();
@@ -470,7 +470,7 @@
                 if(!self._currentLine) {
                     self._toggleMeasure();
                 } else {
-                    self._finishPath(e);
+                    self._finishOrRestartPath(e);
                 }
             }
         },
@@ -683,6 +683,7 @@
             };
 
             self._currentLine = {
+                id: 0,
                 points: [],
                 tooltips: [],
                 markers: [],
@@ -715,12 +716,18 @@
                     // add marker for point
                     // Style of the circle marking the latest point of the Polyline while still drawing
                     var marker = new L.CircleMarker(latlng, self.options.currentCircle).addTo(self._layerPaint);
-                    marker.cntLine = self._lines.length;
+                    marker.cntLine = self._currentLine.id;
                     marker.cntCircle = self._cntCircle;
                     self._cntCircle++;
                     marker.on('mousedown', self._dragCircle, self);
-                    marker.on('click', self._finishPath);
+                    marker.on('click', self._finishOrRestartPath);
                     this.markers.push(marker);
+                },
+                getNewToolTip: function(latlng){
+                    return L.marker (latlng, {
+                        icon: icon,
+                        interactive: false
+                    });
                 },
                 addPoint: function (currentCoords) {
                     var lastPointCoords = this.points.last();
@@ -751,10 +758,8 @@
                         currentTooltip.setLatLng (currentCoords);
                     }
                     // add new tooltip to update on mousemove
-                    var tooltipNew = L.marker (currentCoords, {
-                        icon: icon,
-                        interactive: false
-                    }).addTo(self._layerPaint);
+                    var tooltipNew = this.getNewToolTip(currentCoords);
+                    tooltipNew.addTo(self._layerPaint);
                     this.tooltips.push (tooltipNew);
                     this.handleMarkers (currentCoords);
                 },
@@ -770,9 +775,9 @@
                         // Style of the circle marking the end of the whole Polyline
                         var oldMarker = this.markers.last()
                         oldMarker.setStyle(self.options.endCircle);
-                        oldMarker.off('click');
-                        self._lines.push(this);
-                        self._arrArrows.push (self._arrArrowsCurrentline);
+                        // oldMarker.off('click');
+                        self._lines.splice(self._e1.target.cntLine,1,this);
+                        self._arrArrows.splice(self._e1.target.cntLine,1,self._arrArrowsCurrentline);
                     } else {
                         // if there is only one point, just clean it up
                         self._layerPaint.removeLayer(this.markers.last());
@@ -794,6 +799,7 @@
             this._currentLine.points.last = last;
             this._currentLine.tooltips.last = last;
             this._currentLine.markers.last = last;
+            this._currentLine.id = self._lines.length;
         },
 
             
@@ -804,7 +810,8 @@
          */
         _mouseClick: function (e) {
             // skip if there is no latlng or this event's container point matches the finishing point for the line we just completed
-            if (!e.latlng || (self._finishPoint && self._finishPoint.equals(e.containerPoint))) {
+            if (!e.latlng || (self._currentLine && self._currentLine.restart) || (self._finishPoint && self._finishPoint.equals(e.latlng))) {
+                if(self._currentLine) self._currentLine.restart = false;
                 return;
             }
             if (!self._currentLine) {
@@ -817,9 +824,27 @@
          * Finish the drawing of the path
          * @private
          */
-        _finishPath: function(e) {
-            self._currentLine.finalize();
-            if (e) self._finishPoint = e.containerPoint;
+        _finishOrRestartPath: function(e) {
+            //restart Line on Ctrl+Click
+            if(e.originalEvent.ctrlKey && self._finishPoint && self._finishPoint.equals(e.latlng,2)){
+                self._finishPoint = undefined;
+
+                self._currentLine = self._lines[e.target.cntLine];
+                self._currentLine.restart = true;
+                self._currentLine.tooltips.last()._icon.classList.remove('polyline-measure-tooltip-end');
+                var tooltipNew = self._currentLine.getNewToolTip(e.latlng);
+                tooltipNew.addTo(self._layerPaint);
+                self._currentLine.tooltips.push(tooltipNew);
+                self._currentLine.markers.last().setStyle({fillColor: '#fff'});
+                self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
+
+                self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
+                self._cntCircle = self._currentLine.points.length;
+            }
+            else{
+                if(self._currentLine) self._currentLine.finalize();
+                if(e) self._finishPoint = e.latlng;
+            }
         },
 
         /**
@@ -888,6 +913,7 @@
         },
       
         _dragCircle: function (e1) {
+            if(e1.originalEvent.ctrlKey) return;
             self._e1 = e1;
             if ((self._measuring) && (self._cntCircle === 0)) {    // just execute drag-function if Measuring tool is active but no line is being drawn at the moment.
                 self._map.dragging.disable();  // turn of moving of the map during drag of a circle
