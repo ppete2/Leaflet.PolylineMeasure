@@ -831,6 +831,7 @@
 
                 self._currentLine = self._lines[e.target.cntLine];
                 self._currentLine.restart = true;
+                self._currentLine.tooltips.last()._icon.classList.remove('polyline-measure-tooltip-end');
                 var tooltipNew = self._currentLine.getNewToolTip(e.latlng);
                 tooltipNew.addTo(self._layerPaint);
                 self._currentLine.tooltips.push(tooltipNew);
