@@ -837,8 +837,8 @@
                 self._currentLine.tooltips.push(tooltipNew);
                 self._currentLine.markers.last().setStyle({fillColor: '#fff'});
                 self._currentLine.tempLine.addTo(self._layerPaint).bringToBack();
-
-                self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });
+                self._arrArrows[e.target.cntLine].forEach(function(element) { return self._arrArrowsCurrentline.push(element); });
+                // self._arrArrows[e.target.cntLine].forEach(element => { self._arrArrowsCurrentline.push(element); });   this line didn't work with Internet Explorer 11
                 self._cntCircle = self._currentLine.points.length;
             }
             else{
