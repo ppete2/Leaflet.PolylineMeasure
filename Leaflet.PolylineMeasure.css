@@ -1,3 +1,16 @@
+.leaflet-control {
+	cursor: pointer;
+}
+
+.polyline-measure-unicode-icon {
+	font-size: 19px;
+	font-weight: bold;
+}
+
+a.polyline-measure-clearControl:active {
+	background-color: #f88;
+}
+
 .polyline-measure-tooltip {
 	font: 10px Arial, Helvetica, sans-serif;
     line-height: 10px;
@@ -13,7 +26,7 @@
 }
 
 .polyline-measure-tooltip-end {
-	background-color: rgba(255, 255, 70, 0.7);
+	background-color: rgba(255, 255, 40, 0.7);
 }
 
 .polyline-measure-tooltip-total {
@@ -26,14 +39,7 @@
 	font-style: italic;
 }
 
-.polyline-measure-unicode-icon {
-	font-size: 19px;
-	font-weight: bold;
-}
-.leaflet-control {
-	cursor: pointer;
-}
-
-a.polyline-measure-clearControl:active {
-	background-color: #f88;
+.polyline-measure-popupTooltip {
+	font: 11px Arial, Helvetica, sans-serif;
+    line-height: 11px;
 }
