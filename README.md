@@ -30,6 +30,9 @@ L.control.polylineMeasure(options).addTo(map);
 
 ```js
 options = {
+    bearingTextIn: 'In'                     // language dependend label for inbound bearings
+    bearingTextOut: 'Out',                  // language dependend label for outbound bearings
+    changeUnitsText: 'Change Units',        // language dependend label for "Change units"-button
     position: 'topleft',                    // Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
     unit: 'metres',                         // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'
     showBearings: false,                    // Whether bearings are displayed within the tooltips
