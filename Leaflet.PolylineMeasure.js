@@ -28,6 +28,24 @@
          * @type {Object}
          */
         options: {
+              /**
+             * Title for the bearing In
+             * @type {String}
+             * @default
+             */
+            bearingTextIn: 'In',
+                /**
+             * Title for the bearing Out
+             * @type {String}
+             * @default
+             */
+            bearingTextOut: 'Out',
+                /**
+             * Title for the unit going to be changed
+             * @type {String}
+             * @default
+             */
+            changeUnitsText: 'Change Units',
             /**
              * Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
              * @type {String}
@@ -356,7 +374,7 @@
                 self._clearMeasureControl.classList.add('polyline-measure-clearControl')
             }
             if (self.options.showUnitControl) {
-                var title = "Change units [" + self.options.unit  + "]";
+                 var title = self.options.changeUnitsText + " [" + self.options.unit  + "]";
                 if (self.options.unit=="metres") {
                     var label = "m";
                 }  else if  (self.options.unit=="landmiles") {
@@ -445,7 +463,7 @@
                 self.options.unit = "metres";
                 document.getElementById("unitControlId").innerHTML = "m";
             }
-            self._unitControl.title = "Change units [" + self.options.unit  + "]";
+            self._unitControl.title = self.options.changeUnitsText +" [" + self.options.unit  + "]";
             self._arrPolylines.map (function(line) {
                 var totalDistance = 0;
                 line.circleCoords.map (function(point, point_index) {
@@ -616,7 +634,7 @@
             var textCurrent = '';
             if (differenceRound.value > 0 ) {
                 if (self.options.showBearings === true) {
-                    textCurrent = 'In:' + angleIn + '°<br>Out:---°';
+                     textCurrent = self.options.bearingTextIn + ': ' + angleIn + '°<br>'+self.options.bearingTextOut+':---°';
                 }
                 textCurrent += '<div class="polyline-measure-tooltip-difference">+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + '</div>';
             }
@@ -624,7 +642,11 @@
             currentTooltip._icon.innerHTML = textCurrent;
             if ((self.options.showBearings === true) && (prevTooltip)) {
                 textPrev = prevTooltip._icon.innerHTML;
-                textReplace = textPrev.replace(/Out:.*\°/, "Out:" + angleOut + "°");
+
+                var regExp = new RegExp(self.options.bearingTextOut + '.*\°');
+
+                textReplace = textPrev.replace(regExp, self.options.bearingTextOut + ': ' + angleOut + "°");
+
                 prevTooltip._icon.innerHTML = textReplace;
             }
         },
@@ -788,7 +810,7 @@
             })
             if (self.options.showBearings === true) {
                 firstTooltip.addTo(self._layerPaint);  // otherwise if showBearings = false, the tiny circle of an empty tooltip is displayed
-                text = 'In:---°<br>Out:---°';
+                text = self.options.bearingTextIn+':---°<br>'+self.options.bearingTextOut+':---°';
                 firstTooltip._icon.innerHTML = text;
             }
             self._currentLine.tooltips.push (firstTooltip);
