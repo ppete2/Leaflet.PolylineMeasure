@@ -28,6 +28,12 @@
          * @type {Object}
          */
         options: {
+               /**
+             * Text for bindTooltip
+             * @type {String}
+             * @default
+             */
+            bindTooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
               /**
              * Title for the bearing In
              * @type {String}
@@ -792,7 +798,7 @@
                         var lastCircleMarker = this.circleMarkers.last()
                         lastCircleMarker.setStyle (self.options.endCircle);
                         // use Leaflet's own tooltip method to shwo a popuo tooltip if user hovers the last circle of a polyline
-                        lastCircleMarker.bindTooltip("Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>", {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.bindTooltip(self.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         lastCircleMarker.off ('click', self._finishPolylinePath);
                         lastCircleMarker.on ('click', self._resumePolylinePath);
                         self._arrPolylines.push(this);
@@ -882,7 +888,7 @@
       
         _dragCircleMouseup: function () {
             // bind new popup-tooltip to the last CircleMArker if dragging finished
-            self._e1.target.bindTooltip ("Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>", {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            self._e1.target.bindTooltip (self.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             self._resetPathVariables();
             self._map.off ('mousemove', self._dragCircleMousemove, self);
             self._map.dragging.enable();
