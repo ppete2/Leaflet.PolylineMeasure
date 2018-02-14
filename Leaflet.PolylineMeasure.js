@@ -27,19 +27,25 @@
          * @type {Object}
          */
         options: {
-              /**
+             /**
              * Title for the bearing In
              * @type {String}
              * @default
              */
             bearingTextIn: 'In',
-                /**
+             /**
              * Title for the bearing Out
              * @type {String}
              * @default
              */
             bearingTextOut: 'Out',
-                /**
+             /**
+             * Text for bindTooltip
+             * @type {String}
+             * @default
+             */
+            bindTooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
+             /**
              * Title for the unit going to be changed
              * @type {String}
              * @default
@@ -790,7 +796,7 @@
                         var lastCircleMarker = this.circleMarkers.last()
                         lastCircleMarker.setStyle (polylineState.options.endCircle);
                         // use Leaflet's own tooltip method to shwo a popuo tooltip if user hovers the last circle of a polyline
-                        lastCircleMarker.bindTooltip("Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>", {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.bindTooltip(this.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         lastCircleMarker.off ('click', polylineState._finishPolylinePath, polylineState);
                         lastCircleMarker.on ('click', polylineState._resumePolylinePath, polylineState);
                         polylineState._arrPolylines.push(this);
@@ -880,7 +886,7 @@
       
         _dragCircleMouseup: function () {
             // bind new popup-tooltip to the last CircleMArker if dragging finished
-            this._e1.target.bindTooltip ("Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>", {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            this._e1.target.bindTooltip (this.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             this._resetPathVariables();
             this._map.off ('mousemove', this._dragCircleMousemove, this);
             this._map.dragging.enable();
