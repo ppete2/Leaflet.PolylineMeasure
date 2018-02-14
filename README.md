@@ -9,7 +9,7 @@
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added some optical improvements.
 
 ## Demos
-* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button) or [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button) or [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button)
+* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button) or [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button) or [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button) [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
