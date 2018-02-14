@@ -32,8 +32,9 @@ L.control.polylineMeasure(options).addTo(map);
 options = {
     bearingTextIn: 'In'                     // language dependend label for inbound bearings
     bearingTextOut: 'Out',                  // language dependend label for outbound bearings
+    bearingTextOut: 'Out',                  // language dependend label for outbound bearings
     bindTooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
-                                            // Text for tooltip of line's last point
+                                            // language dependend label for last point's tooltip
     changeUnitsText: 'Change Units',        // language dependend label for "Change units"-button
     position: 'topleft',                    // Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
     unit: 'metres',                         // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'

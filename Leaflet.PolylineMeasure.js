@@ -27,25 +27,25 @@
          * @type {Object}
          */
         options: {
-             /**
+              /**
              * Title for the bearing In
              * @type {String}
              * @default
              */
             bearingTextIn: 'In',
-             /**
+                /**
              * Title for the bearing Out
              * @type {String}
              * @default
              */
             bearingTextOut: 'Out',
              /**
-             * Text for bindTooltip
+             * Language dependend label for last point's tooltip
              * @type {String}
              * @default
              */
             bindTooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
-             /**
+                /**
              * Title for the unit going to be changed
              * @type {String}
              * @default
@@ -796,7 +796,7 @@
                         var lastCircleMarker = this.circleMarkers.last()
                         lastCircleMarker.setStyle (polylineState.options.endCircle);
                         // use Leaflet's own tooltip method to shwo a popuo tooltip if user hovers the last circle of a polyline
-                        lastCircleMarker.bindTooltip(this.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.bindTooltip(polylineState.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         lastCircleMarker.off ('click', polylineState._finishPolylinePath, polylineState);
                         lastCircleMarker.on ('click', polylineState._resumePolylinePath, polylineState);
                         polylineState._arrPolylines.push(this);
