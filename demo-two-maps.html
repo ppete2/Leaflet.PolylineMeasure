@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Map Demo of Leaflet.PolylineMeasure</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="Leaflet.PolylineMeasure.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="Leaflet.PolylineMeasure.js"></script>
+    <style>
+      body {padding: 0; margin: 0;}
+      html, body, #map1, #map2 {height: 100%;}
+      #map1, #map2 {width: 50%; float: left;}
+    </style>
+  </head>
+  <body>
+    <div id="map1"></div>
+    <div id="map2"></div>
+    <script>
+      var initMap = function(id) {
+        var layerOsm = new L.TileLayer('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {subdomains:['server','services'], maxZoom:19, noWrap:false, attribution:'<a href="https://www.arcgis.com/">ArcGIS</a>' });
+        var map = new L.Map(id).addLayer(layerOsm).setView(new L.LatLng(48, 0), 4);
+        L.control.scale({maxWidth:240, metric:true, imperial:false, position: 'bottomleft'}).addTo(map);
+        L.control.polylineMeasure({position:'topleft', unit:'metres', showBearings:true, clearMeasurementsOnStop: false, showMeasurementsClearControl: true, showUnitControl: true}).addTo(map);
+      };
+
+      initMap('map1');
+      initMap('map2');
+    </script>
+  </body>
+</html>
