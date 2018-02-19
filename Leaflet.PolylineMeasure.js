@@ -438,7 +438,7 @@
                 }
                 // to remove temp. Line if line at the moment is being drawn and not finished while clicking the control
                 if (this._cntCircle !== 0) {
-                    this._finishOrRestartPath();
+                    this._finishPolylinePath();
                 }
             }
         },
@@ -448,7 +448,7 @@
          */
         _clearAllMeasurements: function() {
             if ((this._cntCircle !== undefined) && (this._cntCircle !== 0)) {
-                    this._finishOrRestartPath();
+                    this._finishPolylinePath();
             }
             if (this._layerPaint) {
                 this._layerPaint.clearLayers();
