@@ -747,7 +747,6 @@
                         this.path.setLatLngs (this.path.getLatLngs().concat(arc));
                         // following lines needed especially for Mobile Browsers where we just use mouseclicks. No mousemoves, no tempLine.
                         var arrow = self._drawArrow (arc);
-                        debugger
                         self._arrArrowsCurrentline.push (arrow);
                         var distanceSegment = lastPointCoords.distanceTo(currentCoords);
                         this.distance += distanceSegment;
