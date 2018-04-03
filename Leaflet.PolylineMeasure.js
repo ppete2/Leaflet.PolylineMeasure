@@ -1,3 +1,8 @@
+/*************************************************
+**   Leaflet Plugin "Leaflet.PolylineMeasure"   **
+**   Version: 2018-02-19                        **
+*************************************************/
+
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
