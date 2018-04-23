@@ -28,9 +28,9 @@ Add 1 code line within your **Javascript-file** to add the plugin's control into
 L.control.polylineMeasure(options).addTo(map);
 ```
 
-## Package manager
+## Package manager install
 
-It's possible to add this plugin using package managers like "npn". These feature was been added optionally by other users. I'm not responsible to keep this optional package manager installs up-to-date. If you notice that it's install is outdated, feel free to provide a Pull request or contact one of the persons who introduced thos install variants, thanks. 
+It's possible to install and update this plugin using package managers like "npn". These optional feature got added by other users. I'm not familiar with nor responsible to keep these optional package manager installs up-to-date. If you notice that such installs are outdated, feel free to provide a Pull request or contact one of the persons who once introduced those install variants, thanks. 
 
 ## Default options
 
