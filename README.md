@@ -1,3 +1,5 @@
+
+
 # Leaflet.PolylineMeasure
 * Leaflet Plugin to :triangular_ruler: **measure distances** of simple lines as well as of complex polylines.
 * Measuring in **metric system** (metre, kilometre), in **imperial system** (foot, landmile), or in **nautical miles**.
@@ -25,6 +27,10 @@ Add 1 code line within your **Javascript-file** to add the plugin's control into
 ```js
 L.control.polylineMeasure(options).addTo(map);
 ```
+
+## Package manager
+
+It's possible to add this plugin using package managers like "npn". These feature was been added optionally by other users. I'm not responsible to keep this optional package manager installs up-to-date. If you notice that it's install is outdated, feel free to provide a Pull request or contact one of the persons who introduced thos install variants, thanks. 
 
 ## Default options
 
