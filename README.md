@@ -8,7 +8,7 @@
 * To **continue** a line after it has been finished, just hold the *Ctrl-Key* while clicking onto the last point of a line.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
 * **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes. 
-* It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added some optical improvements.
+* It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added functional and optical improvements.
 
 ## Demos
 * Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button) or [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button) or [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button) [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
