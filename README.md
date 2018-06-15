@@ -59,7 +59,7 @@ options = {
         landmiles: 'land miles',
         nauticalmiles: 'nautical miles'
     },
-    unitControlLabel: {             // Lable symbols to show in the Unit Control button
+    unitControlLabel: {             // Label symbols to show in the Unit Control button
         metres: 'm',
         kilometres: 'km',
         feet: 'ft',
