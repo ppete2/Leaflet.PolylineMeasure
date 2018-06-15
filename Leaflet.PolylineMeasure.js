@@ -1,8 +1,8 @@
 /*********************************************************
-**														**
+**                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       Version: 2018-06-15                            **
-**														**	
+**                                                      **    
 *********************************************************/
 
 
@@ -34,12 +34,12 @@
          * @type {Object}
          */
         options: {
-			/**
+            /**
              * Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
              * @type {String}
              * @default
              */
-            position: 'topleft',		
+            position: 'topleft',        
             /**
              * Which units the distances are displayed in. Possible values are: 'metres', 'landmiles', 'nauticalmiles'
              * @type {String}
@@ -52,13 +52,13 @@
              * @default
              */
             clearMeasurementsOnStop: true,
-			/**
+            /**
              * Whether bearings are displayed within the tooltips
              * @type {Boolean}
              * @default
              */
             showBearings: false,
-			 /**
+             /**
              * Text for the bearing In
              * @type {String}
              * @default
@@ -130,30 +130,30 @@
              * @default
              */
             showUnitControl: false,
-		    /**
+            /**
              * Title texts to show on the Unit Control button
              * @type {Object}
              * @default
              */
             unitControlTitle: {
                text: 'Change Units',
-			   metres: 'metres',
-			   landmiles: 'land miles',
-			   nauticalmiles: 'nautical miles'
-			},
-			/**
+               metres: 'metres',
+               landmiles: 'land miles',
+               nauticalmiles: 'nautical miles'
+            },
+            /**
              * Lable symbols to show in the Unit Control button
              * @type {Object}
              * @default
              */   
-			unitControlLabel: {
+            unitControlLabel: {
                metres: 'm',
-			   kilometres: 'km',
-			   feet: 'ft',
-			   landmiles: 'mi',
-			   nauticalmiles: 'nm'
-			},
-			/**
+               kilometres: 'km',
+               feet: 'ft',
+               landmiles: 'mi',
+               nauticalmiles: 'nm'
+            },
+            /**
              * Styling settings for the temporary dashed rubberline
              * @type {Object}
              */
@@ -377,7 +377,7 @@
             // initialize state
             this._arrPolylines = [];
             this._measureControl = this._createControl (label, title, classes, this._container, this._toggleMeasure, this);
-			this._measureControl.setAttribute('id', _measureControlId);
+            this._measureControl.setAttribute('id', _measureControlId);
             if (this.options.showClearControl) {
                 var title = this.options.clearControlTitle;
                 var label = this.options.clearControlLabel;
@@ -391,13 +391,13 @@
             if (this.options.showUnitControl) {
                 if (this.options.unit == "metres") {
                     var label = this.options.unitControlLabel.metres;
-					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.metres  + "]";
+                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.metres  + "]";
                 }  else if  (this.options.unit == "landmiles") {
                     var label = this.options.unitControlLabel.landmiles;
-					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.landmiles  + "]";
+                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.landmiles  + "]";
                 } else {
                     var label = this.options.unitControlLabel.nauticalmiles;
-					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.nauticalmiles  + "]";
+                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.nauticalmiles  + "]";
                 }
                 var classes = [];
                 this._unitControl = this._createControl (label, title, classes, this._container, this._changeUnit, this);
@@ -422,7 +422,7 @@
         _toggleMeasure: function () {
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
-				this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
+                this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
                 this._measureControl.title = this.options.measureControlTitleOff;
                 this._oldCursor = this._map._container.style.cursor;          // save former cursor type
                 this._map._container.style.cursor = 'crosshair';
@@ -473,15 +473,15 @@
             if (this.options.unit == "metres") {
                 this.options.unit = "landmiles";
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.landmiles;
-				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.landmiles  + "]";
+                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.landmiles  + "]";
             } else if (this.options.unit == "landmiles") {
                 this.options.unit = "nauticalmiles";
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.nauticalmiles;
-				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.nauticalmiles  + "]";
+                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.nauticalmiles  + "]";
             } else {
                 this.options.unit = "metres";
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.metres;
-				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.metres  + "]";
+                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.metres  + "]";
             }
             this._arrPolylines.map (function(line) {
                 var totalDistance = 0;
@@ -724,7 +724,7 @@
                 dashArray: '8,8'
             }).addTo(this._layerPaint).bringToBack();
 
-	    var polylineState = this;
+        var polylineState = this;
             this._currentLine = {
                 id: 0,
                 circleCoords: [],

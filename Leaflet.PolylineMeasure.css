@@ -1,49 +1,49 @@
 .leaflet-control {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 a.polyline-measure-controlOnBgColor, a.polyline-measure-controlOnBgColor:hover {
-	background-color: #8f8;
+    background-color: #8f8;
 }
 
 .polyline-measure-unicode-icon {
-	font-size: 19px;
-	font-weight: bold;
+    font-size: 19px;
+    font-weight: bold;
 }
 
 a.polyline-measure-clearControl:active {
-	background-color: #f88;
+    background-color: #f88;
 }
 
 .polyline-measure-tooltip {
-	font: 10px Arial, Helvetica, sans-serif;
+    font: 10px Arial, Helvetica, sans-serif;
     line-height: 10px;
-	background-color: rgba(255, 255, 170, 0.7);
+    background-color: rgba(255, 255, 170, 0.7);
     border-radius: 3px;
-	box-shadow: 1px 1px 4px #888;
-	margin: 0;
-	padding: 2px;
-	width: auto !important;
-	height: auto !important;
-	white-space: nowrap;
+    box-shadow: 1px 1px 4px #888;
+    margin: 0;
+    padding: 2px;
+    width: auto !important;
+    height: auto !important;
+    white-space: nowrap;
     text-align: right;
 }
 
 .polyline-measure-tooltip-end {
-	background-color: rgba(255, 255, 40, 0.7);
+    background-color: rgba(255, 255, 40, 0.7);
 }
 
 .polyline-measure-tooltip-total {
-	color: #006;
+    color: #006;
     font-weight: bold;
 }
 
 .polyline-measure-tooltip-difference {
-	color: #060;
-	font-style: italic;
+    color: #060;
+    font-style: italic;
 }
 
 .polyline-measure-popupTooltip {
-	font: 11px Arial, Helvetica, sans-serif;
+    font: 11px Arial, Helvetica, sans-serif;
     line-height: 11px;
 }
