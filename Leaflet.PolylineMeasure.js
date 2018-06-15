@@ -142,7 +142,7 @@
                nauticalmiles: 'nautical miles'
             },
             /**
-             * Lable symbols to show in the Unit Control button
+             * Label symbols to show in the Unit Control button
              * @type {Object}
              * @default
              */   
