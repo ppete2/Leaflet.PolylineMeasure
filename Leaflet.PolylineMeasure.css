@@ -2,6 +2,10 @@
 	cursor: pointer;
 }
 
+a.polyline-measure-controlOnBgColor, a.polyline-measure-controlOnBgColor:hover {
+	background-color: #8f8;
+}
+
 .polyline-measure-unicode-icon {
 	font-size: 19px;
 	font-weight: bold;

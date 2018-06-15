@@ -1,7 +1,10 @@
-/*************************************************
-**   Leaflet Plugin "Leaflet.PolylineMeasure"   **
-**   Version: 2018-02-19                        **
-*************************************************/
+/*********************************************************
+**														**
+**       Leaflet Plugin "Leaflet.PolylineMeasure"       **
+**       Version: 2018-06-15                            **
+**														**	
+*********************************************************/
+
 
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
@@ -26,42 +29,17 @@
      * @extends L.Control
      */
     L.Control.PolylineMeasure = L.Control.extend({
-
         /**
          * Default options for the tool
          * @type {Object}
          */
         options: {
-              /**
-             * Title for the bearing In
-             * @type {String}
-             * @default
-             */
-            bearingTextIn: 'In',
-                /**
-             * Title for the bearing Out
-             * @type {String}
-             * @default
-             */
-            bearingTextOut: 'Out',
-             /**
-             * Language dependend label for last point's tooltip
-             * @type {String}
-             * @default
-             */
-            bindTooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
-                /**
-             * Title for the unit going to be changed
-             * @type {String}
-             * @default
-             */
-            changeUnitsText: 'Change Units',
-            /**
+			/**
              * Position to show the control. Possible values are: 'topright', 'topleft', 'bottomright', 'bottomleft'
              * @type {String}
              * @default
              */
-            position: 'topleft',
+            position: 'topleft',		
             /**
              * Which units the distances are displayed in. Possible values are: 'metres', 'landmiles', 'nauticalmiles'
              * @type {String}
@@ -69,11 +47,35 @@
              */
             unit: 'metres',
             /**
+             * Clear the measurements on stop
+             * @type {Boolean}
+             * @default
+             */
+            clearMeasurementsOnStop: true,
+			/**
              * Whether bearings are displayed within the tooltips
              * @type {Boolean}
              * @default
              */
             showBearings: false,
+			 /**
+             * Text for the bearing In
+             * @type {String}
+             * @default
+             */
+            bearingTextIn: 'In',
+            /**
+             * Text for the bearing Out
+             * @type {String}
+             * @default
+             */
+            bearingTextOut: 'Out',
+             /**
+             * Text for last point's tooltip
+             * @type {String}
+             * @default
+             */
+            tooltipText: "Click and drag to <b>move point</b><br>Press CTRL-key and click to <b>resume line</b>",
             /**
              * Title for the control going to be switched on
              * @type {String}
@@ -87,55 +89,37 @@
              */
             measureControlTitleOff: "Turn off PolylineMeasure",
             /**
-             * HTML to place inside the control. This should just be a unicode icon
+             * Label of the Measure control (maybe a unicode symbol)
              * @type {String}
              * @default
              */
             measureControlLabel: '&#8614;',
             /**
-             * Classes to apply to the control
+             * Classes to apply to the Measure control
              * @type {Array}
              * @default
              */
             measureControlClasses: [],
             /**
-             * Background color for control when selected
-             * @type {String}
-             * @default
-             */
-            backgroundColor: '#8f8',
-            /**
-             * Cursor type to show when creating measurements
-             * @type {String}
-             * @default
-             */
-            cursor: 'crosshair',
-            /**
-             * Clear the measurements on stop
-             * @type {Boolean}
-             * @default
-             */
-            clearMeasurementsOnStop: true,
-            /**
              * Show a control to clear all the measurements
              * @type {Boolean}
              * @default
              */
-            showMeasurementsClearControl: false,
+            showClearControl: false,
             /**
-             * Title text to show on the clear measurements control button
+             * Title text to show on the Clear measurements control button
              * @type {String}
              * @default
              */
             clearControlTitle: 'Clear Measurements',
             /**
-             * Clear control inner html
+             * Label of the Clear control (maybe a unicode symbol)
              * @type {String}
              * @default
              */
             clearControlLabel: '&times;',
             /**
-             * Collection of classes to add to clear control button
+             * Classes to apply to Clear control button
              * @type {Array}
              * @default
              */
@@ -146,7 +130,30 @@
              * @default
              */
             showUnitControl: false,
-            /**
+		    /**
+             * Title texts to show on the Unit Control button
+             * @type {Object}
+             * @default
+             */
+            unitControlTitle: {
+               text: 'Change Units',
+			   metres: 'metres',
+			   landmiles: 'land miles',
+			   nauticalmiles: 'nautical miles'
+			},
+			/**
+             * Lable symbols to show in the Unit Control button
+             * @type {Object}
+             * @default
+             */   
+			unitControlLabel: {
+               metres: 'm',
+			   kilometres: 'km',
+			   feet: 'ft',
+			   landmiles: 'mi',
+			   nauticalmiles: 'nm'
+			},
+			/**
              * Styling settings for the temporary dashed rubberline
              * @type {Object}
              */
@@ -369,31 +376,32 @@
 
             // initialize state
             this._arrPolylines = [];
-            this._measureControl = this._createControl(label, title, classes, this._container, this._toggleMeasure, this);
-            this._measureControl.setAttribute('id', _measureControlId);
-            
-            if (this.options.showMeasurementsClearControl) {
+            this._measureControl = this._createControl (label, title, classes, this._container, this._toggleMeasure, this);
+			this._measureControl.setAttribute('id', _measureControlId);
+            if (this.options.showClearControl) {
                 var title = this.options.clearControlTitle;
                 var label = this.options.clearControlLabel;
                 var classes = this.options.clearControlClasses;
                 if (label.indexOf('&') != -1) {
                     classes.push(_unicodeClass);
                 }
-                this._clearMeasureControl = this._createControl(label, title, classes, this._container, this._clearAllMeasurements, this);
+                this._clearMeasureControl = this._createControl (label, title, classes, this._container, this._clearAllMeasurements, this);
                 this._clearMeasureControl.classList.add('polyline-measure-clearControl')
             }
             if (this.options.showUnitControl) {
-                 var title = this.options.changeUnitsText + " [" + this.options.unit  + "]";
-                if (this.options.unit=="metres") {
-                    var label = "m";
-                }  else if  (this.options.unit=="landmiles") {
-                    var label = "mi";
+                if (this.options.unit == "metres") {
+                    var label = this.options.unitControlLabel.metres;
+					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.metres  + "]";
+                }  else if  (this.options.unit == "landmiles") {
+                    var label = this.options.unitControlLabel.landmiles;
+					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.landmiles  + "]";
                 } else {
-                    var label = "nm";
+                    var label = this.options.unitControlLabel.nauticalmiles;
+					var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.nauticalmiles  + "]";
                 }
                 var classes = [];
-                this._unitControl = this._createControl(label, title, classes, this._container, this._changeUnit, this);
-                this._unitControl.setAttribute('id', 'unitControlId');
+                this._unitControl = this._createControl (label, title, classes, this._container, this._changeUnit, this);
+                this._unitControl.setAttribute ('id', 'unitControlId');
             }
             return this._container;
         },
@@ -414,10 +422,10 @@
         _toggleMeasure: function () {
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
-                this._measureControl.style.backgroundColor = this.options.backgroundColor;
+				this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
                 this._measureControl.title = this.options.measureControlTitleOff;
                 this._oldCursor = this._map._container.style.cursor;          // save former cursor type
-                this._map._container.style.cursor = this.options.cursor;
+                this._map._container.style.cursor = 'crosshair';
                 this._doubleClickZoom = this._map.doubleClickZoom.enabled();  // save former status of doubleClickZoom
                 this._map.doubleClickZoom.disable();
                 // create LayerGroup "layerPaint" (only) the first time Measure Control is switched on
@@ -429,7 +437,7 @@
                 L.DomEvent.on (document, 'keydown', this._onKeyDown, this);
                 this._resetPathVariables();
             } else {   // if measuring is going to be switched off
-                this._measureControl.removeAttribute('style');
+                this._measureControl.classList.remove ('polyline-measure-controlOnBgColor');
                 this._measureControl.title = this.options.measureControlTitleOn;
                 this._map._container.style.cursor = this._oldCursor;
                 this._map.off ('mousemove', this._mouseMove, this);
@@ -464,15 +472,17 @@
         _changeUnit: function() {
             if (this.options.unit == "metres") {
                 this.options.unit = "landmiles";
-                document.getElementById("unitControlId").innerHTML = "mi";
+                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.landmiles;
+				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.landmiles  + "]";
             } else if (this.options.unit == "landmiles") {
                 this.options.unit = "nauticalmiles";
-                document.getElementById("unitControlId").innerHTML = "nm";
+                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.nauticalmiles;
+				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.nauticalmiles  + "]";
             } else {
                 this.options.unit = "metres";
-                document.getElementById("unitControlId").innerHTML = "m";
+                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.metres;
+				this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.metres  + "]";
             }
-            this._unitControl.title = this.options.changeUnitsText +" [" + this.options.unit  + "]";
             this._arrPolylines.map (function(line) {
                 var totalDistance = 0;
                 line.circleCoords.map (function(point, point_index) {
@@ -512,7 +522,7 @@
             var dist = distance;
             var symbol;
             if (this.options.unit === 'nauticalmiles') {
-                unit = "nm";
+                unit = this.options.unitControlLabel.nauticalmiles;
                 if (dist >= 1852000) {
                     dist = (dist/1852).toFixed(0);
                 } else if (dist >= 185200) {
@@ -522,10 +532,10 @@
                     dist = (dist/1852).toFixed(2);
                 } else  {
                     dist = (dist/0.3048).toFixed(0);
-                    unit = "ft";
+                    unit = this.options.unitControlLabel.feet;
                 }
             } else if (this.options.unit === 'landmiles') {
-                unit = "mi";
+                unit = this.options.unitControlLabel.landmiles;
                 if (dist >= 1609344) {
                     dist = (dist/1609.344).toFixed(0);
                 } else if (dist >= 160934.4) {
@@ -535,11 +545,11 @@
                     dist = (dist/1609.344).toFixed(2);
                 } else {
                     dist = (dist/0.3048).toFixed(0);
-                    unit = "ft";
+                    unit = this.options.unitControlLabel.feet;
                 }
             }
             else {
-                unit = "km";
+                unit = this.options.unitControlLabel.kilometres;
                 if (dist >= 1000000) {
                     dist = (dist/1000).toFixed(0);
                 } else if (dist >= 100000) {
@@ -549,7 +559,7 @@
                     dist = (dist/1000).toFixed(2);
                 } else {
                     dist = (dist).toFixed(1);
-                    unit = "m";
+                    unit = this.options.unitControlLabel.metres;
                 }
             }
             return {value:dist, unit:unit};
@@ -801,7 +811,7 @@
                         var lastCircleMarker = this.circleMarkers.last()
                         lastCircleMarker.setStyle (polylineState.options.endCircle);
                         // use Leaflet's own tooltip method to shwo a popuo tooltip if user hovers the last circle of a polyline
-                        lastCircleMarker.bindTooltip(polylineState.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.bindTooltip(polylineState.options.tooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         lastCircleMarker.off ('click', polylineState._finishPolylinePath, polylineState);
                         lastCircleMarker.on ('click', polylineState._resumePolylinePath, polylineState);
                         polylineState._arrPolylines.push(this);
@@ -891,7 +901,7 @@
       
         _dragCircleMouseup: function () {
             // bind new popup-tooltip to the last CircleMArker if dragging finished
-            this._e1.target.bindTooltip (this.options.bindTooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            this._e1.target.bindTooltip (this.options.tooltipText, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             this._resetPathVariables();
             this._map.off ('mousemove', this._dragCircleMousemove, this);
             this._map.dragging.enable();
