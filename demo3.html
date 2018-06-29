@@ -17,10 +17,10 @@
     <body>
         <div id="map"></div>
         <script>
-            var layerOsm = new L.TileLayer('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {subdomains:['server','services'], maxZoom:19, noWrap:true, attribution:'<a href="https://www.arcgis.com/">ArcGIS</a>' });
-            var map = new L.Map('map').addLayer(layerOsm).setView(new L.LatLng(48, 0), 4);
-            L.control.scale({maxWidth:240, metric:false, imperial:true, position: 'bottomleft'}).addTo(map);
-            L.control.polylineMeasure({position:'topleft', unit:'nauticalmiles', showBearings:true, clearMeasurementsOnStop: false, showMeasurementsClearControl: false, showUnitControl: false}).addTo(map);
+            var layerOsm = new L.TileLayer ('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {subdomains:['server','services'], maxZoom:19, noWrap:true, attribution:'<a href="https://www.arcgis.com/">ArcGIS</a>' });
+            var map = new L.Map ('map').addLayer (layerOsm).setView (new L.LatLng(48, 0), 4);
+            L.control.scale ({maxWidth:240, metric:false, imperial:true, position: 'bottomleft'}).addTo (map);
+            L.control.polylineMeasure ({position:'topleft', unit:'nauticalmiles', showBearings:true, clearMeasurementsOnStop: false, showClearControl: false, showUnitControl: false}).addTo (map);
         </script>    
     </body>
 </html>
