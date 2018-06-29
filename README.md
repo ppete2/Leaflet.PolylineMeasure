@@ -3,7 +3,7 @@
 # Leaflet.PolylineMeasure
 * Leaflet Plugin to **measure distances** of simple lines as well as of complex polylines.
 * Measuring in **metric system** (metre, kilometre), in **imperial system** (foot, landmile), or in **nautical miles**.
-* Lines are drawn as realistic arcs. Bearings and distances are calculated considering [Great.circle distance](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
+* Lines are drawn as realistic arcs. **Bearings** and **distances** are calculated considering [**Great-circle distance**](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
 * **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes. 
 * To **finish** drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
