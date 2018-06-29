@@ -6,10 +6,10 @@
 * Lines are drawn as realistic arcs. Bearings and distances are calculated considering [Great.circle distance](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
 * **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes. 
 * To **finish** drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
-* To **continue** a line after it has been finished, just hold the *Ctrl-Key* while clicking onto the first or last point of a line.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
-* To **add** points, just hold the *Ctrl-Key* while clicking onto an arrow.
-* To **delete** points, just hold the *Alt-Key* while clicking onto a point.
+* To **continue** a line after it has been finished, hold the *Ctrl-Key* while clicking onto the first or last point of a line.
+* To **add** points, hold the *Ctrl-Key* while clicking onto an arrow.
+* To **delete** points, hold the *Alt-Key* while clicking onto a point.
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added functional and optical improvements.
 
 ## Demos
