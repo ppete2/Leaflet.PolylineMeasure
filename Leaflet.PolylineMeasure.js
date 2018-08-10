@@ -380,6 +380,7 @@
             // initialize state
             this._arrPolylines = [];
             this._measureControl = this._createControl (label, title, classes, this._container, this._toggleMeasure, this);
+            this._defaultControlBgColor = this._measureControl.style.backgroundColor;
             this._measureControl.setAttribute('id', _measureControlId);
             if (this.options.showClearControl) {
                 var title = this.options.clearControlTitle;
@@ -426,6 +427,7 @@
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
                 this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
+                this._measureControl.style.backgroundColor = this.options.backgroundColor;
                 this._measureControl.title = this.options.measureControlTitleOff;
                 this._oldCursor = this._map._container.style.cursor;          // save former cursor type
                 this._map._container.style.cursor = 'crosshair';
@@ -441,6 +443,7 @@
                 this._resetPathVariables();
             } else {   // if measuring is going to be switched off
                 this._measureControl.classList.remove ('polyline-measure-controlOnBgColor');
+                this._measureControl.style.backgroundColor = this._defaultControlBgColor;
                 this._measureControl.title = this.options.measureControlTitleOn;
                 this._map._container.style.cursor = this._oldCursor;
                 this._map.off ('mousemove', this._mouseMove, this);
@@ -457,6 +460,7 @@
                     this._finishPolylinePath();
                 }
             }
+            this._map.fire('polylinemeasure:toggle', {sttus: this._measuring});
         },
 
         /**
@@ -1244,4 +1248,6 @@
     L.control.polylineMeasure = function (options) {
         return new L.Control.PolylineMeasure (options);
     };
+
+    return L.Control.PolylineMeasure;
 }));
