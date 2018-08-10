@@ -460,6 +460,7 @@
                     this._finishPolylinePath();
                 }
             }
+            // allow easy to connect the measure control to the app, f.e. to disable the selection on the map when the measurement is turned on
             this._map.fire('polylinemeasure:toggle', {sttus: this._measuring});
         },
 
@@ -1250,4 +1251,11 @@
     };
 
     return L.Control.PolylineMeasure;
+    // to allow
+    // import PolylineMeasure from 'leaflet.polylinemeasure';
+    // const measureControl = new PolylineMeasure();
+    // together with
+    // import 'leaflet.polylinemeasure';
+    // const measureControl = new L.Control.PolylineMeasure();
+    
 }));
