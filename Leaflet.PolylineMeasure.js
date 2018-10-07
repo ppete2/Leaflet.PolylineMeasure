@@ -512,8 +512,8 @@
         _onKeyDown: function (e) {
             if (e.keyCode === 27) {
                 // if resuming a line at its first point is active
-                if (resumeFirstpointFlag === true) {
-                   resumeFirstpointFlag = false;
+                if (this._resumeFirstpointFlag === true) {
+                    this._resumeFirstpointFlag = false;
                     this._map.off ('mousemove', this._resumeFirstpointMousemove, this);
                     this._map.off ('click', this._resumeFirstpointClick, this); 
                     this._layerPaint.removeLayer (this._rubberlinePath2);
@@ -1088,7 +1088,7 @@
         },
       
         _resumeFirstpointClick: function (e) {
-            resumeFirstpointFlag = false;
+            this._resumeFirstpointFlag = false;
             this._map.off ('mousemove', this._resumeFirstpointMousemove, this);
             this._map.off ('click', this._resumeFirstpointClick, this); 
             this._layerPaint.removeLayer (this._rubberlinePath2);
@@ -1125,7 +1125,7 @@
                 this._map.off ('click', this._mouseClick, this); // to avoid unwanted creation of a new line if CTRL-clicked onto a point 
                 // if user wants resume the line at its starting point
                 if (e1.target.cntCircle === 0) { 
-                    resumeFirstpointFlag = true;
+                    this._resumeFirstpointFlag = true;
                     lineNr = e1.target.cntLine;
                     circleNr = e1.target.cntCircle;
                     currentCircleCoords = e1.latlng;
