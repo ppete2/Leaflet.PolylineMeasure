@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2018-08-10                            **
+**       Version: 2018-10-09                            **
 **                                                      **    
 *********************************************************/
 
@@ -1175,6 +1175,7 @@
                 if (circleNr === 0) {     
                     this._arrPolylines[lineNr].circleMarkers [0].setStyle (this.options.startCircle);
                     lineCoords.splice (0, arcpoints-1)
+                    this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                     this._arrPolylines[lineNr].arrowMarkers [circleNr].removeFrom (this._layerPaint);
                     this._arrPolylines[lineNr].arrowMarkers.splice(0,1);
                     text='';
@@ -1186,6 +1187,8 @@
                     this._arrPolylines[lineNr].tooltips [0]._icon.innerHTML = text;
                 // if last Circle is being removed
                 } else if (circleNr === this._arrPolylines[lineNr].circleCoords.length) {
+                    this._arrPolylines[lineNr].circleMarkers [circleNr-1].on ('click', this._resumePolylinePath, this);
+                    this._arrPolylines[lineNr].circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                     this._arrPolylines[lineNr].circleMarkers.slice(-1)[0].setStyle (this.options.endCircle);  // get last element of the array
                     this._arrPolylines[lineNr].tooltips.slice(-1)[0]._icon.classList.add('polyline-measure-tooltip-end');
                     lineCoords.splice (-(arcpoints-1), arcpoints-1)
