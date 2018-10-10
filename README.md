@@ -9,7 +9,7 @@
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
 * To **continue** a line after it has been finished, hold the *Ctrl-Key* while clicking onto the first or last point of a line.
 * To **add** points, hold the *Ctrl-Key* while clicking onto an arrow.
-* To **delete** points, hold the *Alt-Key* while clicking onto a point.
+* To **delete** points, hold the *Shift-Key* while clicking onto a point.
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added functional and optical improvements.
 
 ## Demos
@@ -44,7 +44,7 @@ options = {
     showBearings: false,            // Whether bearings are displayed within the tooltips
     bearingTextIn: 'In'             // language dependend label for inbound bearings
     bearingTextOut: 'Out',          // language dependend label for outbound bearings
-    tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press ALT-key and click to <b>delete point</b>',
+    tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press SHIFT-key and click to <b>delete point</b>',
     tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
     tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
                                     // language dependend labels for point's tooltips

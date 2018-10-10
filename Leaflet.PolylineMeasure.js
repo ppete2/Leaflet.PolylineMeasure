@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2018-10-09                            **
+**       Version: 2018-10-10                            **
 **                                                      **    
 *********************************************************/
 
@@ -75,7 +75,7 @@
              * @type {String}
              * @default
              */
-            tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press ALT-key and click to <b>delete point</b>',
+            tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press SHIFT-key and click to <b>delete point</b>',
             tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
             tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
                         
@@ -1159,7 +1159,7 @@
             }
             
             // if user wants to delete a circle
-            if (e1.originalEvent.altKey) {    
+            if (e1.originalEvent.shiftKey) {    // it's not possible to use "ALT-Key" instead, cause this won't work in some Linux distributions (there it's the default hotkey for moving windows) 
                 lineNr = e1.target.cntLine;
                 circleNr = e1.target.cntCircle;
                 this._arrPolylines[lineNr].circleCoords.splice(circleNr,1);
