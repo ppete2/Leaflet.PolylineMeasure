@@ -418,7 +418,21 @@
                 this._toggleMeasure();
             } 
         },
+        
+        _blockEvents: function () {
+            if (!this._oldTargets) {
+                this._oldTargets = this._map._targets;
+                this._map._targets = {};
+            }
+        },
 
+        _unblockEvents: function () {
+            if (this._oldTargets) {
+                this._map._targets = this._oldTargets;
+                delete this._oldTargets;
+            }
+        },
+    
         /**
          * Toggle the measure functionality on or off
          * @private
@@ -426,6 +440,7 @@
         _toggleMeasure: function () {
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
+                this._blockEvents();
                 this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
                 this._measureControl.style.backgroundColor = this.options.backgroundColor;
                 this._measureControl.title = this.options.measureControlTitleOff;
@@ -442,6 +457,7 @@
                 L.DomEvent.on (document, 'keydown', this._onKeyDown, this);
                 this._resetPathVariables();
             } else {   // if measuring is going to be switched off
+                this._unblockEvents();
                 this._measureControl.classList.remove ('polyline-measure-controlOnBgColor');
                 this._measureControl.style.backgroundColor = this._defaultControlBgColor;
                 this._measureControl.title = this.options.measureControlTitleOn;
