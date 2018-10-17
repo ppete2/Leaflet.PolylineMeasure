@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2018-10-13                            **
+**       Version: 2018-10-17                            **
 **                                                      **    
 *********************************************************/
 
@@ -878,6 +878,7 @@
                     } else {
                         // if there is only one point, just clean it up
                         polylineState._layerPaint.removeLayer (this.circleMarkers.last());
+                        polylineState._layerPaint.removeLayer (this.tooltips.last());
                     }
                     polylineState._resetPathVariables();
                 }
