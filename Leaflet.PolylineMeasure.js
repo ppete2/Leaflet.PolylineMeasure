@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2018-10-17                            **
+**       Version: 2018-10-22                            **
 **                                                      **    
 *********************************************************/
 
@@ -367,6 +367,11 @@
          * @returns {Element}           Containing element
          */
         onAdd: function(map) {
+            var self = this
+            // needed to avoid creating points by mouseclick during dragging the map
+    	    map.on('movestart ', function() {
+    		  self._mapdragging = true
+    	    })
             this._container = document.createElement('div');
             this._container.classList.add('leaflet-bar');
             L.DomEvent.disableClickPropagation(this._container); // otherwise drawing process would instantly start at controls' container or double click would zoom-in map
@@ -419,13 +424,15 @@
             } 
         },
         
+        // turn off all Leaflet-own events of markers (popups, tooltips). Needed to allow creating points on top of markers
         _blockEvents: function () {
             if (!this._oldTargets) {
                 this._oldTargets = this._map._targets;
                 this._map._targets = {};
             }
         },
-
+        
+        // on disabling the measure add-on, enable the former Leaflet-own events again
         _unblockEvents: function () {
             if (this._oldTargets) {
                 this._map._targets = this._oldTargets;
@@ -440,6 +447,7 @@
         _toggleMeasure: function () {
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
+                this._mapdragging = false;
                 this._blockEvents();
                 this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
                 this._measureControl.style.backgroundColor = this.options.backgroundColor;
@@ -913,10 +921,15 @@
             if (!e.latlng || (this._finishCircleScreencoords && this._finishCircleScreencoords.equals(e.containerPoint))) {
                 return;
             }
-            if (!this._currentLine) {
+            if (!this._currentLine && !this._mapdragging) {
                 this._startLine (e.latlng);
             }
-            this._currentLine.addPoint (e.latlng);
+            // just create a point if the map isn't dragged during the mouseclick.
+            if (!this._mapdragging) {
+                this._currentLine.addPoint (e.latlng);
+            } else {
+                this._mapdragging = false; // this manual setting to "false" needed, instead of a "moveend"-Event. Cause the mouseclick of a "moveend"-event immediately would create a point too the same time.
+            }            
         },
 
         /**
