@@ -1261,7 +1261,6 @@
                     }.bind (this));
                 // if this is the first line and it's not finished yet
                 } else {
-                    debugger
 	                this._currentLine.circleCoords.splice(circleNr,1);
 	                this._currentLine.circleMarkers [circleNr].removeFrom (this._layerPaint);
 	                this._currentLine.circleMarkers.splice(circleNr,1);
