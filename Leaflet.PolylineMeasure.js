@@ -1208,8 +1208,18 @@
 
                     // if the last Circle in polyline is being removed (in the code above, so length will be equal 0)
                     if(!this._arrPolylines[lineNr].circleMarkers.length) {
-                        this._arrPolylines.splice(lineNr, 1);
-                        return;
+                    	this._arrPolylines.splice(lineNr, 1);
+                    	// when you delete the line in the middle of array, other lines indexes change, so you need to update line number of markers and circles
+	                    this._arrPolylines.forEach(function(line, index) {
+		                    line.circleMarkers.map(function (item) {
+			                    item.cntLine = index;
+		                    });
+		                    line.arrowMarkers.map(function (item) {
+			                    item.cntLine = index;
+		                    });
+	                    });
+
+	                    return;
                     }
                     // if first Circle is being removed
                     if (circleNr === 0) {
@@ -1261,11 +1271,17 @@
                     }.bind (this));
                 // if this is the first line and it's not finished yet
                 } else {
+	                // when you're drawing and deleting point you need to take it into account by decreasing _cntCircle
+                  this._cntCircle--;
+                  // if the last Circle in polyline is being removed
+                  if(this._currentLine.circleMarkers.length === 1) {
+                      this._currentLine.finalize();
+                      return;
+                  }
+
 	                this._currentLine.circleCoords.splice(circleNr,1);
 	                this._currentLine.circleMarkers [circleNr].removeFrom (this._layerPaint);
 	                this._currentLine.circleMarkers.splice(circleNr,1);
-	                // when you're drawing and deleting point you need to take it into account by decreasing _cntCircle
-	                this._cntCircle--;
 	                this._currentLine.circleMarkers.map (function (item, index) {
 		                item.cntCircle = index;
 	                });
@@ -1273,14 +1289,13 @@
 	                this._currentLine.tooltips [circleNr].removeFrom (this._layerPaint);
 	                this._currentLine.tooltips.splice(circleNr,1);
 
-	                // if the last Circle in polyline is being removed (in the code above, so length will be equal 0)
-	                if(!this._currentLine.circleMarkers.length) {
-		                this._currentLine = null;
-		                return;
-	                }
 	                // if first Circle is being removed
 	                if (circleNr === 0) {
-		                this._currentLine.circleMarkers [0].setStyle (this.options.currentCircle);
+                    if(this._currentLine.circleMarkers.length === 1) {
+                        this._currentLine.circleMarkers [0].setStyle (this.options.currentCircle);
+                    } else {
+                        this._currentLine.circleMarkers [0].setStyle (this.options.startCircle);
+                    }
 		                lineCoords.splice (0, arcpoints-1);
 		                this._currentLine.circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
 		                this._currentLine.arrowMarkers [circleNr].removeFrom (this._layerPaint);
@@ -1335,12 +1350,13 @@
                       }
 		                }
 	                }.bind (this));
+
+	                // update _currentLine distance after point deletion
+	                this._currentLine.distance = totalDistanceUnfinishedLine;
                 }
-                // update _currentLine distance after point deletion
-                this._currentLine.distance = totalDistanceUnfinishedLine;
+
                 return;
             }
-
             this._e1 = e1;
             if ((this._measuring) && (this._cntCircle === 0)) {    // just execute drag-function if Measuring tool is active but no line is being drawn at the moment.
                 this._map.dragging.disable();  // turn of moving of the map during drag of a circle
