@@ -472,6 +472,10 @@
                 this._map._container.style.cursor = this._oldCursor;
                 this._map.off ('mousemove', this._mouseMove, this);
                 this._map.off ('click', this._mouseClick, this);
+                this._map.off ('mousemove', this._resumeFirstpointMousemove, this);
+                this._map.off ('click', this._resumeFirstpointClick, this);
+                this._map.off ('mousemove', this._dragCircleMousemove, this);
+                this._map.off ('mouseup', this._dragCircleMouseup, this);
                 L.DomEvent.off (document, 'keydown', this._onKeyDown, this);
                 if(this._doubleClickZoom) {
                     this._map.doubleClickZoom.enable();
