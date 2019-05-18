@@ -701,7 +701,7 @@
          */
         _updateTooltip: function (currentTooltip, prevTooltip, total, difference, lastCircleCoords, mouseCoords) {
             // Explanation of formula: http://www.movable-type.co.uk/scripts/latlong.html
-            calcAngle = function (p1, p2, direction) {
+            var calcAngle = function (p1, p2, direction) {
                 var lat1 = p1.lat / 180 * Math.PI;
                 var lat2 = p2.lat / 180 * Math.PI;
                 var lng1 = p1.lng / 180 * Math.PI;
@@ -860,7 +860,7 @@
                         arrowMarker.cntLine = polylineState._currentLine.id;
                         arrowMarker.cntArrow = polylineState._cntCircle - 1;
                         polylineState._currentLine.arrowMarkers.push (arrowMarker);
-                        distanceSegment = lastCircleCoords.distanceTo (mouseCoords);
+                        var distanceSegment = lastCircleCoords.distanceTo (mouseCoords);
                         this.distance += distanceSegment;
                         var currentTooltip = polylineState._currentLine.tooltips.last();
                         var prevTooltip = polylineState._currentLine.tooltips.slice(-1,-2)[0];
