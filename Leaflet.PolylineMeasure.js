@@ -730,9 +730,9 @@
             textCurrent += '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
             currentTooltip._icon.innerHTML = textCurrent;
             if ((this.options.showBearings === true) && (prevTooltip)) {
-                textPrev = prevTooltip._icon.innerHTML;
+                var textPrev = prevTooltip._icon.innerHTML;
                 var regExp = new RegExp(this.options.bearingTextOut + '.*\°');
-                textReplace = textPrev.replace(regExp, this.options.bearingTextOut + ': ' + angleOut + "°");
+                var textReplace = textPrev.replace(regExp, this.options.bearingTextOut + ': ' + angleOut + "°");
                 prevTooltip._icon.innerHTML = textReplace;
             }
         },
