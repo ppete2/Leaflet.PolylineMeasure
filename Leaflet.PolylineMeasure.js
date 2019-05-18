@@ -1008,7 +1008,7 @@
                 var arc2 = this._polylineArc (e.latlng, this._arrPolylines[lineNr].circleCoords[arrowNr+2]);
                 Array.prototype.splice.apply (lineCoords, [(arrowNr)*(this._arcpoints-1), this._arcpoints].concat (arc1, arc2));
                 this._arrPolylines[lineNr].polylinePath.setLatLngs (lineCoords);
-                arrowMarker = this._drawArrow (arc1);
+                var arrowMarker = this._drawArrow (arc1);
                 this._arrPolylines[lineNr].arrowMarkers[arrowNr] = arrowMarker;
                 arrowMarker = this._drawArrow (arc2);
                 this._arrPolylines[lineNr].arrowMarkers.splice(arrowNr+1,0,arrowMarker);
@@ -1067,19 +1067,19 @@
             this._e1.target.setLatLng (currentCircleCoords);
             this._e1.target.unbindTooltip();    // unbind popup-tooltip cause otherwise it would be annoying during dragging, or popup instantly again if it's just closed
             this._arrPolylines[lineNr].circleCoords[circleNr] = currentCircleCoords;
-            lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs(); // get Coords of each Point of the current Polyline
+            var lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs(); // get Coords of each Point of the current Polyline
             if (circleNr >= 1) {   // redraw previous arc just if circle is not starting circle of polyline
-                newLineSegment1 = this._polylineArc(this._arrPolylines[lineNr].circleCoords[circleNr-1], currentCircleCoords);
+                var newLineSegment1 = this._polylineArc(this._arrPolylines[lineNr].circleCoords[circleNr-1], currentCircleCoords);
                 // the next line's syntax has to be used since Internet Explorer doesn't know new spread operator (...) for inserting the individual elements of an array as 3rd argument of the splice method; Otherwise we could write: lineCoords.splice (circleNr*(arcpoints-1), arcpoints, ...newLineSegment1);
                 Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), arcpoints].concat (newLineSegment1));
-                arrowMarker = this._drawArrow (newLineSegment1);
+                var arrowMarker = this._drawArrow (newLineSegment1);
                 arrowMarker.cntLine = lineNr;
                 arrowMarker.cntArrow = circleNr-1;
                 this._arrPolylines[lineNr].arrowMarkers [circleNr-1].removeFrom (this._layerPaint);
                 this._arrPolylines[lineNr].arrowMarkers [circleNr-1] = arrowMarker;
             }
             if (circleNr < this._arrPolylines[lineNr].circleCoords.length-1) {   // redraw following arc just if circle is not end circle of polyline
-                newLineSegment2 = this._polylineArc (currentCircleCoords, this._arrPolylines[lineNr].circleCoords[circleNr+1]);
+                var newLineSegment2 = this._polylineArc (currentCircleCoords, this._arrPolylines[lineNr].circleCoords[circleNr+1]);
                 Array.prototype.splice.apply (lineCoords, [circleNr*(arcpoints-1), arcpoints].concat (newLineSegment2));
                 arrowMarker = this._drawArrow (newLineSegment2);
                 arrowMarker.cntLine = lineNr;
@@ -1152,7 +1152,7 @@
             });
             this._arrPolylines[lineNr].circleCoords.unshift(e.latlng);
             var arc = this._polylineArc (e.latlng, currentCircleCoords);
-            arrowMarker = this._drawArrow (arc);
+            var arrowMarker = this._drawArrow (arc);
             this._arrPolylines[lineNr].arrowMarkers.unshift(arrowMarker);
             this._arrPolylines[lineNr].arrowMarkers.map (function (item, index) {
                 item.cntLine = lineNr;
@@ -1221,7 +1221,7 @@
                     this._arrPolylines[lineNr].circleMarkers.map (function (item, index) {
                         item.cntCircle = index;
                     });
-                    lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs();
+                    var lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs();
                     this._arrPolylines[lineNr].tooltips [circleNr].removeFrom (this._layerPaint);
                     this._arrPolylines[lineNr].tooltips.splice(circleNr,1);
 
@@ -1269,7 +1269,7 @@
                         Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), (2*arcpoints-1)].concat (newLineSegment));
                         this._arrPolylines[lineNr].arrowMarkers [circleNr-1].removeFrom (this._layerPaint);
                         this._arrPolylines[lineNr].arrowMarkers [circleNr].removeFrom (this._layerPaint);
-                        arrowMarker = this._drawArrow (newLineSegment);
+                        var arrowMarker = this._drawArrow (newLineSegment);
                         this._arrPolylines[lineNr].arrowMarkers.splice(circleNr-1,2,arrowMarker);
                     }
                     this._arrPolylines[lineNr].polylinePath.setLatLngs (lineCoords);
