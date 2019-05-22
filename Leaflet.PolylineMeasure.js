@@ -134,6 +134,12 @@
              */
             showUnitControl: false,
             /**
+             * Show same unit on tooltips whether distance is long or short
+             * @type {Boolean}
+             * @default
+             */
+            distanceShowSameUnit: false,
+            /**
              * Title texts to show on the Unit Control button
              * @type {Object}
              * @default
@@ -601,8 +607,12 @@
                 } else if (dist >= 1852) {
                     dist = (dist/1852).toFixed(2);
                 } else  {
-                    dist = (dist/0.3048).toFixed(0);
-                    unit = this.options.unitControlLabel.feet;
+                    if (this.options.distanceShowSameUnit) {
+                        dist = (dist / 1852).toFixed(2);
+                    } else {
+                        dist = (dist / 0.3048).toFixed(0);
+                        unit = this.options.unitControlLabel.feet;
+                    }
                 }
             } else if (this.options.unit === 'landmiles') {
                 unit = this.options.unitControlLabel.landmiles;
@@ -614,8 +624,12 @@
                 } else if (dist >= 1609.344) {
                     dist = (dist/1609.344).toFixed(2);
                 } else {
-                    dist = (dist/0.3048).toFixed(0);
-                    unit = this.options.unitControlLabel.feet;
+                    if (this.options.distanceShowSameUnit) {
+                        dist = (dist / 1609.344).toFixed(2);
+                    } else {
+                        dist = (dist / 0.3048).toFixed(0);
+                        unit = this.options.unitControlLabel.feet;
+                    }
                 }
             }
             else {
@@ -628,8 +642,12 @@
                 } else if (dist >= 1000) {
                     dist = (dist/1000).toFixed(2);
                 } else {
-                    dist = (dist).toFixed(1);
-                    unit = this.options.unitControlLabel.metres;
+                    if (this.options.distanceShowSameUnit) {
+                        dist = (dist / 1000).toFixed(2);
+                    } else {
+                        dist = (dist).toFixed(1);
+                        unit = this.options.unitControlLabel.metres;
+                    }
                 }
             }
             return {value:dist, unit:unit};
