@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2019-05-20                            **
+**       Version: 2019-05-22                            **
 **                                                      **
 *********************************************************/
 
@@ -134,7 +134,7 @@
              */
             showUnitControl: false,
             /**
-             * Show same unit on tooltips whether distance is long or short
+             * Keep same unit in tooltips in case of distance less then 1 km/mi/nm
              * @type {Boolean}
              * @default
              */
@@ -151,7 +151,7 @@
                nauticalmiles: 'nautical miles'
             },
             /**
-             * Label symbols to show in the Unit Control button
+             * Unit symbols to show in the Unit Control button and measurement labels
              * @type {Object}
              * @default
              */
@@ -599,53 +599,50 @@
             var unit;
             if (this.options.unit === 'nauticalmiles') {
                 unit = this.options.unitControlLabel.nauticalmiles;
-                if (dist >= 1852000) {
+                if (dist >= 185200) {
                     dist = (dist/1852).toFixed(0);
-                } else if (dist >= 185200) {
+                } else if (dist >= 18520) {
                     dist = (dist/1852).toFixed(1);
-                    // don't use 3 decimal digits, cause especially in countries using the "." as thousands separator a number could optically be confused (e.g. "1.234 nm": is it 1234 nm or 1,234 nm ?)
                 } else if (dist >= 1852) {
                     dist = (dist/1852).toFixed(2);
                 } else  {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist / 1852).toFixed(2);
+                        dist = (dist/1852).toFixed(3);
                     } else {
-                        dist = (dist / 0.3048).toFixed(0);
+                        dist = (dist/0.3048).toFixed(0);
                         unit = this.options.unitControlLabel.feet;
                     }
                 }
             } else if (this.options.unit === 'landmiles') {
                 unit = this.options.unitControlLabel.landmiles;
-                if (dist >= 1609344) {
+                if (dist >= 160934.4) {
                     dist = (dist/1609.344).toFixed(0);
-                } else if (dist >= 160934.4) {
+                } else if (dist >= 16093.44) {
                     dist = (dist/1609.344).toFixed(1);
-                    // don't use 3 decimal digits, cause especially in countries using the "." as thousands separator a number could optically be confused (e.g. "1.234mi": is it 1234mi or 1,234mi ?)
                 } else if (dist >= 1609.344) {
                     dist = (dist/1609.344).toFixed(2);
                 } else {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist / 1609.344).toFixed(2);
+                        dist = (dist/1609.344).toFixed(3);
                     } else {
-                        dist = (dist / 0.3048).toFixed(0);
+                        dist = (dist/0.3048).toFixed(0);
                         unit = this.options.unitControlLabel.feet;
                     }
                 }
             }
             else {
                 unit = this.options.unitControlLabel.kilometres;
-                if (dist >= 1000000) {
+                if (dist >= 100000) {
                     dist = (dist/1000).toFixed(0);
-                } else if (dist >= 100000) {
+                } else if (dist >= 10000) {
                     dist = (dist/1000).toFixed(1);
-                    // don't use 3 decimal digits, cause especially in countries using the "." as thousands separator a number could optically be confused (e.g. "1.234 km": is it 1234 km or 1,234 km ?)
                 } else if (dist >= 1000) {
                     dist = (dist/1000).toFixed(2);
                 } else {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist / 1000).toFixed(2);
+                        dist = (dist/1000).toFixed(3);
                     } else {
-                        dist = (dist).toFixed(1);
+                        dist = (dist).toFixed(0);
                         unit = this.options.unitControlLabel.metres;
                     }
                 }

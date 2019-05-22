@@ -57,13 +57,14 @@ options = {
     clearControlLabel: '&times',    // Label of the Clear control (maybe a unicode symbol)
     clearControlClasses: [],        // Classes to apply to clear control button
     showUnitControl: false,         // Show a control to change the units of measurements
+    distanceShowSameUnit: false,    // Keep same unit in tooltips in case of distance less then 1 km/mi/nm
     unitControlTitle: {             // Title texts to show on the Unit Control button
         text: 'Change Units',
         metres: 'metres',
         landmiles: 'land miles',
         nauticalmiles: 'nautical miles'
     },
-    unitControlLabel: {             // Label symbols to show in the Unit Control button
+    unitControlLabel: {             // Unit symbols to show in the Unit Control button and measurement labels
         metres: 'm',
         kilometres: 'km',
         feet: 'ft',
