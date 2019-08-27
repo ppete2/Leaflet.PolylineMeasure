@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2019-05-22                            **
+**       Version: 2019-08-27                            **
 **                                                      **
 *********************************************************/
 
@@ -753,13 +753,14 @@
         },
 
         _drawArrow: function (arcLine) {
-            var P48 = arcLine[48];
-            var P49 = arcLine[49];
-            var diffLng4849 = P49[1] - P48[1];
-            var diffLat4849 = P49[0] - P48[0];
-            var center = [P48[0] + diffLat4849/2, P48[1] + diffLng4849/2];  // center of Great-circle distance, NOT of the arc on a Mercator map! reason: a) to complicated b) map not always Mercator c) good optical feature to see where real center of distance is not the "virtual" warped arc center due to Mercator projection
-                // angle just an aprroximation, which could be somewhat off if Line runs near high latitudes. Use of *geographical coords* for line segment [48] to [49] is best method. Use of *Pixel coords* for just one arc segement [48] to [49] could create for short lines unexact rotation angles, and the use Use of Pixel coords between endpoints [0] to [98] results in even more rotation difference for high latitudes as with geogrpaphical coords-method
-            var cssAngle = -Math.atan2(diffLat4849, diffLng4849)*57.29578   // convert radiant to degree as needed for use as CSS value; cssAngle is opposite to mathematical angle.
+            var midpoint = Math.round(arcLine.length/2);
+            var P1 = arcLine[midpoint-1];
+            var P2 = arcLine[midpoint];
+            var diffLng12 = P2[1] - P1[1];
+            var diffLat12 = P2[0] - P1[0];
+            var center = [P1[0] + diffLat12/2, P1[1] + diffLng12/2];  // center of Great-circle distance, NOT of the arc on a Mercator map! reason: a) to complicated b) map not always Mercator c) good optical feature to see where real center of distance is not the "virtual" warped arc center due to Mercator projection
+                // angle just an aprroximation, which could be somewhat off if Line runs near high latitudes. Use of *geographical coords* for line segment P1 to P2 is best method. Use of *Pixel coords* for just one arc segement P1 to P2 could create for short lines unexact rotation angles, and the use Use of Pixel coords between endpoints [0] to [99] (in case of 100-point-arc) results in even more rotation difference for high latitudes as with geogrpaphical coords-method
+            var cssAngle = -Math.atan2(diffLat12, diffLng12)*57.29578   // convert radiant to degree as needed for use as CSS value; cssAngle is opposite to mathematical angle.
             var iconArrow = L.divIcon ({
                 className: "",  // to avoid getting a default class with paddings and borders assigned by Leaflet
                 iconSize: [16, 16],
@@ -771,7 +772,6 @@
             newArrowMarker.bindTooltip (this.options.tooltipTextAdd, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             newArrowMarker.on ('click', this._clickedArrow, this);
             return newArrowMarker;
-
         },
 
         /**
