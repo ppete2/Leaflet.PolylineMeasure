@@ -44,7 +44,9 @@ options = {
     showBearings: false,            // Whether bearings are displayed within the tooltips
     bearingTextIn: 'In'             // language dependend label for inbound bearings
     bearingTextOut: 'Out',          // language dependend label for outbound bearings
-    tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press SHIFT-key and click to <b>delete point</b>',
+    tooltipTextFinish: 'Click to <b>finish line</b><br>',
+    tooltipTextDelete: 'Press SHIFT-key and click to <b>delete point</b>',
+    tooltipTextMove: 'Click and drag to <b>move point</b><br>',
     tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
     tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
                                     // language dependend labels for point's tooltips

@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2019-08-27                            **
+**       Version: 2019-09-30                            **
 **                                                      **
 *********************************************************/
 
@@ -75,7 +75,9 @@
              * @type {String}
              * @default
              */
-            tooltipTextDraganddelete: 'Click and drag to <b>move point</b><br>Press SHIFT-key and click to <b>delete point</b>',
+            tooltipTextFinish: 'Click to <b>finish line</b><br>',
+            tooltipTextDelete: 'Press SHIFT-key and click to <b>delete point</b>',
+            tooltipTextMove: 'Click and drag to <b>move point</b><br>',
             tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
             tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
 
@@ -769,7 +771,9 @@
                 html : "<div style = 'font-size: 16px; line-height: 16px; vertical-align:top; transform: rotate("+ cssAngle +"deg)'>&#x27a4;</div>"   // best results if iconSize = font-size = line-height and iconAnchor font-size/2 .both values needed to position symbol in center of L.divIcon for all font-sizes.
             });
             var newArrowMarker = L.marker (center, {icon: iconArrow}).addTo(this._layerPaint);
-            newArrowMarker.bindTooltip (this.options.tooltipTextAdd, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            if (!this._currentLine){  // just bind tooltip if not drawing line anymore, cause following the instruction of tooltip is just possible when not drawing a line
+                newArrowMarker.bindTooltip (this.options.tooltipTextAdd, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            }
             newArrowMarker.on ('click', this._clickedArrow, this);
             return newArrowMarker;
         },
@@ -831,17 +835,16 @@
                     // update style on previous marker
                     var lastCircleMarker = this.circleMarkers.last();
                     if (lastCircleMarker) {
+                        lastCircleMarker.bindTooltip (polylineState.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         lastCircleMarker.off ('click', polylineState._finishPolylinePath, polylineState);
                         if (this.circleMarkers.length === 1) {
                             lastCircleMarker.setStyle (polylineState.options.startCircle);
-                            lastCircleMarker.unbindTooltip ();
-                            lastCircleMarker.bindTooltip (polylineState.options.tooltipTextDraganddelete + polylineState.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         } else {
                             lastCircleMarker.setStyle (polylineState.options.intermedCircle);
                         }
                     }
                     var newCircleMarker = new L.CircleMarker (latlng, polylineState.options.currentCircle).addTo(polylineState._layerPaint);
-                    newCircleMarker.bindTooltip (polylineState.options.tooltipTextDraganddelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                    newCircleMarker.bindTooltip (polylineState.options.tooltipTextFinish + polylineState.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                     newCircleMarker.cntLine = polylineState._currentLine.id;
                     newCircleMarker.cntCircle = polylineState._cntCircle;
                     polylineState._cntCircle++;
@@ -903,8 +906,11 @@
                         var lastCircleMarker = this.circleMarkers.last()
                         lastCircleMarker.setStyle (polylineState.options.endCircle);
                         // use Leaflet's own tooltip method to shwo a popuo tooltip if user hovers the last circle of a polyline
-                        lastCircleMarker.unbindTooltip ();
-                        lastCircleMarker.bindTooltip (polylineState.options.tooltipTextDraganddelete + polylineState.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.unbindTooltip ();  // to close the opened Tooltip after it's been opened after click onto point to finish the line
+                        polylineState._currentLine.circleMarkers.map (function (circle) {circle.bindTooltip (polylineState.options.tooltipTextMove + polylineState.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'})});
+                        polylineState._currentLine.circleMarkers[0].bindTooltip (polylineState.options.tooltipTextMove + polylineState.options.tooltipTextDelete + polylineState.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        lastCircleMarker.bindTooltip (polylineState.options.tooltipTextMove + polylineState.options.tooltipTextDelete + polylineState.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        polylineState._currentLine.arrowMarkers.map (function (arrow) {arrow.bindTooltip (polylineState.options.tooltipTextAdd, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'})});
                         lastCircleMarker.off ('click', polylineState._finishPolylinePath, polylineState);
                         lastCircleMarker.on ('click', polylineState._resumePolylinePath, polylineState);
                         polylineState._arrPolylines.push(this);
@@ -988,7 +994,7 @@
                 tooltipNew.addTo (this._layerPaint);
                 this._currentLine.tooltips.push(tooltipNew);
                 this._currentLine.circleMarkers.last().unbindTooltip();   // remove popup-tooltip of previous, last circleMarker
-                this._currentLine.circleMarkers.last().bindTooltip (this.options.tooltipTextDraganddelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                this._currentLine.circleMarkers.last().bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                 this._currentLine.circleMarkers.last().setStyle (this.options.currentCircle);
                 this._cntCircle = this._currentLine.circleCoords.length;
             }
@@ -1011,7 +1017,7 @@
                 var newCircleMarker = new L.CircleMarker (e.latlng, this.options.intermedCircle).addTo(this._layerPaint);
                 newCircleMarker.cntLine = lineNr;
                 newCircleMarker.on ('mousedown', this._dragCircle, this);
-                newCircleMarker.bindTooltip (this.options.tooltipTextDraganddelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                newCircleMarker.bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                 this._arrPolylines[lineNr].circleMarkers.splice (arrowNr+1, 0, newCircleMarker);
                 this._arrPolylines[lineNr].circleMarkers.map (function (item, index) {
                     item.cntCircle = index;
@@ -1057,9 +1063,9 @@
         _dragCircleMouseup: function () {
             // bind new popup-tooltip to the last CircleMArker if dragging finished
             if ((this._circleNr === 0) || (this._circleNr === this._arrPolylines[this._lineNr].circleCoords.length-1)) {
-               this._e1.target.bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+               this._e1.target.bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             } else {
-               this._e1.target.bindTooltip (this.options.tooltipTextDraganddelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+               this._e1.target.bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             }
             this._resetPathVariables();
             this._map.off ('mousemove', this._dragCircleMousemove, this);
@@ -1155,12 +1161,12 @@
             this._layerPaint.removeLayer (this._rubberlinePath2);
             this._arrPolylines[lineNr].circleMarkers [0].setStyle (this.options.intermedCircle);
             this._arrPolylines[lineNr].circleMarkers [0].unbindTooltip();
-            this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             var newCircleMarker = new L.CircleMarker (e.latlng, this.options.startCircle).addTo(this._layerPaint);
             newCircleMarker.cntLine = lineNr;
             newCircleMarker.cntCircle = 0;
             newCircleMarker.on ('mousedown', this._dragCircle, this);
-            newCircleMarker.bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+            newCircleMarker.bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
             this._arrPolylines[lineNr].circleMarkers.unshift(newCircleMarker);
             this._arrPolylines[lineNr].circleMarkers.map (function (item, index) {
                 item.cntCircle = index;
@@ -1259,7 +1265,7 @@
                     if (circleNr === 0) {
                         this._arrPolylines[lineNr].circleMarkers [0].setStyle (this.options.startCircle);
                         lineCoords.splice (0, arcpoints-1);
-                        this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        this._arrPolylines[lineNr].circleMarkers [0].bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         this._arrPolylines[lineNr].arrowMarkers [circleNr].removeFrom (this._layerPaint);
                         this._arrPolylines[lineNr].arrowMarkers.splice(0,1);
                         var text='';
@@ -1272,7 +1278,7 @@
                         // if last Circle is being removed
                     } else if (circleNr === this._arrPolylines[lineNr].circleCoords.length) {
                         this._arrPolylines[lineNr].circleMarkers [circleNr-1].on ('click', this._resumePolylinePath, this);
-                        this._arrPolylines[lineNr].circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+                        this._arrPolylines[lineNr].circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
                         this._arrPolylines[lineNr].circleMarkers.slice(-1)[0].setStyle (this.options.endCircle);  // get last element of the array
                         this._arrPolylines[lineNr].tooltips.slice(-1)[0]._icon.classList.add('polyline-measure-tooltip-end');
                         lineCoords.splice (-(arcpoints-1), arcpoints-1);
@@ -1331,7 +1337,7 @@
                         this._currentLine.circleMarkers [0].setStyle (this.options.startCircle);
                     }
 		                lineCoords.splice (0, arcpoints-1);
-		                this._currentLine.circleMarkers [0].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+		                this._currentLine.circleMarkers [0].bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
 		                this._currentLine.arrowMarkers [circleNr].removeFrom (this._layerPaint);
 		                this._currentLine.arrowMarkers.splice(0,1);
 		                var text='';
@@ -1344,7 +1350,7 @@
 		                // if last Circle is being removed
 	                } else if (circleNr === this._currentLine.circleCoords.length) {
 		                this._currentLine.circleMarkers [circleNr-1].on ('click', this._resumePolylinePath, this);
-		                this._currentLine.circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextDraganddelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
+		                this._currentLine.circleMarkers [circleNr-1].bindTooltip (this.options.tooltipTextMove + this.options.tooltipTextDelete + this.options.tooltipTextResume, {direction:'top', opacity:0.7, className:'polyline-measure-popupTooltip'});
 		                this._currentLine.circleMarkers.slice(-1)[0].setStyle (this.options.currentCircle);  // get last element of the array
 		                this._currentLine.tooltips.slice(-1)[0]._icon.classList.add('polyline-measure-tooltip-end');
 		                lineCoords.splice (-(arcpoints-1), arcpoints-1);
