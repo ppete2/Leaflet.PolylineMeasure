@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2019-10-04                            **
+**       Version: 2019-10-05                            **
 **                                                      **
 *********************************************************/
 
@@ -437,19 +437,19 @@
         },
 
         // turn off all Leaflet-own events of markers (popups, tooltips). Needed to allow creating points on top of markers
-        _blockEvents: function () {
-            if (!this._oldTargets) {
-                this._oldTargets = this._map._targets;
-                this._map._targets = {};
+        _saveNonpolylineEvents: function () {
+            this._nonpolylineTargets = this._map._targets;
+            if (typeof this._polylineTargets !== 'undefined') {
+                this._map._targets = this._polylineTargets;
+            } else {
+                this._map._targets ={};
             }
         },
 
-        // on disabling the measure add-on, enable the former Leaflet-own events again
-        _unblockEvents: function () {
-            if (this._oldTargets) {
-                this._map._targets = this._oldTargets;
-                delete this._oldTargets;
-            }
+        // on disabling the measure add-on, save Polyline-measure events and enable the former Leaflet-own events again
+        _savePolylineEvents: function () {
+                this._polylineTargets = this._map._targets;
+                this._map._targets = this._nonpolylineTargets;
         },
 
         /**
@@ -460,7 +460,7 @@
             this._measuring = !this._measuring;
             if (this._measuring) {   // if measuring is going to be switched on
                 this._mapdragging = false;
-                this._blockEvents();
+                this._saveNonpolylineEvents ();
                 this._measureControl.classList.add ('polyline-measure-controlOnBgColor');
                 this._measureControl.style.backgroundColor = this.options.backgroundColor;
                 this._measureControl.title = this.options.measureControlTitleOff;
@@ -477,7 +477,7 @@
                 L.DomEvent.on (document, 'keydown', this._onKeyDown, this);
                 this._resetPathVariables();
             } else {   // if measuring is going to be switched off
-                this._unblockEvents();
+                this._savePolylineEvents ();
                 this._measureControl.classList.remove ('polyline-measure-controlOnBgColor');
                 this._measureControl.style.backgroundColor = this._defaultControlBgColor;
                 this._measureControl.title = this.options.measureControlTitleOn;
