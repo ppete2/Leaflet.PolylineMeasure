@@ -1,7 +1,7 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2019-10-05                            **
+**       Version: 2019-11-01                            **
 **                                                      **
 *********************************************************/
 
@@ -581,10 +581,9 @@
                     this._map.on ('mousemove', this._mouseMove, this);
                     return
                 }
-                // if NOT drawing a line, ESC will directly switch of measuring
-                if (!this._currentLine) {
+                if (!this._currentLine) {    // if NOT drawing a line, ESC will directly switch of measuring
                     this._toggleMeasure();
-                } else {
+                } else {                     // if drawing a line, ESC will finish the current line
                     this._finishPolylinePath(e);
                 }
             }
@@ -870,7 +869,7 @@
                     if (this.circleCoords.length > 1) {
                         var arc = polylineState._polylineArc (lastCircleCoords, mouseCoords);
                         if (this.circleCoords.length > 2) {
-                            arc.shift();  // remove first coordinate og the arc, cause it is identical with last coordinate of previous arc
+                            arc.shift();  // remove first coordinate of the arc, cause it is identical with last coordinate of previous arc
                         }
                         this.polylinePath.setLatLngs (this.polylinePath.getLatLngs().concat(arc));
                         // following lines needed especially for Mobile Browsers where we just use mouseclicks. No mousemoves, no tempLine.
@@ -1120,6 +1119,7 @@
                     var lastCircleCoords = this._arrPolylines[lineNr].circleCoords[index - 1];
                     var mouseCoords = this._arrPolylines[lineNr].circleCoords[index];
                     totalDistance += distance;
+                    this._arrPolylines[lineNr].distance = totalDistance;
                     var prevTooltip = this._arrPolylines[lineNr].tooltips[index-1]
                     this._updateTooltip (item, prevTooltip, totalDistance, distance, lastCircleCoords, mouseCoords);
                 }
@@ -1134,7 +1134,7 @@
             this._rubberlinePath2.setLatLngs (this._polylineArc (mouseCoords, currentCircleCoords));
             this._tooltipNew.setLatLng (mouseCoords);
             var totalDistance = 0;
-            var distance = mouseCoords .distanceTo (this._arrPolylines[lineNr].circleCoords[0]);
+            var distance = mouseCoords.distanceTo (this._arrPolylines[lineNr].circleCoords[0]);
             var lastCircleCoords = mouseCoords;
             var currentCoords = this._arrPolylines[lineNr].circleCoords[0];
             totalDistance += distance;
@@ -1235,7 +1235,17 @@
                 var circleNr = this._circleNr;
 
                 // if there is a polyline with this number in finished ones
-                if(this._arrPolylines[lineNr]) {
+                if (this._arrPolylines[lineNr]) {
+                    if (this._arrPolylines[lineNr].circleMarkers.length === 2) {    // if there are just 2 remaining points, delete all these points and the remaining line, since there should not stay a lonely point the map 
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].circleMarkers [1]);
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].tooltips [1]);
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].circleMarkers [0]);
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].tooltips [0]);
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].arrowMarkers [0]);
+                      this._layerPaint.removeLayer (this._arrPolylines[lineNr].polylinePath);
+                      return;
+                    }
+                    
                     this._arrPolylines[lineNr].circleCoords.splice(circleNr,1);
                     this._arrPolylines[lineNr].circleMarkers [circleNr].removeFrom (this._layerPaint);
                     this._arrPolylines[lineNr].circleMarkers.splice(circleNr,1);
@@ -1305,6 +1315,7 @@
                             var lastCircleCoords = this._arrPolylines[lineNr].circleCoords[index - 1];
                             var mouseCoords = this._arrPolylines[lineNr].circleCoords[index];
                             totalDistance += distance;
+                            this._arrPolylines[lineNr].distance = totalDistance;
                             var prevTooltip = this._arrPolylines[lineNr].tooltips[index-1];
                             this._updateTooltip (item, prevTooltip, totalDistance, distance, lastCircleCoords, mouseCoords);
                         }
