@@ -13,14 +13,30 @@
             html, body, #map {height: 100%;}
         </style>
     </head>
-    
+
     <body>
         <div id="map"></div>
         <script>
             var layerOsm = new L.TileLayer ('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {subdomains:['server','services'], maxZoom:19, noWrap:false, attribution:'<a href="https://www.arcgis.com/">ArcGIS</a>' });
             var map = new L.Map ('map').addLayer (layerOsm).setView (new L.LatLng(48, 0), 4);
             L.control.scale ({maxWidth:240, metric:true, imperial:false, position: 'bottomleft'}).addTo (map);
-            L.control.polylineMeasure ({position:'topleft', unit:'metres', showBearings:true, clearMeasurementsOnStop: false, showClearControl: true, showUnitControl: true}).addTo (map);
-        </script>    
+            let polylineMeasure = L.control.polylineMeasure ({position:'topleft', unit:'metres', showBearings:true, clearMeasurementsOnStop: false, showClearControl: true, showUnitControl: true})
+            polylineMeasure.addTo (map);
+
+            function debugevent(e) { console.debug(e.type, e, polylineMeasure._currentLine) }
+
+            map.on('polylinemeasure:toggle', debugevent);
+            map.on('polylinemeasure:start', debugevent);
+            map.on('polylinemeasure:resume', debugevent);
+            map.on('polylinemeasure:finish', debugevent);
+            map.on('polylinemeasure:clear', debugevent);
+            map.on('polylinemeasure:add', debugevent);
+            map.on('polylinemeasure:insert', debugevent);
+            map.on('polylinemeasure:move', debugevent); // TODO
+            map.on('polylinemeasure:remove', debugevent); // TODO
+
+
+
+        </script>
     </body>
 </html>

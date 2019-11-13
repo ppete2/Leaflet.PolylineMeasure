@@ -29,6 +29,23 @@ Add 1 code line within your **Javascript-file** to add the plugin's control into
 ```js
 L.control.polylineMeasure(options).addTo(map);
 ```
+### Events
+It fire some events during the measure in order to allow more interactivity with the app.
+Subscribe to events with :
+
+```js
+map.on('polylinemeasure:toogle', e => { /* e.sttus */ });
+map.on('polylinemeasure:start', currentLine => {...});
+map.on('polylinemeasure:resume', currentLine => {...});
+map.on('polylinemeasure:finish', currentLine => {...});
+map.on('polylinemeasure:clear', e => {...});
+map.on('polylinemeasure:add', e => { /* e.latlng */ });
+map.on('polylinemeasure:insert', e => { /* e.latlng */ });
+map.on('polylinemeasure:move', e => { /* e.latlng ; e.sourceTarget._latlng */ });
+map.on('polylinemeasure:remove', e => { /* e.latlng ; e.sourceTarget._latlng */ });
+```
+
+* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) each event is printed in the console.
 
 ## Package manager install
 
