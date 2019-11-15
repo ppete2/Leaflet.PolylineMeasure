@@ -4,7 +4,7 @@
 * Leaflet Plugin to **measure distances** of simple lines as well as of complex polylines.
 * Measuring in **metric system** (metre, kilometre), in **imperial system** (foot, landmile), or in **nautical miles**.
 * Lines are drawn as realistic arcs. **Bearings** and **distances** are calculated considering [**Great-circle distance**](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
-* **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes. 
+* **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes.
 * To **finish** drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
 * To **continue** a line after it has been finished, hold the *Ctrl-Key* while clicking onto the first or last point of a line.
@@ -32,7 +32,7 @@ L.control.polylineMeasure(options).addTo(map);
 
 ## Package manager install
 
-It's possible to install and update this plugin using package managers like `npm`. These optional feature got added by other users. I'm not familiar with nor responsible to keep these optional package manager installs up-to-date. If you notice that such installs are outdated, feel free to provide a Pull request or contact one of the persons who once introduced those install variants, thanks. 
+It's possible to install and update this plugin using package managers like `npm`. These optional feature got added by other users. I'm not familiar with nor responsible to keep these optional package manager installs up-to-date. If you notice that such installs are outdated, feel free to provide a Pull request or contact one of the persons who once introduced those install variants, thanks.
 
 ## Default options
 
@@ -111,3 +111,21 @@ options = {
     },
 };
 ```
+
+## Events
+It fire some events during the measure in order to allow more interactivity with the app.
+Subscribe to events with :
+
+```js
+map.on('polylinemeasure:toogle', e => { /* e.sttus */ });
+map.on('polylinemeasure:start', currentLine => {...});
+map.on('polylinemeasure:resume', currentLine => {...});
+map.on('polylinemeasure:finish', currentLine => {...});
+map.on('polylinemeasure:clear', e => {...});
+map.on('polylinemeasure:add', e => { /* e.latlng */ });
+map.on('polylinemeasure:insert', e => { /* e.latlng */ });
+map.on('polylinemeasure:move', e => { /* e.latlng ; e.sourceTarget._latlng */ });
+map.on('polylinemeasure:remove', e => { /* e.latlng ; e.sourceTarget._latlng */ });
+```
+
+* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) each event is printed in the console.
