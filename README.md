@@ -121,6 +121,7 @@ map.on('polylinemeasure:toogle', e => { /* e.sttus */ });
 map.on('polylinemeasure:start', currentLine => {...});
 map.on('polylinemeasure:resume', currentLine => {...});
 map.on('polylinemeasure:finish', currentLine => {...});
+map.on('polylinemeasure:change', currentLine => {...});
 map.on('polylinemeasure:clear', e => {...});
 map.on('polylinemeasure:add', e => { /* e.latlng */ });
 map.on('polylinemeasure:insert', e => { /* e.latlng */ });

@@ -961,6 +961,7 @@
             if (!this._mapdragging) {
                 this._currentLine.addPoint (e.latlng);
                 this._map.fire('polylinemeasure:add', e);
+                this._map.fire('polylinemeasure:change', this._currentLine);
             } else {
                 this._mapdragging = false; // this manual setting to "false" needed, instead of a "moveend"-Event. Cause the mouseclick of a "moveend"-event immediately would create a point too the same time.
             }
@@ -1061,7 +1062,8 @@
                         this._updateTooltip (item, prevTooltip, totalDistance, distance, lastCircleCoords, mouseCoords);
                     }
                 }.bind(this));
-              this._map.fire('polylinemeasure:insert', e);
+                this._map.fire('polylinemeasure:insert', e);
+                this._map.fire('polylinemeasure:change', this._currentLine);
             }
         },
 
@@ -1078,6 +1080,7 @@
             this._map.on ('mousemove', this._mouseMove, this);
             this._map.off ('mouseup', this._dragCircleMouseup, this);
             this._map.fire('polylinemeasure:move', this._e1);
+            this._map.fire('polylinemeasure:change', this._currentLine);
         },
 
         _dragCircleMousemove: function (e2) {
@@ -1251,6 +1254,7 @@
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].arrowMarkers [0]);
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].polylinePath);
                       this._map.fire('polylinemeasure:remove', e1);
+                      this._map.fire('polylinemeasure:change', this._currentLine);
                       return;
                     }
                     
@@ -1415,6 +1419,7 @@
                 }
 
                 this._map.fire('polylinemeasure:remove', e1);
+                this._map.fire('polylinemeasure:change', this._currentLine);
                 return;
             }
             this._e1 = e1;
