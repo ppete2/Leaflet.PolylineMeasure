@@ -1063,7 +1063,7 @@
                     }
                 }.bind(this));
                 this._map.fire('polylinemeasure:insert', e);
-                this._map.fire('polylinemeasure:change', this._currentLine);
+                this._map.fire('polylinemeasure:change', this._arrPolylines[this._lineNr]);
             }
         },
 
@@ -1080,7 +1080,7 @@
             this._map.on ('mousemove', this._mouseMove, this);
             this._map.off ('mouseup', this._dragCircleMouseup, this);
             this._map.fire('polylinemeasure:move', this._e1);
-            this._map.fire('polylinemeasure:change', this._currentLine);
+            this._map.fire('polylinemeasure:change', this._arrPolylines[this._lineNr]);
         },
 
         _dragCircleMousemove: function (e2) {
@@ -1254,7 +1254,7 @@
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].arrowMarkers [0]);
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].polylinePath);
                       this._map.fire('polylinemeasure:remove', e1);
-                      this._map.fire('polylinemeasure:change', this._currentLine);
+                      this._map.fire('polylinemeasure:change', this._arrPolylines[this._lineNr]);
                       return;
                     }
                     
@@ -1419,7 +1419,7 @@
                 }
 
                 this._map.fire('polylinemeasure:remove', e1);
-                this._map.fire('polylinemeasure:change', this._currentLine);
+                this._map.fire('polylinemeasure:change', this._arrPolylines[this._lineNr]);
                 return;
             }
             this._e1 = e1;
