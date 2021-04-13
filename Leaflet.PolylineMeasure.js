@@ -47,6 +47,27 @@
              */
             unit: 'metres',
             /**
+             * Secondary Unit to display: 'metres', 'landmiles', 'nauticalmiles'
+             * @type {String}
+             * @default
+             */
+            secondaryUnit: null,
+             /**
+             * Whether to show point difference or not
+             * @type {boolean}
+             */
+            showDifference : true,
+             /**
+             * Set Number of decimal places
+             * @type {Number}
+             */
+            decimalPlaces : 2,
+            /**
+             * Whether to show point tooltips, Last will always be shown
+             * @type {boolean}
+             */
+             showTooltip : true,
+            /**
              * Clear the measurements on stop
              * @type {Boolean}
              * @default
@@ -566,7 +587,9 @@
                     if (this.options.showBearings === true) {
                         text = this.options.bearingTextIn+':---°<br>'+this.options.bearingTextOut+':---°';
                     }
+                    if(this.options.showDifference) {
                     text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                    }
                     text = text + '<div class="polyline-measure-tooltip-total">' + '0</div>';
                     this._arrPolylines[lineNr].tooltips [0]._icon.innerHTML = text;
                     this._arrPolylines[lineNr].tooltips.map (function (item, index) {
@@ -602,32 +625,32 @@
             if (this.options.unit === 'nauticalmiles') {
                 unit = this.options.unitControlLabel.nauticalmiles;
                 if (dist >= 185200) {
-                    dist = (dist/1852).toFixed(0);
+                    dist = (dist/1852).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 18520) {
-                    dist = (dist/1852).toFixed(1);
+                    dist = (dist/1852).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 1852) {
-                    dist = (dist/1852).toFixed(2);
+                    dist = (dist/1852).toFixed(this.options.decimalPlaces);
                 } else  {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist/1852).toFixed(3);
+                        dist = (dist/1852).toFixed(this.options.decimalPlaces);
                     } else {
-                        dist = (dist/0.3048).toFixed(0);
+                        dist = (dist/0.3048).toFixed(this.options.decimalPlaces);
                         unit = this.options.unitControlLabel.feet;
                     }
                 }
             } else if (this.options.unit === 'landmiles') {
                 unit = this.options.unitControlLabel.landmiles;
                 if (dist >= 160934.4) {
-                    dist = (dist/1609.344).toFixed(0);
+                    dist = (dist/1609.344).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 16093.44) {
-                    dist = (dist/1609.344).toFixed(1);
+                    dist = (dist/1609.344).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 1609.344) {
-                    dist = (dist/1609.344).toFixed(2);
+                    dist = (dist/1609.344).toFixed(this.options.decimalPlaces);
                 } else {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist/1609.344).toFixed(3);
+                        dist = (dist/1609.344).toFixed(this.options.decimalPlaces);
                     } else {
-                        dist = (dist/0.3048).toFixed(0);
+                        dist = (dist/0.3048).toFixed(this.options.decimalPlaces);
                         unit = this.options.unitControlLabel.feet;
                     }
                 }
@@ -635,16 +658,16 @@
             else {
                 unit = this.options.unitControlLabel.kilometres;
                 if (dist >= 100000) {
-                    dist = (dist/1000).toFixed(0);
+                    dist = (dist/1000).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 10000) {
-                    dist = (dist/1000).toFixed(1);
+                    dist = (dist/1000).toFixed(this.options.decimalPlaces);
                 } else if (dist >= 1000) {
-                    dist = (dist/1000).toFixed(2);
+                    dist = (dist/1000).toFixed(this.options.decimalPlaces);
                 } else {
                     if (this.options.distanceShowSameUnit) {
-                        dist = (dist/1000).toFixed(3);
+                        dist = (dist/1000).toFixed(this.options.decimalPlaces);
                     } else {
-                        dist = (dist).toFixed(0);
+                        dist = (dist).toFixed(this.options.decimalPlaces);
                         unit = this.options.unitControlLabel.metres;
                     }
                 }
@@ -740,11 +763,30 @@
             var textCurrent = '';
             if (differenceRound.value > 0 ) {
                 if (this.options.showBearings === true) {
-                     textCurrent = this.options.bearingTextIn + ': ' + angleIn + '°<br>'+this.options.bearingTextOut+':---°';
+                    textCurrent = this.options.bearingTextIn + ': ' + angleIn + '°<br>'+this.options.bearingTextOut+':---°';
                 }
-                textCurrent += '<div class="polyline-measure-tooltip-difference">+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + '</div>';
+                if(this.options.showDifference) {
+                    textCurrent += '<div class="polyline-measure-tooltip-difference">+' + differenceRound.value + '&nbsp;' +  differenceRound.unit + '</div>';
+                }
             }
+
+            totalRound = this._getDistance (total);
             textCurrent += '<div class="polyline-measure-tooltip-total">' + totalRound.value + '&nbsp;' +  totalRound.unit + '</div>';
+            
+            console.log(this.options.unit, this.options.secondaryUnit);
+
+            if(this.options.secondaryUnit !== null){
+                var tempUnit = this.options.unit;
+                this.options.unit = this.options.secondaryUnit;
+                var secondaryTotalRound = this._getDistance(total);
+                this.options.unit = tempUnit;
+                textCurrent += '<div class="polyline-measure-tooltip-total">' + secondaryTotalRound.value + '&nbsp;' +  secondaryTotalRound.unit + '</div>';
+            }
+
+            if(!this.options.showTooltip){
+                currentTooltip._icon.classList.add('polyline-measure-tooltip--hidden');
+            }
+
             currentTooltip._icon.innerHTML = textCurrent;
             if ((this.options.showBearings === true) && (prevTooltip)) {
                 var textPrev = prevTooltip._icon.innerHTML;
@@ -891,6 +933,9 @@
                     // add new tooltip to update on mousemove
                     var tooltipNew = this.getNewToolTip(mouseCoords);
                     tooltipNew.addTo(polylineState._layerPaint);
+
+                   
+
                     this.tooltips.push (tooltipNew);
                     this.handleMarkers (mouseCoords);
                 },
@@ -932,7 +977,9 @@
             if (this.options.showBearings === true) {
                 text = this.options.bearingTextIn+':---°<br>'+this.options.bearingTextOut+':---°';
             }
-            text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+            if(this.options.showDifference) {
+                text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+            }
             text = text + '<div class="polyline-measure-tooltip-total">' + '0</div>';
             firstTooltip._icon.innerHTML = text;
             this._currentLine.tooltips.push (firstTooltip);
@@ -1228,7 +1275,9 @@
                     if (this.options.showBearings === true) {
                         text = text + this.options.bearingTextIn+':---°<br>'+this.options.bearingTextOut+':---°';
                     }
-                    text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                    if(this.options.showDifference) {
+                        text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                    }
                     text = text + '<div class="polyline-measure-tooltip-total">' + '0</div>';
                     this._tooltipNew._icon.innerHTML = text;
                     this._map.off ('mousemove', this._mouseMove, this);
@@ -1294,7 +1343,9 @@
                         if (this.options.showBearings === true) {
                             text = this.options.bearingTextIn+':---°<br>'+this.options.bearingTextOut+':---°';
                         }
-                        text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                        if(this.options.showDifference) {
+                            text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                        }
                         text = text + '<div class="polyline-measure-tooltip-total">' + '0</div>';
                         this._arrPolylines[lineNr].tooltips [0]._icon.innerHTML = text;
                         // if last Circle is being removed
@@ -1367,7 +1418,9 @@
 		                if (this.options.showBearings === true) {
 			                text = this.options.bearingTextIn+':---°<br>'+this.options.bearingTextOut+':---°';
 		                }
-		                text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                        if(this.options.showDifference) {
+		                    text = text + '<div class="polyline-measure-tooltip-difference">+' + '0</div>';
+                        }
 		                text = text + '<div class="polyline-measure-tooltip-total">' + '0</div>';
 		                this._currentLine.tooltips [0]._icon.innerHTML = text;
 		                // if last Circle is being removed
