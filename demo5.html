@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demo 5 of Leaflet.PolylineMeasure</title>
+        <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+        <link rel="stylesheet" href="Leaflet.PolylineMeasure.css" />
+        <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+        <script src="Leaflet.PolylineMeasure.js"></script>
+        <style>
+            body {padding: 0; margin: 0;}
+            html, body, #map {height: 100%;}
+        </style>
+    </head>
+
+    <body>
+        <div id="map"></div>
+        <script>
+            var layerOsm = new L.TileLayer ('https://{s}.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {subdomains:['server','services'], maxZoom:19, noWrap:false, attribution:'<a href="https://www.arcgis.com/">ArcGIS</a>' });
+            var map = new L.Map ('map').addLayer (layerOsm).setView (new L.LatLng(20.27, -157), 7);
+            L.control.scale ({maxWidth:240, metric:true, imperial:false, position: 'bottomleft'}).addTo (map);
+            let polylineMeasure = L.control.polylineMeasure ({position:'topleft', unit:'metres', showBearings:true, clearMeasurementsOnStop: false, showClearControl: true, showUnitControl: true})
+            polylineMeasure.addTo (map);
+
+            // Some constant polyline coords:
+            const line1coords = [
+                { lat: 22.156883186860703, lng: -158.95019531250003 },
+                { lat: 22.01436065310322, lng: -157.33520507812503 },
+                { lat: 21.391704731036587, lng: -156.17065429687503 },
+                { lat: 20.64306554672647, lng: -155.56640625000003 },
+                { lat: 19.342244996771804, lng: -155.33569335937503 }
+            ];
+            const line2coords = [
+                { lat: 19.880391767822505, lng: -159.67529296875003 },
+                { lat: 17.90556881196468, lng: -156.39038085937503 }
+            ];
+
+            polylineMeasure.seed([line1coords, line2coords])
+
+        </script>
+    </body>
+</html>
