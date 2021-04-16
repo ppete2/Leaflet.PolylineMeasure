@@ -1433,6 +1433,33 @@
                 this._circleStartingLng = e1.target._latlng.lng;
                 this._map.on ('mousemove', this._dragCircleMousemove, this);
             }
+        },
+
+        /**
+         * Takes in a dataset and programatically draws the polylines and measurements to the map
+         * Dataset must be in the form of an array of LatLng[], which allows for multiple discontinuous
+         * polylines to be seeded
+         * @param {L.LatLng[][]} polylinesArray | Array of array of points
+         */
+        seed: function(polylinesArray){
+            // Hijack user actions to manually draw polylines
+            polylinesArray.forEach((polyline) => {
+                // toggle draw state on:
+                this._toggleMeasure();
+                // start line with first point of each polyline
+                this._startLine(polyline[0]);
+                // add subsequent points:
+                polyline.forEach((point, ind) => {
+                    const latLng = L.latLng(point);
+                    this._mouseMove({ latLng });
+                    this._currentLine.addPoint(latLng);
+                    // on last point,
+                    if (ind === polyline.length - 1) {
+                        this._finishPolylinePath();
+                        this._toggleMeasure();
+                    }
+                });
+            });
         }
     });
 

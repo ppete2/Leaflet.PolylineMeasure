@@ -13,7 +13,12 @@
 * It is an evolution of jtreml's Plugin [leaflet.measure](https://github.com/jtreml/leaflet.measure) since the original plugin hasn't been bugfixed for years. I modified it to work again with **Leaflet v1.0 and newer** (still runs with Leaflet v0.7) and added functional and optical improvements.
 
 ## Demos
-* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button) or [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button) or [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button) [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
+* Please take a look at these demos:
+- [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button)
+- [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button)
+- [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button)
+- [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
+- [**Demo 5**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo5.html) (programatically providing polyline points)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
@@ -129,4 +134,25 @@ map.on('polylinemeasure:move', e => { /* e.latlng ; e.sourceTarget._latlng */ })
 map.on('polylinemeasure:remove', e => { /* e.latlng ; e.sourceTarget._latlng */ });
 ```
 
-* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) each event is printed in the console.
+## Seeding Data
+You can programatically draw measured polylines using the `.seed` method.  It takes an array of arrays of `L.LatLng`, which enables drawing multiple, discontinuous polylines:
+
+```js
+let polylineMeasure = L.control.polylineMeasure(options);
+polylineMeasure.addTo (map);
+
+const line1coords = [
+    { lat: 22.156883186860703, lng: -158.95019531250003 },
+    { lat: 22.01436065310322, lng: -157.33520507812503 },
+    { lat: 21.391704731036587, lng: -156.17065429687503 },
+    { lat: 20.64306554672647, lng: -155.56640625000003 }
+];
+const line2coords = [
+    { lat: 19.880391767822505, lng: -159.67529296875003 },
+    { lat: 17.90556881196468, lng: -156.39038085937503 }
+];
+
+polylineMeasure.seed([line1coords, line2coords])
+```
+
+* Please take a look at [**Demo 5**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo5.html), where multiple polylines are drawn and measured programatically.
