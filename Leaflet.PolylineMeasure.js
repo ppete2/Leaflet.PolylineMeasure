@@ -532,17 +532,23 @@
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.metres;
                 this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.metres  + "]";
             }
-            this._arrPolylines.map (function(line) {
-                var totalDistance = 0;
-                line.circleCoords.map (function(point, point_index) {
-                    if (point_index >= 1) {
-                        var distance = line.circleCoords [point_index - 1].distanceTo (line.circleCoords [point_index]);
-                        totalDistance += distance;
-                        this._updateTooltip (line.tooltips [point_index], line.tooltips [point_index - 1], totalDistance, distance, line.circleCoords [point_index - 1], line.circleCoords [point_index]);
-                    }
-                }.bind(this));
-            }.bind(this));
+
+			if (this._currentLine) {
+				this._computeDistance(this._currentLine);
+			}
+            this._arrPolylines.map (this._computeDistance.bind(this));
         },
+
+		_computeDistance: function(line) {
+			var totalDistance = 0;
+			line.circleCoords.map (function(point, point_index) {
+				if (point_index >= 1) {
+					var distance = line.circleCoords [point_index - 1].distanceTo (line.circleCoords [point_index]);
+					totalDistance += distance;
+					this._updateTooltip (line.tooltips [point_index], line.tooltips [point_index - 1], totalDistance, distance, line.circleCoords [point_index - 1], line.circleCoords [point_index]);
+				}
+			}.bind(this));
+		},
 
         /**
          * Event to fire when a keyboard key is depressed.
@@ -1246,7 +1252,7 @@
 
                 // if there is a polyline with this number in finished ones
                 if (this._arrPolylines[lineNr]) {
-                    if (this._arrPolylines[lineNr].circleMarkers.length === 2) {    // if there are just 2 remaining points, delete all these points and the remaining line, since there should not stay a lonely point the map 
+                    if (this._arrPolylines[lineNr].circleMarkers.length === 2) {    // if there are just 2 remaining points, delete all these points and the remaining line, since there should not stay a lonely point the map
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].circleMarkers [1]);
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].tooltips [1]);
                       this._layerPaint.removeLayer (this._arrPolylines[lineNr].circleMarkers [0]);
@@ -1257,7 +1263,7 @@
                       this._map.fire('polylinemeasure:change', this._arrPolylines[this._lineNr]);
                       return;
                     }
-                    
+
                     this._arrPolylines[lineNr].circleCoords.splice(circleNr,1);
                     this._arrPolylines[lineNr].circleMarkers [circleNr].removeFrom (this._layerPaint);
                     this._arrPolylines[lineNr].circleMarkers.splice(circleNr,1);
