@@ -165,6 +165,13 @@
                nauticalmiles: 'nm'
             },
             /**
+             * Classes to apply to the Unit control
+             * @type {Array}
+             * @default
+             */
+            unitControlClasses: [],
+
+            /**
              * Styling settings for the temporary dashed rubberline
              * @type {Object}
              */
@@ -420,7 +427,7 @@
                     var label = this.options.unitControlLabel.nauticalmiles;
                     var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.nauticalmiles  + "]";
                 }
-                var classes = [];
+                var classes = this.options.unitControlClasses;
                 this._unitControl = this._createControl (label, title, classes, this._container, this._changeUnit, this);
                 this._unitControl.setAttribute ('id', 'unitControlId');
             }
