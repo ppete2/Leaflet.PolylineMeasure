@@ -37,7 +37,7 @@ L.control.polylineMeasure(options).addTo(map);
 
 ## Package manager install
 
-It's possible to install and update this plugin using package managers like `npm`. These optional feature got added by other users. I'm not familiar with nor responsible to keep these optional package manager installs up-to-date. If you notice that such installs are outdated, feel free to provide a Pull request or contact one of the persons who once introduced those install variants, thanks.
+It's possible to install and update the Plugin using package managers like `npm`. This feature has been added by other users. I'm not familiar nor responsible to keep these package manager installs up-to-date. If you notice such installs being outdated, feel free to provide a Pull request or contact one of the persons who introduced package manager installs, thanks.
 
 ## Default options
 
