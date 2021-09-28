@@ -55,29 +55,30 @@ options = {
     tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
     tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
                                     // language dependend labels for point's tooltips
-    measureControlTitleOn: 'Turn on PolylineMeasure',   // Title for the control going to be switched on
-    measureControlTitleOff: 'Turn off PolylineMeasure', // Title for the control going to be switched off
-    measureControlLabel: '&#8614;', // Label of the Measure control (maybe a unicode symbol)
-    measureControlClasses: [],      // Classes to apply to the Measure control
+    measureControlTitleOn: 'Turn on PolylineMeasure',   // Title for the Measure Control going to be switched on
+    measureControlTitleOff: 'Turn off PolylineMeasure', // Title for the Measure Control going to be switched off
+    measureControlLabel: '&#8614;', // Label of the Measure Control (Unicode symbols are possible)
+    measureControlClasses: [],      // Classes to apply to the Measure Control
     showClearControl: false,        // Show a control to clear all the measurements
-    clearControlTitle: 'Clear Measurements', // Title text to show on the clear measurements control button
-    clearControlLabel: '&times',    // Label of the Clear control (maybe a unicode symbol)
-    clearControlClasses: [],        // Classes to apply to clear control button
+    clearControlTitle: 'Clear Measurements', // Title text to show on the Clear Control
+    clearControlLabel: '&times',    // Label of the Clear Control (Unicode symbols are possible)
+    clearControlClasses: [],        // Classes to apply to Clear Control
     showUnitControl: false,         // Show a control to change the units of measurements
     distanceShowSameUnit: false,    // Keep same unit in tooltips in case of distance less then 1 km/mi/nm
-    unitControlTitle: {             // Title texts to show on the Unit Control button
+    unitControlTitle: {             // Title texts to show on the Unit Control
         text: 'Change Units',
         metres: 'metres',
         landmiles: 'land miles',
         nauticalmiles: 'nautical miles'
     },
-    unitControlLabel: {             // Unit symbols to show in the Unit Control button and measurement labels
+    unitControlLabel: {             // Unit symbols to show in the Unit Control and measurement labels
         metres: 'm',
         kilometres: 'km',
         feet: 'ft',
         landmiles: 'mi',
         nauticalmiles: 'nm'
     },
+    unitControlClasses: [],         // Classes to apply to the Unit Control
     tempLine: {                     // Styling settings for the temporary dashed line
         color: '#00f',              // Dashed line color
         weight: 2                   // Dashed line weight
