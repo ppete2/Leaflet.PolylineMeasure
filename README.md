@@ -14,7 +14,7 @@
 
 ## Demos
 * Please take a look at these demos:
-- [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (metre units, bearings, with Clear-button and Units-button)
+- [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (kilometre units, bearings, with Clear-button and Units-button)
 - [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button)
 - [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button)
 - [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
@@ -44,7 +44,7 @@ It's possible to install and update this plugin using package managers like `npm
 ```js
 options = {
     position: 'topleft',            // Position to show the control. Values: 'topright', 'topleft', 'bottomright', 'bottomleft'
-    unit: 'metres',                 // Show imperial or metric distances. Values: 'metres', 'landmiles', 'nauticalmiles'
+    unit: 'kilometres',                 // Show imperial or metric distances. Values: 'kilometres', 'landmiles', 'nauticalmiles'
     clearMeasurementsOnStop: true,  // Clear all the measurements when the control is unselected
     showBearings: false,            // Whether bearings are displayed within the tooltips
     bearingTextIn: 'In'             // language dependend label for inbound bearings
@@ -67,7 +67,7 @@ options = {
     distanceShowSameUnit: false,    // Keep same unit in tooltips in case of distance less then 1 km/mi/nm
     unitControlTitle: {             // Title texts to show on the Unit Control
         text: 'Change Units',
-        metres: 'metres',
+        kilometres: 'kilometres',
         landmiles: 'land miles',
         nauticalmiles: 'nautical miles'
     },

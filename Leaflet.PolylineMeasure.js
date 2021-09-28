@@ -41,11 +41,11 @@
              */
             position: 'topleft',
             /**
-             * Which units the distances are displayed in. Possible values are: 'metres', 'landmiles', 'nauticalmiles'
+             * Which units the distances are displayed in. Possible values are: 'kilometres', 'landmiles', 'nauticalmiles'
              * @type {String}
              * @default
              */
-            unit: 'metres',
+            unit: 'kilometres',
             /**
              * Clear the measurements on stop
              * @type {Boolean}
@@ -148,7 +148,7 @@
              */
             unitControlTitle: {
                text: 'Change Units',
-               metres: 'metres',
+               kilometres: 'kilometres',
                landmiles: 'land miles',
                nauticalmiles: 'nautical miles'
             },
@@ -417,9 +417,9 @@
                 this._clearMeasureControl.classList.add('polyline-measure-clearControl')
             }
             if (this.options.showUnitControl) {
-                if (this.options.unit == "metres") {
-                    var label = this.options.unitControlLabel.metres;
-                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.metres  + "]";
+                if (this.options.unit == "kilometres") {
+                    var label = this.options.unitControlLabel.kilometres;
+                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.kilometres  + "]";
                 }  else if  (this.options.unit == "landmiles") {
                     var label = this.options.unitControlLabel.landmiles;
                     var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.landmiles  + "]";
@@ -526,7 +526,7 @@
         },
 
         _changeUnit: function() {
-            if (this.options.unit == "metres") {
+            if (this.options.unit == "kilometres") {
                 this.options.unit = "landmiles";
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.landmiles;
                 this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.landmiles  + "]";
@@ -535,9 +535,9 @@
                 document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.nauticalmiles;
                 this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.nauticalmiles  + "]";
             } else {
-                this.options.unit = "metres";
-                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.metres;
-                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.metres  + "]";
+                this.options.unit = "kilometres";
+                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.kilometres;
+                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.kilometres  + "]";
             }
 
             if (this._currentLine) {
