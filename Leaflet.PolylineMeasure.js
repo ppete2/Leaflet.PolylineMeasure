@@ -136,11 +136,11 @@
              */
             showUnitControl: false,
             /**
-             * Keep same unit in tooltips in case of distance less then 1 km/mi/nm
+             * Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
              * @type {Boolean}
              * @default
              */
-            distanceShowSameUnit: false,
+            useSubunits: true,
             /**
              * Title texts to show on the Unit Control button
              * @type {Object}
@@ -621,12 +621,7 @@
                 } else if (dist >= 1852) {
                     dist = (dist/1852).toFixed(2);
                 } else  {
-                    if (this.options.distanceShowSameUnit) {
-                        dist = (dist/1852).toFixed(3);
-                    } else {
-                        dist = (dist/0.3048).toFixed(0);
-                        unit = this.options.unitControlLabel.feet;
-                    }
+                    dist = (dist/1852).toFixed(3);   // there's no subunit of Nautical Miles for horizontal length measurements. "Cable length" (1/10th of 1 nm) is rarely used 
                 }
             } else if (this.options.unit === 'landmiles') {
                 unit = this.options.unitControlLabel.landmiles;
@@ -637,7 +632,7 @@
                 } else if (dist >= 1609.344) {
                     dist = (dist/1609.344).toFixed(2);
                 } else {
-                    if (this.options.distanceShowSameUnit) {
+                    if (!this.options.useSubunits) {
                         dist = (dist/1609.344).toFixed(3);
                     } else {
                         dist = (dist/0.3048).toFixed(0);
@@ -654,7 +649,7 @@
                 } else if (dist >= 1000) {
                     dist = (dist/1000).toFixed(2);
                 } else {
-                    if (this.options.distanceShowSameUnit) {
+                    if (!this.options.useSubunits) {
                         dist = (dist/1000).toFixed(3);
                     } else {
                         dist = (dist).toFixed(0);

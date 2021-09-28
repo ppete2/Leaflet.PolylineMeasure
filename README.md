@@ -2,7 +2,7 @@
 
 # Leaflet.PolylineMeasure
 * Leaflet Plugin to **measure distances** of simple lines as well as of complex polylines.
-* Measuring in **metric system** (metre, kilometre), in **imperial system** (foot, landmile), or in **nautical miles**.
+* Measuring in **metric system** (metres, kilometres), in **imperial system** (feett, landmiles), or in **nautical miles**.
 * Lines are drawn as realistic arcs. **Bearings** and **distances** are calculated considering [**Great-circle distance**](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
 * **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes.
 * To **finish** drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
@@ -14,11 +14,11 @@
 
 ## Demos
 * Please take a look at these demos:
-- [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (kilometre units, bearings, with Clear-button and Units-button)
-- [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit-button)
-- [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nauticalmile units, bearings, without Unit-button and Clear-button)
+- [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html) (kilometre units, bearings, with Clear Control and Unit Control buttons)
+- [**Demo 2**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo2.html)  (landmile units, without bearings, without Unit Control button)
+- [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nautical mile units, bearings, without Unit Control and Clear Control buttons)
 - [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
-- [**Demo 5**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo5.html) (programatically providing polyline points)
+- [**Demo 5**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo5.html) (programatically providing polyline points - "Seeding Data")
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
@@ -44,7 +44,7 @@ It's possible to install and update this plugin using package managers like `npm
 ```js
 options = {
     position: 'topleft',            // Position to show the control. Values: 'topright', 'topleft', 'bottomright', 'bottomleft'
-    unit: 'kilometres',                 // Show imperial or metric distances. Values: 'kilometres', 'landmiles', 'nauticalmiles'
+    unit: 'kilometres',             // Show imperial or metric distances. Values: 'kilometres', 'landmiles', 'nauticalmiles'
     clearMeasurementsOnStop: true,  // Clear all the measurements when the control is unselected
     showBearings: false,            // Whether bearings are displayed within the tooltips
     bearingTextIn: 'In'             // language dependend label for inbound bearings
@@ -64,7 +64,7 @@ options = {
     clearControlLabel: '&times',    // Label of the Clear Control (Unicode symbols are possible)
     clearControlClasses: [],        // Classes to apply to Clear Control
     showUnitControl: false,         // Show a control to change the units of measurements
-    distanceShowSameUnit: false,    // Keep same unit in tooltips in case of distance less then 1 km/mi/nm
+    useSubunits: true,              // Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
     unitControlTitle: {             // Title texts to show on the Unit Control
         text: 'Change Units',
         kilometres: 'kilometres',
@@ -119,8 +119,8 @@ options = {
 ```
 
 ## Events
-It fire some events during the measure in order to allow more interactivity with the app.
-Subscribe to events with :
+Several Events are fired during the use of the Plugin in order to offer interactivity outside the Plugin.
+Subscribe to events with:
 
 ```js
 map.on('polylinemeasure:toogle', e => { /* e.sttus */ });
@@ -134,6 +134,7 @@ map.on('polylinemeasure:insert', e => { /* e.latlng */ });
 map.on('polylinemeasure:move', e => { /* e.latlng ; e.sourceTarget._latlng */ });
 map.on('polylinemeasure:remove', e => { /* e.latlng ; e.sourceTarget._latlng */ });
 ```
+* Please take a look at [**Demo 1**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo1.html), where those events get listed in the JS console of your browser
 
 ## Seeding Data
 You can programatically draw measured polylines using the `.seed` method.  It takes an array of arrays of `L.LatLng`, which enables drawing multiple, discontinuous polylines:
