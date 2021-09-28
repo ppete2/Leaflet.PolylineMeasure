@@ -64,7 +64,7 @@ options = {
     clearControlLabel: '&times',    // Label of the Clear Control (Unicode symbols are possible)
     clearControlClasses: [],        // Classes to apply to Clear Control
     showUnitControl: false,         // Show a control to change the units of measurements
-    useSubunits: true,              // Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
+    useSubunits: true,              // Use subunits (metres/feet) in tooltips if distances are less than 1 kilometre/landmile
     unitControlTitle: {             // Title texts to show on the Unit Control
         text: 'Change Units',
         kilometres: 'kilometres',
