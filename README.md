@@ -47,7 +47,7 @@ options = {
     unit: 'kilometres',             // Show imperial or metric distances. Values: 'kilometres', 'landmiles', 'nauticalmiles'
     clearMeasurementsOnStop: true,  // Clear all the measurements when the control is unselected
     showBearings: false,            // Whether bearings are displayed within the tooltips
-    bearingTextIn: 'In'             // language dependend label for inbound bearings
+    bearingTextIn: 'In',            // language dependend label for inbound bearings
     bearingTextOut: 'Out',          // language dependend label for outbound bearings
     tooltipTextFinish: 'Click to <b>finish line</b><br>',
     tooltipTextDelete: 'Press SHIFT-key and click to <b>delete point</b>',
