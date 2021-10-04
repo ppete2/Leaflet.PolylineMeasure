@@ -534,7 +534,7 @@
 
             // Update the unit of measurement.
             this.options.unit = this.options.unitControlUnits[indexNextUnit];
-            document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel[this.options.unit];
+            this._unitControl.innerHTML = this.options.unitControlLabel[this.options.unit];
             this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle[this.options.unit]  + "]";
 
             if (this._currentLine) {
