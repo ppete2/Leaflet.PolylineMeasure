@@ -41,7 +41,7 @@
              */
             position: 'topleft',
             /**
-             * Which units the distances are displayed in. Possible values are: 'kilometres', 'landmiles', 'nauticalmiles'
+             * Default unit the distances are displayed in. Possible values are: 'kilometres', 'landmiles', 'nauticalmiles'
              * @type {String}
              * @default
              */
@@ -135,6 +135,13 @@
              * @default
              */
             showUnitControl: false,
+            /**
+             * The measurement units that can be cycled through by using the unitControl.
+             * unitControlUnits.length > 1 should hold.
+             * @type {Array}
+             * @default
+             */
+            unitControlUnits: ["kilometres" , "landmiles", "nauticalmiles"],
             /**
              * Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
              * @type {Boolean}
@@ -416,17 +423,12 @@
                 this._clearMeasureControl = this._createControl (label, title, classes, this._container, this._clearAllMeasurements, this);
                 this._clearMeasureControl.classList.add('polyline-measure-clearControl')
             }
-            if (this.options.showUnitControl) {
-                if (this.options.unit == "kilometres") {
-                    var label = this.options.unitControlLabel.kilometres;
-                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.kilometres  + "]";
-                }  else if  (this.options.unit == "landmiles") {
-                    var label = this.options.unitControlLabel.landmiles;
-                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.landmiles  + "]";
-                } else {
-                    var label = this.options.unitControlLabel.nauticalmiles;
-                    var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle.nauticalmiles  + "]";
-                }
+
+            // There is no point in using the unitControl if there are no units to choose from.
+            if (this.options.showUnitControl && this.options.unitControlUnits.length > 1) {
+                var label = this.options.unitControlLabel[this.options.unit];
+                var title = this.options.unitControlTitle.text + " [" + this.options.unitControlTitle[this.options.unit]  + "]";
+
                 var classes = this.options.unitControlClasses;
                 this._unitControl = this._createControl (label, title, classes, this._container, this._changeUnit, this);
                 this._unitControl.setAttribute ('id', 'unitControlId');
@@ -526,19 +528,14 @@
         },
 
         _changeUnit: function() {
-            if (this.options.unit == "kilometres") {
-                this.options.unit = "landmiles";
-                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.landmiles;
-                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.landmiles  + "]";
-            } else if (this.options.unit == "landmiles") {
-                this.options.unit = "nauticalmiles";
-                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.nauticalmiles;
-                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.nauticalmiles  + "]";
-            } else {
-                this.options.unit = "kilometres";
-                document.getElementById("unitControlId").innerHTML = this.options.unitControlLabel.kilometres;
-                this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle.kilometres  + "]";
-            }
+            // Retrieve the index of the next available unit of measurement.
+            let indexCurrUnit = this.options.unitControlUnits.indexOf(this.options.unit);
+            let indexNextUnit = (indexCurrUnit+1)%this.options.unitControlUnits.length;
+
+            // Update the unit of measurement.
+            this.options.unit = this.options.unitControlUnits[indexNextUnit];
+            this._unitControl.innerHTML = this.options.unitControlLabel[this.options.unit];
+            this._unitControl.title = this.options.unitControlTitle.text +" [" + this.options.unitControlTitle[this.options.unit]  + "]";
 
             if (this._currentLine) {
                 this._computeDistance(this._currentLine);
@@ -621,7 +618,7 @@
                 } else if (dist >= 1852) {
                     dist = (dist/1852).toFixed(2);
                 } else  {
-                    dist = (dist/1852).toFixed(3);   // there's no subunit of Nautical Miles for horizontal length measurements. "Cable length" (1/10th of 1 nm) is rarely used 
+                    dist = (dist/1852).toFixed(3);   // there's no subunit of Nautical Miles for horizontal length measurements. "Cable length" (1/10th of 1 nm) is rarely used
                 }
             } else if (this.options.unit === 'landmiles') {
                 unit = this.options.unitControlLabel.landmiles;
