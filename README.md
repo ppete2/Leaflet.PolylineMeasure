@@ -44,8 +44,9 @@ It's possible to install and update the Plugin using package managers like `npm`
 ```js
 options = {
     position: 'topleft',            // Position to show the control. Values: 'topright', 'topleft', 'bottomright', 'bottomleft'
-    unit: 'kilometres',             // Show imperial or metric distances. Values: 'kilometres', 'landmiles', 'nauticalmiles'
-    clearMeasurementsOnStop: true,  // Clear all the measurements when the control is unselected
+    unit: 'kilometres',             // Default unit the distances are displayed in. Values: 'kilometres', 'landmiles', 'nauticalmiles'
+    useSubunits: true,              // Use subunits (metres/feet) in tooltips if distances are less than 1 kilometre/landmile
+    clearMeasurementsOnStop: true,  // Clear all measurements when Measure Control is switched off
     showBearings: false,            // Whether bearings are displayed within the tooltips
     bearingTextIn: 'In',            // language dependend label for inbound bearings
     bearingTextOut: 'Out',          // language dependend label for outbound bearings
@@ -64,7 +65,8 @@ options = {
     clearControlLabel: '&times',    // Label of the Clear Control (Unicode symbols are possible)
     clearControlClasses: [],        // Classes to apply to Clear Control
     showUnitControl: false,         // Show a control to change the units of measurements
-    useSubunits: true,              // Use subunits (metres/feet) in tooltips if distances are less than 1 kilometre/landmile
+    unitControlUnits: ["kilometres", "landmiles", "nauticalmiles"],
+                                    // measurement units being cycled through by using the Unit Control
     unitControlTitle: {             // Title texts to show on the Unit Control
         text: 'Change Units',
         kilometres: 'kilometres',

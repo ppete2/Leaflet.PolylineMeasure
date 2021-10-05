@@ -1,7 +1,8 @@
 /*********************************************************
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
-**       Version: 2021-09-28                            **
+**       File "Leaflet.PolylineMeasure.js"              **
+**       Date: 2021-10-05                               **
 **                                                      **
 *********************************************************/
 
@@ -47,7 +48,13 @@
              */
             unit: 'kilometres',
             /**
-             * Clear the measurements on stop
+             * Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
+             * @type {Boolean}
+             * @default
+             */
+            useSubunits: true,            
+            /**
+             * Clear all measurements when Measure Control is switched off
              * @type {Boolean}
              * @default
              */
@@ -136,18 +143,11 @@
              */
             showUnitControl: false,
             /**
-             * The measurement units that can be cycled through by using the unitControl.
-             * unitControlUnits.length > 1 should hold.
+             * The measurement units that can be cycled through by using the Unit Control button
              * @type {Array}
              * @default
              */
             unitControlUnits: ["kilometres" , "landmiles", "nauticalmiles"],
-            /**
-             * Use subunits (metres/feet) in tooltips in case of distances less then 1 kilometre/landmile
-             * @type {Boolean}
-             * @default
-             */
-            useSubunits: true,
             /**
              * Title texts to show on the Unit Control button
              * @type {Object}
