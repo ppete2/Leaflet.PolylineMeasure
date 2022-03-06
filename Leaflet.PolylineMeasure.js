@@ -2,7 +2,7 @@
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       File "Leaflet.PolylineMeasure.js"              **
-**       Date: 2021-10-05                               **
+**       Date: 2022-03-06                               **
 **                                                      **
 *********************************************************/
 
