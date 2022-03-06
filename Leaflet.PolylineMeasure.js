@@ -510,7 +510,7 @@
                 }
             }
             // allow easy to connect the measure control to the app, f.e. to disable the selection on the map when the measurement is turned on
-            this._map.fire('polylinemeasure:toggle', {sttus: this._measuring});
+            this._map.fire('polylinemeasure:toggle', {status: this._measuring});
         },
 
         /**
