@@ -89,6 +89,9 @@ options = {
         color: '#006',              // Solid line color
         weight: 2                   // Solid line weight
     },
+    arrow: {                        // Styling of the midway arrow 
+        color: '#000',              // Color of the arrow
+    },
     startCircle: {                  // Style settings for circle marker indicating the starting point of the polyline
         color: '#000',              // Color of the border of the circle
         weight: 1,                  // Weight of the circle
@@ -108,7 +111,7 @@ options = {
         weight: 1,                  // Weight of the circle
         fillColor: '#f0f',          // Fill color of the circle
         fillOpacity: 1,             // Fill opacity of the circle
-        radius: 3                   // Radius of the circle
+        radius: 6                   // Radius of the circle
     },
     endCircle: {                    // Style settings for circle marker indicating the last point of the polyline
         color: '#000',              // Color of the border of the circle
