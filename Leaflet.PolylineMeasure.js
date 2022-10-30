@@ -886,12 +886,12 @@
                     // update polyline
                     if (this.circleCoords.length > 1) {
                         var arc = polylineState._polylineArc (lastCircleCoords, mouseCoords);
+                        var arrowMarker = polylineState._drawArrow (arc);
                         if (this.circleCoords.length > 2) {
                             arc.shift();  // remove first coordinate of the arc, cause it is identical with last coordinate of previous arc
                         }
                         this.polylinePath.setLatLngs (this.polylinePath.getLatLngs().concat(arc));
                         // following lines needed especially for Mobile Browsers where we just use mouseclicks. No mousemoves, no tempLine.
-                        var arrowMarker = polylineState._drawArrow (arc);
                         arrowMarker.cntLine = polylineState._currentLine.id;
                         arrowMarker.cntArrow = polylineState._cntCircle - 1;
                         polylineState._currentLine.arrowMarkers.push (arrowMarker);
