@@ -2,7 +2,7 @@
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       File "Leaflet.PolylineMeasure.js"              **
-**       Date: 2022-10-31                               **
+**       Date: 2022-12-27                               **
 **                                                      **
 *********************************************************/
 
@@ -24,6 +24,7 @@
 }(function (L) {
     var _measureControlId = 'polyline-measure-control';
     var _unicodeClass = 'polyline-measure-unicode-icon';
+    var isMacOS = navigator.platform === 'MacIntel';
 
     /**
      * Polyline Measure class
@@ -85,8 +86,8 @@
             tooltipTextFinish: 'Click to <b>finish line</b><br>',
             tooltipTextDelete: 'Press SHIFT-key and click to <b>delete point</b>',
             tooltipTextMove: 'Click and drag to <b>move point</b><br>',
-            tooltipTextResume: '<br>Press CTRL-key and click to <b>resume line</b>',
-            tooltipTextAdd: 'Press CTRL-key and click to <b>add point</b>',
+            tooltipTextResume: '<br>Press ' + isMacOS ? '⌘' : 'CTRL-key' + ' and click to <b>resume line</b>',
+            tooltipTextAdd: 'Press ' + isMacOS ? '⌘' : 'CTRL-key' + ' and click to <b>add point</b>',
 
             /**
              * Title for the control going to be switched on
@@ -1012,7 +1013,7 @@
          * @private
          */
         _resumePolylinePath: function (e) {
-            if (e.originalEvent.ctrlKey === true) {    // just resume if user pressed the CTRL-Key while clicking onto the last circle
+            if (e.originalEvent.ctrlKey === true || e.originalEvent.metaKey === true) {    // just resume if user pressed the CTRL-Key (or metaKey on Mac) while clicking onto the last circle
                 this._currentLine = this._arrPolylines [e.target.cntLine];
                 this._rubberlinePath = L.polyline ([], {
                     // Style of temporary, rubberline while moving the mouse
@@ -1043,7 +1044,7 @@
         },
 
         _clickedArrow: function(e) {
-            if (e.originalEvent.ctrlKey) {
+            if (e.originalEvent.ctrlKey || e.originalEvent.metaKey) {  // (metaKey for Mac)
                 var lineNr = e.target.cntLine;
                 var arrowNr = e.target.cntArrow;
                 this._arrPolylines[lineNr].arrowMarkers [arrowNr].removeFrom (this._layerPaint);
@@ -1227,7 +1228,7 @@
         // not just used for dragging Cirles but also for deleting circles and resuming line at its starting point.
         _dragCircle: function (e1) {
             var arcpoints = this._arcpoints;
-            if (e1.originalEvent.ctrlKey) {   // if user wants to resume drawing a line
+            if (e1.originalEvent.ctrlKey || e1.originalEvent.metaKey) {   // if user wants to resume drawing a line. metaKey for Mac
                 this._map.off ('click', this._mouseClick, this); // to avoid unwanted creation of a new line if CTRL-clicked onto a point
                 // if user wants resume the line at its starting point
                 if (e1.target.cntCircle === 0) {
