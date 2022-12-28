@@ -1057,7 +1057,7 @@
                     item.cntCircle = index;
                 });
                 this._arrPolylines[lineNr].circleCoords.splice (arrowNr+1, 0, e.latlng);
-                lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs(); // get Coords of each Point of the current Polyline
+                var lineCoords = this._arrPolylines[lineNr].polylinePath.getLatLngs(); // get Coords of each Point of the current Polyline
                 var arc1 = this._polylineArc (this._arrPolylines[lineNr].circleCoords[arrowNr], e.latlng);
                 arc1.pop();
                 var arc2 = this._polylineArc (e.latlng, this._arrPolylines[lineNr].circleCoords[arrowNr+2]);
