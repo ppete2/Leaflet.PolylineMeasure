@@ -1337,7 +1337,7 @@
                         this._arrPolylines[lineNr].arrowMarkers.splice(-1,1);
                         // if intermediate Circle is being removed
                     } else {
-                        newLineSegment = this._polylineArc (this._arrPolylines[lineNr].circleCoords[circleNr-1], this._arrPolylines[lineNr].circleCoords[circleNr]);
+                        var newLineSegment = this._polylineArc (this._arrPolylines[lineNr].circleCoords[circleNr-1], this._arrPolylines[lineNr].circleCoords[circleNr]);
                         Array.prototype.splice.apply (lineCoords, [(circleNr-1)*(arcpoints-1), (2*arcpoints-1)].concat (newLineSegment));
                         this._arrPolylines[lineNr].arrowMarkers [circleNr-1].removeFrom (this._layerPaint);
                         this._arrPolylines[lineNr].arrowMarkers [circleNr].removeFrom (this._layerPaint);
