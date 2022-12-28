@@ -2,7 +2,7 @@
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       File "Leaflet.PolylineMeasure.js"              **
-**       Date: 2022-12-27                               **
+**       Date: 2022-12-28                               **
 **                                                      **
 *********************************************************/
 
@@ -86,8 +86,8 @@
             tooltipTextFinish: 'Click to <b>finish line</b><br>',
             tooltipTextDelete: 'Press SHIFT-key and click to <b>delete point</b>',
             tooltipTextMove: 'Click and drag to <b>move point</b><br>',
-            tooltipTextResume: '<br>Press ' + isMacOS ? '⌘' : 'CTRL-key' + ' and click to <b>resume line</b>',
-            tooltipTextAdd: 'Press ' + isMacOS ? '⌘' : 'CTRL-key' + ' and click to <b>add point</b>',
+            tooltipTextResume: '<br>Press ' + (isMacOS ? '⌘' : 'CTRL-key') + ' and click to <b>resume line</b>',
+            tooltipTextAdd: 'Press ' + (isMacOS ? '⌘' : 'CTRL-key') + ' and click to <b>add point</b>',
 
             /**
              * Title for the control going to be switched on
