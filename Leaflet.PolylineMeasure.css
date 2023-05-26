@@ -2,14 +2,10 @@
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       File "Leaflet.PolylineMeasure.css"             **
-**       Date: 2021-10-05                               **
+**       Date: 2023-05-26                               **
 **                                                      **
 *********************************************************/
 
-
-.leaflet-control {
-    cursor: pointer;
-}
 
 a.polyline-measure-controlOnBgColor, a.polyline-measure-controlOnBgColor:hover {
     background-color: #8f8;
@@ -18,10 +14,16 @@ a.polyline-measure-controlOnBgColor, a.polyline-measure-controlOnBgColor:hover {
 .polyline-measure-unicode-icon {
     font-size: 19px;
     font-weight: bold;
+    cursor: pointer;
 }
 
 a.polyline-measure-clearControl:active {
     background-color: #f88;
+}
+
+.polyline-measure-unicode-icon, .polyline-measure-clearControl, #unitControlId
+{
+cursor: pointer;
 }
 
 .polyline-measure-tooltip {
