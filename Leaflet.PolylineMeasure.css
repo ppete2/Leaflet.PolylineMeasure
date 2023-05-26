@@ -14,7 +14,6 @@ a.polyline-measure-controlOnBgColor, a.polyline-measure-controlOnBgColor:hover {
 .polyline-measure-unicode-icon {
     font-size: 19px;
     font-weight: bold;
-    cursor: pointer;
 }
 
 a.polyline-measure-clearControl:active {
@@ -23,7 +22,7 @@ a.polyline-measure-clearControl:active {
 
 .polyline-measure-unicode-icon, .polyline-measure-clearControl, #unitControlId
 {
-cursor: pointer;
+    cursor: pointer;
 }
 
 .polyline-measure-tooltip {
