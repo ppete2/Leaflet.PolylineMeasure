@@ -2,7 +2,7 @@
 **                                                      **
 **       Leaflet Plugin "Leaflet.PolylineMeasure"       **
 **       File "Leaflet.PolylineMeasure.js"              **
-**       Date: 2023-08-05                               **
+**       Date: 2023-11-07                               **
 **                                                      **
 *********************************************************/
 
@@ -643,7 +643,7 @@
                     dist = (dist/1609.344).toFixed(2);
                 } else {
                     if (!this.options.useSubunits) {
-                        dist = (dist/1609.344).toFixed(3);
+                        dist = (dist/1609.344).toFixed(4);
                     } else {
                         dist = (dist/0.3048).toFixed(0);
                         unit = this.options.unitControlLabel.feet;
@@ -660,9 +660,9 @@
                     dist = (dist/1000).toFixed(2);
                 } else {
                     if (!this.options.useSubunits) {
-                        dist = (dist/1000).toFixed(3);
+                        dist = (dist/1000).toFixed(4);
                     } else {
-                        dist = (dist).toFixed(2);
+                        dist = (dist).toFixed(1);
                         unit = this.options.unitControlLabel.metres;
                     }
                 }
