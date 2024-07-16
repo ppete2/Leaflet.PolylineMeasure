@@ -5,6 +5,7 @@
 * Measuring in **metric system** (metres, kilometres), in **imperial system** (feet, landmiles), or in **nautical miles**.
 * Lines are drawn as realistic arcs. **Bearings** and **distances** are calculated considering [**Great-circle distance**](https://en.wikipedia.org/wiki/Great-circle_distance) which is the shortest path between 2 points on Earth.
 * **Arrows** indicating the **real midways** of the line's great-circle **distances**, not their optical middle which is different due to projection, especially in high latitudes.
+* Lines can be displayed as straight **rhumb lines** instead of great-circle arcs if preferred.
 * To **finish** drawing a line just *doubleclick*, or *singleclick* onto the last (=orange) point, or *press "ESC"-key*.
 * **Moving** of line's points afterwards is possible by clicking and draging them. *(This feature can not be guaranteed to work on every **mobile** browser using touch input, e.g. with Chrome Mobile it isn't working right now)*
 * To **continue** a line after it has been finished, hold the *Ctrl-Key* while clicking onto the first or last point of a line.
@@ -19,6 +20,7 @@
 - [**Demo 3**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo3.html) (nautical mile units, bearings, without Unit Control and Clear Control buttons)
 - [**Demo 4**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo4.html) (two maps)
 - [**Demo 5**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo5.html) (programatically providing polyline points - "Seeding Data")
+- [**Demo 6**](https://ppete2.github.io/Leaflet.PolylineMeasure/demo6.html) (using simple rhumb lines instead of great circles)
 
 ![Screenshot](https://ppete2.github.io/Leaflet.PolylineMeasure/screenshot.jpg)
 
@@ -48,6 +50,8 @@ options = {
     useSubunits: true,              // Use subunits (metres/feet) in tooltips if distances are less than 1 kilometre/landmile
     clearMeasurementsOnStop: true,  // Clear all measurements when Measure Control is switched off
     showBearings: false,            // Whether bearings are displayed within the tooltips
+    useRhumbLines: false,           // Whether to use simple rhumb lines instead of great circle measurements
+    arcpoints: 99,                  // Number of points to draw in each arc (when using default great circle method)
     bearingTextIn: 'In',            // language dependend label for inbound bearings
     bearingTextOut: 'Out',          // language dependend label for outbound bearings
     tooltipTextFinish: 'Click to <b>finish line</b><br>',
